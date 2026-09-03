@@ -49,28 +49,17 @@ public final class CodexResponsesProtocol extends AbstractHttpModelProtocol {
 
     @Override
     public ModelCompletionResponse complete(ModelConfig config, List<ModelMessage> messages) throws ModelCompletionException {
-        String raw = "";
-        try {
-            JSONObject body = requestBuilder.buildCompleteBody(config, messages);
-            CodexRequestAuth auth = resolveAuth(config);
-            HashMap<String, String> headers = requestBuilder.codexHeaders(
-                    auth.accessToken, auth.accountId, auth.oauth);
-            String endpoint = auth.oauth
-                    ? requestBuilder.oauthResponsesEndpoint()
-                    : requestBuilder.responsesEndpoint(config.getBaseUrl());
-            raw = postJson(endpoint, body, headers);
-            JSONObject response = new JSONObject(raw);
-            StringBuilder text = new StringBuilder(response.optString("output_text"));
-            StringBuilder reasoning = new StringBuilder();
-            LinkedHashMap<String, CodexOutputMerger.ToolCallBuilder> toolCallBuilders = new LinkedHashMap<>();
-            outputMerger.mergeOutputArray(response.optJSONArray("output"), text, reasoning, toolCallBuilders, new HashMap<>(), null);
-            return new ModelCompletionResponse(text.toString(), reasoning.toString(), outputMerger.buildToolCalls(toolCallBuilders));
-        } catch (ModelCompletionException e) {
-            throw e;
-        } catch (Exception e) {
-            logParseError("parse_codex_complete", raw, e);
-            throw new ModelCompletionException("Codex Responses protocol parse failed: " + e.getMessage(), e);
-        }
+        // Keep model testing and other one-shot Codex calls on the same Responses
+        // streaming transport used by the real chat. The ChatGPT Codex backend is
+        // stream-oriented, so a separate non-stream POST can succeed with API-key
+        // providers while failing for an otherwise valid ChatGPT OAuth session.
+        return stream(
+                config,
+                messages,
+                null,
+                new ModelCancellationToken(),
+                ModelRequestOptions.defaults()
+        );
     }
 
     @Override
@@ -99,7 +88,7 @@ public final class CodexResponsesProtocol extends AbstractHttpModelProtocol {
             final int[] usageInputTokens = new int[1];
             final int[] usageOutputTokens = new int[1];
 
-            postJsonSse(requestBuilder.responsesEndpoint(config.getBaseUrl()), body, headers, cancellationToken, (eventType, data) -> {
+            postJsonSse(endpoint, body, headers, cancellationToken, (eventType, data) -> {
                 handleSseEvent(eventType, data, callback, text, reasoning, reasoningSummaryStream,
                         toolCallBuilders, customToolInputs, usageInputTokens, usageOutputTokens);
             });
@@ -249,11 +238,12 @@ public final class CodexResponsesProtocol extends AbstractHttpModelProtocol {
             return new CodexRequestAuth(configuredToken, "", false);
         }
         if (context != null) {
-            String oauthToken = new CodexAuthManager(context).getValidAccessToken();
+            CodexAuthManager authManager = new CodexAuthManager(context);
+            String oauthToken = authManager.getValidAccessToken();
             if (oauthToken != null && oauthToken.length() > 0) {
                 return new CodexRequestAuth(
                         oauthToken,
-                        new CodexAuthManager(context).getAccountId(),
+                        authManager.getAccountId(),
                         true
                 );
             }
