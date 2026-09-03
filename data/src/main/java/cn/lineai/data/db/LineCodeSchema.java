@@ -2,7 +2,7 @@ package cn.lineai.data.db;
 
 public final class LineCodeSchema {
     public static final String DATABASE_NAME = "linecode.db";
-    public static final int VERSION = 4;
+    public static final int VERSION = 5;
 
     public static final String TABLE_METADATA = "metadata";
     public static final String TABLE_SETTINGS = "settings";
@@ -25,6 +25,8 @@ public final class LineCodeSchema {
     public static final String TABLE_EXTENSION_MCPS = "extension_mcps";
     public static final String TABLE_IPC_PROVIDERS = "ipc_providers";
     public static final String TABLE_IMPORT_JOBS = "import_jobs";
+    public static final String TABLE_AGENT_TASKS = "agent_tasks";
+    public static final String TABLE_AGENT_TASK_EVENTS = "agent_task_events";
 
     public static final String[] TABLES = new String[] {
             TABLE_METADATA,
@@ -47,7 +49,9 @@ public final class LineCodeSchema {
             TABLE_EXTENSION_AGENTS,
             TABLE_EXTENSION_MCPS,
             TABLE_IPC_PROVIDERS,
-            TABLE_IMPORT_JOBS
+            TABLE_IMPORT_JOBS,
+            TABLE_AGENT_TASKS,
+            TABLE_AGENT_TASK_EVENTS
     };
 
     public static boolean isValidTable(String name) {
@@ -84,6 +88,51 @@ public final class LineCodeSchema {
      */
     public static final String SQL_CREATE_INDEX_IPC_PROVIDERS =
             "CREATE INDEX IF NOT EXISTS idx_ipc_providers_enabled ON ipc_providers(enabled, provider_type, updated_at DESC)";
+
+
+    public static final String SQL_CREATE_AGENT_TASKS =
+            "CREATE TABLE IF NOT EXISTS agent_tasks ("
+                    + "id TEXT PRIMARY KEY,"
+                    + "conversation_id TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,"
+                    + "project_id TEXT,"
+                    + "workspace_path TEXT NOT NULL DEFAULT '',"
+                    + "user_message_id TEXT NOT NULL DEFAULT '',"
+                    + "prompt TEXT NOT NULL DEFAULT '',"
+                    + "raw_input_json TEXT NOT NULL DEFAULT '',"
+                    + "model_config_id TEXT NOT NULL DEFAULT '',"
+                    + "state TEXT NOT NULL,"
+                    + "generation_id INTEGER NOT NULL DEFAULT 0,"
+                    + "tool_call_count INTEGER NOT NULL DEFAULT 0,"
+                    + "max_tool_calls INTEGER NOT NULL DEFAULT 0,"
+                    + "checkpoint_json TEXT NOT NULL DEFAULT '',"
+                    + "last_error TEXT NOT NULL DEFAULT '',"
+                    + "resume_count INTEGER NOT NULL DEFAULT 0,"
+                    + "created_at INTEGER NOT NULL,"
+                    + "updated_at INTEGER NOT NULL,"
+                    + "started_at INTEGER,"
+                    + "finished_at INTEGER,"
+                    + "deadline_at INTEGER"
+                    + ")";
+
+    public static final String SQL_CREATE_AGENT_TASK_EVENTS =
+            "CREATE TABLE IF NOT EXISTS agent_task_events ("
+                    + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "task_id TEXT NOT NULL REFERENCES agent_tasks(id) ON DELETE CASCADE,"
+                    + "sequence INTEGER NOT NULL,"
+                    + "event_type TEXT NOT NULL,"
+                    + "state TEXT NOT NULL,"
+                    + "payload_json TEXT NOT NULL DEFAULT '',"
+                    + "created_at INTEGER NOT NULL,"
+                    + "UNIQUE(task_id, sequence)"
+                    + ")";
+
+    public static final String SQL_CREATE_INDEX_AGENT_TASKS =
+            "CREATE INDEX IF NOT EXISTS idx_agent_tasks_queue "
+                    + "ON agent_tasks(conversation_id, state, created_at ASC)";
+
+    public static final String SQL_CREATE_INDEX_AGENT_TASK_EVENTS =
+            "CREATE INDEX IF NOT EXISTS idx_agent_task_events_task "
+                    + "ON agent_task_events(task_id, sequence ASC)";
 
     public static final String[] CREATE_SQL = new String[] {
             "CREATE TABLE IF NOT EXISTS metadata ("
@@ -294,6 +343,10 @@ public final class LineCodeSchema {
                     + "item_counts_json TEXT,"
                     + "error TEXT"
                     + ")",
+            SQL_CREATE_AGENT_TASKS,
+            SQL_CREATE_AGENT_TASK_EVENTS,
+            SQL_CREATE_INDEX_AGENT_TASKS,
+            SQL_CREATE_INDEX_AGENT_TASK_EVENTS,
             "CREATE INDEX IF NOT EXISTS idx_model_configs_selected ON model_configs(selected)",
             "CREATE INDEX IF NOT EXISTS idx_projects_selected ON projects(selected)",
             "CREATE INDEX IF NOT EXISTS idx_conversations_updated ON conversations(updated_at DESC)",
@@ -337,6 +390,8 @@ public final class LineCodeSchema {
             "DROP TABLE IF EXISTS working_memory_fts",
             "DROP TABLE IF EXISTS conversation_index_fts",
             "DROP TABLE IF EXISTS memories_fts",
+            "DROP TABLE IF EXISTS agent_task_events",
+            "DROP TABLE IF EXISTS agent_tasks",
             "DROP TABLE IF EXISTS import_jobs",
             "DROP TABLE IF EXISTS ipc_providers",
             "DROP TABLE IF EXISTS extension_mcps",

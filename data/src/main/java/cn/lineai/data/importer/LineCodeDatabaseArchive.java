@@ -70,7 +70,9 @@ public final class LineCodeDatabaseArchive {
             LineCodeSchema.TABLE_SKILLS,
             LineCodeSchema.TABLE_SKILL_USAGE,
             LineCodeSchema.TABLE_EXTENSION_AGENTS,
-            LineCodeSchema.TABLE_EXTENSION_MCPS
+            LineCodeSchema.TABLE_EXTENSION_MCPS,
+            LineCodeSchema.TABLE_AGENT_TASKS,
+            LineCodeSchema.TABLE_AGENT_TASK_EVENTS
     };
 
     private final LineCodeArchiveCodec codec = new LineCodeArchiveCodec();

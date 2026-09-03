@@ -12,6 +12,7 @@ import cn.lineai.context.ContextManager;
 import cn.lineai.context.TokenUsageTracker;
 import cn.lineai.data.db.LineCodeDatabase;
 import cn.lineai.data.importer.LineCodeArchiveService;
+import cn.lineai.data.repository.AgentTaskRepository;
 import cn.lineai.data.repository.AiBehaviorSettingsRepository;
 import cn.lineai.data.repository.ChatModeRepository;
 import cn.lineai.data.repository.ConversationRepository;
@@ -88,6 +89,7 @@ public final class MainDependencies {
     final ThemeSettingsRepository themeSettingsRepository;
     final PromptTemplateRepository promptTemplateRepository;
     final ConversationStore conversationRepository;
+    final AgentTaskRepository agentTaskRepository;
     final ProjectStore projectRepository;
     final LearningContextStore learningContextRepository;
     final LearningContextService learningContextService;
@@ -146,6 +148,7 @@ public final class MainDependencies {
         promptTemplateRepository = new PromptTemplateRepository(resourceProvider, settingsRepository);
         LineTheme.apply(themeSettingsRepository.resolveCurrentPalette());
         conversationRepository = new ConversationRepository(database);
+        agentTaskRepository = new AgentTaskRepository(database);
         WorkspacePaths workspacePaths = new WorkspacePaths(context);
         projectRepository = new ProjectRepository(database, settingsRepository, workspacePaths);
         learningContextRepository = new LearningContextRepository(database, workspacePaths, promptTemplateRepository);
