@@ -45,7 +45,7 @@ jobs:
         run: ./gradlew :app:assembleDebug
 
       - name: Build user-cert debug APK
-        run: ./gradlew :app:assembleDebugUserCert
+        run: ./gradlew :app:exportDebugUserCertApk
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
