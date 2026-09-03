@@ -75,6 +75,9 @@ final class CodexRequestBuilder {
         headers.put("version", oauth ? CODEX_OAUTH_CLIENT_VERSION : CODEX_PROTOCOL_VERSION);
         headers.put("originator", CODEX_ORIGINATOR);
         headers.put("User-Agent", oauth ? oauthUserAgent() : codexUserAgent());
+        // The official Codex client projects the current window id both into
+        // client_metadata and the compatibility HTTP headers.
+        headers.put("x-codex-window-id", CODEX_WINDOW_ID);
         if (oauth) {
             headers.put("OpenAI-Beta", "responses=experimental");
         }
