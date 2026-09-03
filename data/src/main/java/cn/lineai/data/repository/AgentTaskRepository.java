@@ -213,8 +213,8 @@ public final class AgentTaskRepository extends BaseRepository {
             String checkpointJson
     ) {
         AgentTaskRecord current = get(taskId);
-        if (current == null) {
-            return null;
+        if (current == null || current.getState().isTerminal()) {
+            return current;
         }
         AgentTaskState state = nextState == null ? AgentTaskState.FAILED : nextState;
         long now = System.currentTimeMillis();
@@ -247,7 +247,11 @@ public final class AgentTaskRepository extends BaseRepository {
     }
 
     public synchronized AgentTaskRecord cancel(String taskId, String reason) {
-        return finish(taskId, AgentTaskState.CANCELLED, reason, "");
+        AgentTaskRecord current = get(taskId);
+        if (current == null || current.getState().isTerminal()) {
+            return current;
+        }
+        return finish(taskId, AgentTaskState.CANCELLED, reason, current.getCheckpointJson());
     }
 
     public synchronized AgentTaskRecord pause(String taskId, String reason) {
