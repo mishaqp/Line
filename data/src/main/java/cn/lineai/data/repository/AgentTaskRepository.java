@@ -468,7 +468,7 @@ public final class AgentTaskRepository extends BaseRepository {
 
     private String normalizePhase(String phase) {
         String value = phase == null ? "unknown" : phase.trim().toLowerCase(java.util.Locale.ROOT);
-        return value.length() == 0 ? "unknown" : value.replaceAll("[^a-z0-9_\-]", "_");
+        return value.length() == 0 ? "unknown" : value.replaceAll("[^a-z0-9_-]", "_");
     }
 
     private String payload(String key, Object value) {
