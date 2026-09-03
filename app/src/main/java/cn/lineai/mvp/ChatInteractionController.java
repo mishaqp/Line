@@ -5,6 +5,8 @@ import cn.lineai.model.tool.ToolResult;
 import cn.lineai.ai.ImageInputPayload;
 import cn.lineai.ai.ModelCancellationToken;
 import cn.lineai.data.repository.ChatModeRepository;
+import cn.lineai.model.AgentTaskRecord;
+import cn.lineai.mvp.agent.AgentRuntimeController;
 import cn.lineai.data.repository.ConversationStore;
 import cn.lineai.data.repository.ToolSettingsStore;
 import cn.lineai.model.ChatMessage;
@@ -48,6 +50,10 @@ final class ChatInteractionController {
         void setComposerDraft(String text, ArrayList<InputAttachment> attachments);
 
         void render();
+
+        default String projectPath() {
+            return "";
+        }
     }
 
     private final ArrayList<ChatMessage> messages;
@@ -58,6 +64,7 @@ final class ChatInteractionController {
     private final ToolSettingsStore toolSettingsRepository;
     private final ContextCompactionController contextCompactionController;
     private final GenerationFlowController generationFlowController;
+    private final AgentRuntimeController agentRuntimeController;
     private final Host host;
     private String lastMessageModelId = "";
 
@@ -70,6 +77,7 @@ final class ChatInteractionController {
             ToolSettingsStore toolSettingsRepository,
             ContextCompactionController contextCompactionController,
             GenerationFlowController generationFlowController,
+            AgentRuntimeController agentRuntimeController,
             Host host
     ) {
         this.messages = messages;
@@ -80,11 +88,13 @@ final class ChatInteractionController {
         this.toolSettingsRepository = toolSettingsRepository;
         this.contextCompactionController = contextCompactionController;
         this.generationFlowController = generationFlowController;
+        this.agentRuntimeController = agentRuntimeController;
         this.host = host;
     }
 
     void newConversation() {
         host.cancelActiveGeneration();
+        agentRuntimeController.cancelActiveTask("Диалог переключён пользователем.");
         if (chatSessionStore.isStreaming()) {
             host.markStreamingMessagesStopped();
             generationFlowController.markRunningAgentProgressStopped(host.agentTerminatedMessage());
@@ -107,6 +117,7 @@ final class ChatInteractionController {
             return;
         }
         host.cancelActiveGeneration();
+        agentRuntimeController.cancelActiveTask("Диалог переключён пользователем.");
         boolean wasStreaming = chatSessionStore.isStreaming();
         if (wasStreaming) {
             host.markStreamingMessagesStopped();
@@ -130,6 +141,7 @@ final class ChatInteractionController {
         if (id == null || id.length() == 0) {
             return;
         }
+        agentRuntimeController.cancelTasksForConversation(id, "Диалог удалён пользователем.");
         conversationRepository.deleteConversation(id);
         if (id.equals(chatSessionStore.getCurrentConversationId())) {
             host.cancelActiveGeneration();
@@ -180,8 +192,8 @@ final class ChatInteractionController {
     private void dispatchMessage(String text, List<InputAttachment> attachments, String rawInputJson) {
         String trimmed = text == null ? "" : text.trim();
         ArrayList<InputAttachment> safeAttachments = sanitizeAttachments(attachments);
-        if ((trimmed.isEmpty() && safeAttachments.isEmpty() && rawInputJson.length() == 0)
-                || chatSessionStore.isStreaming()) {
+        boolean wasStreaming = chatSessionStore.isStreaming();
+        if (trimmed.isEmpty() && safeAttachments.isEmpty() && rawInputJson.length() == 0) {
             return;
         }
         host.ensureCurrentConversation();
@@ -212,14 +224,48 @@ final class ChatInteractionController {
         }
         lastMessageModelId = currentModelId;
 
+        String activeUserMessageId = messages.get(messages.size() - 1).getId();
+        AgentTaskRecord task = agentRuntimeController.enqueue(
+                chatSessionStore.getCurrentConversationId(),
+                "",
+                host.projectPath(),
+                activeUserMessageId,
+                userContent,
+                "",
+                selectedModel.getId(),
+                selectedModel.getToolCallLimit()
+        );
+        if (wasStreaming) {
+            host.render();
+            return;
+        }
+        startTask(task, selectedModel, userContent, activeUserMessageId);
+    }
+
+
+    private void startTask(
+            AgentTaskRecord task,
+            ModelConfig selectedModel,
+            String userInput,
+            String activeUserMessageId
+    ) {
+        if (task == null || selectedModel == null || chatSessionStore.isStreaming()) {
+            return;
+        }
         int generationId = chatSessionStore.nextGenerationId();
         ModelCancellationToken cancellationToken = new ModelCancellationToken();
+        AgentTaskRecord started = agentRuntimeController.startTask(
+                task.getId(), generationId, cancellationToken
+        );
+        if (started == null) {
+            host.render();
+            return;
+        }
         host.setCurrentCancellationToken(cancellationToken);
         chatSessionStore.setStreaming(true);
         host.startGenerationKeepAlive();
         host.render();
 
-        String activeUserMessageId = messages.get(messages.size() - 1).getId();
         if (contextCompactionController.shouldAutoCompactBeforeRequest(selectedModel, activeUserMessageId)) {
             contextCompactionController.startContextCompaction(
                     generationId,
@@ -227,12 +273,10 @@ final class ChatInteractionController {
                     cancellationToken,
                     true,
                     activeUserMessageId,
-                    userContent
+                    userInput
             );
             return;
         }
-        // 软触发增量压缩：50% 占用时把最早的一部分消息压缩成摘要，避免上下文继续
-        // 增长到 80% 时才一次性处理大量历史。这是动态压缩的核心环节。
         if (contextCompactionController.shouldAutoSoftCompactBeforeRequest(selectedModel, activeUserMessageId)) {
             contextCompactionController.startSoftContextCompaction(
                     generationId,
@@ -240,11 +284,75 @@ final class ChatInteractionController {
                     cancellationToken,
                     true,
                     activeUserMessageId,
-                    userContent
+                    userInput
             );
             return;
         }
-        generationFlowController.startInitialModelRequest(generationId, selectedModel, cancellationToken, userContent);
+        generationFlowController.startInitialModelRequest(
+                generationId,
+                selectedModel,
+                cancellationToken,
+                userInput,
+                task.getToolCallCount()
+        );
+    }
+
+    void startQueuedTask(AgentTaskRecord task) {
+        if (task == null || chatSessionStore.isStreaming()
+                || !task.getConversationId().equals(chatSessionStore.getCurrentConversationId())) {
+            return;
+        }
+        ModelConfig model = modelRepository.getModel(task.getModelConfigId());
+        if (model == null) {
+            agentRuntimeController.failTask(
+                    task.getId(),
+                    "Задача использует удалённую модель; выберите модель и повторите её."
+            );
+            host.render();
+            resumePendingTasksForConversation(task.getConversationId());
+            return;
+        }
+        startTask(
+                task,
+                model,
+                task.getPrompt(),
+                task.getUserMessageId().length() == 0 ? lastUserMessageId() : task.getUserMessageId()
+        );
+    }
+
+    void resumePendingTasksForConversation(String conversationId) {
+        if (conversationId == null || conversationId.length() == 0 || chatSessionStore.isStreaming()) {
+            return;
+        }
+        AgentTaskRecord task = agentRuntimeController.findRecoverableTask(conversationId);
+        if (task == null) {
+            task = agentRuntimeController.findNextQueuedTask(conversationId);
+        }
+        if (task != null) {
+            startQueuedTask(task);
+        }
+    }
+
+    boolean resumeTask(String taskId) {
+        if (chatSessionStore.isStreaming()) {
+            return false;
+        }
+        AgentTaskRecord task = agentRuntimeController.getTask(taskId);
+        if (task == null || !task.getState().canStart()
+                || !task.getConversationId().equals(chatSessionStore.getCurrentConversationId())) {
+            return false;
+        }
+        startQueuedTask(task);
+        return chatSessionStore.isStreaming();
+    }
+
+    private String lastUserMessageId() {
+        for (int i = messages.size() - 1; i >= 0; i--) {
+            if (messages.get(i).getRole() == ChatMessage.Role.USER) {
+                return messages.get(i).getId();
+            }
+        }
+        return "";
     }
 
     void recallMessage(String messageId) {
@@ -288,8 +396,10 @@ final class ChatInteractionController {
     }
 
     void stopGeneration() {
+        String conversationId = chatSessionStore.getCurrentConversationId();
         generationFlowController.flushPendingAssistantDelta();
         host.cancelActiveGeneration();
+        agentRuntimeController.cancelActiveTask("Задача отменена пользователем.");
         chatSessionStore.setStreaming(false);
         host.stopGenerationKeepAlive();
         chatSessionStore.invalidateActiveGeneration();
@@ -297,12 +407,19 @@ final class ChatInteractionController {
         generationFlowController.markRunningAgentProgressStopped(host.agentTerminatedMessage());
         host.persistCurrentConversation();
         host.render();
+        AgentTaskRecord next = agentRuntimeController.findNextQueuedTask(conversationId);
+        if (next != null) {
+            startQueuedTask(next);
+        }
     }
 
     void clearCurrentConversation() {
         String currentConversationId = chatSessionStore.getCurrentConversationId();
         messages.clear();
         if (currentConversationId.length() > 0) {
+            agentRuntimeController.cancelTasksForConversation(
+                    currentConversationId, "Диалог очищен пользователем."
+            );
             conversationRepository.deleteConversation(currentConversationId);
         }
         chatSessionStore.clearCurrentConversation();

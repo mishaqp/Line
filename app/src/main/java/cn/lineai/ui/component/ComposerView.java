@@ -737,10 +737,13 @@ public final class ComposerView extends LinearLayout implements QuoteController.
             text = quoted + text;
             clearQuote();
         }
-        pendingQueue.add(new QueuedItem(text, new ArrayList<>(attachments)));
+        // Сохраняем queued input через Agent Runtime сразу, чтобы очередь переживала
+        // остановку генерации и перезапуск процесса.
+        if (listener != null) {
+            listener.onSend(text, new ArrayList<>(attachments));
+        }
         input.setText("");
         clearAttachments();
-        // Update pending block
         updatePendingBlock();
         updateSendButton();
     }

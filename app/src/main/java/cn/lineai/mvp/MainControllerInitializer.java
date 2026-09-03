@@ -612,6 +612,7 @@ final class MainControllerInitializer {
                 toolSettingsRepository,
                 coordinator.contextCompactionController,
                 coordinator.generationFlowController,
+                coordinator.agentRuntimeController(),
                 new ChatInteractionHost(coordinator)
         );
         coordinator.overlayActionController = new OverlayActionController(

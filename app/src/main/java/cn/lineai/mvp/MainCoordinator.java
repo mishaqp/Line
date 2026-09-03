@@ -8,6 +8,9 @@ import cn.lineai.context.ContextCompactionService;
 import cn.lineai.context.ContextManager;
 
 import cn.lineai.data.repository.AiBehaviorSettingsRepository;
+import cn.lineai.model.AgentTaskRecord;
+import cn.lineai.model.AgentTaskState;
+import cn.lineai.mvp.agent.AgentRuntimeController;
 import cn.lineai.data.repository.ChatModeRepository;
 import cn.lineai.data.repository.ConversationRecord;
 import cn.lineai.data.repository.ConversationStore;
@@ -139,6 +142,7 @@ public final class MainCoordinator implements MainUiController {
     private final SafPathResolver safPathResolver;
     LineCodeArchiveController lineCodeArchiveController;
     AgentExecutionController agentExecutionController;
+    final AgentRuntimeController agentRuntimeController;
     private final cn.lineai.state.TodoStateStore todoStateStore;
     private final ViewProxy viewProxy = new ViewProxy();
     private final ScreenNavigationController.Host navigationHost = new ScreenNavigationController.Host() {
@@ -213,6 +217,9 @@ public final class MainCoordinator implements MainUiController {
         phoneControlController = dependencies.phoneControlController;
         errorLogController = dependencies.errorLogController;
 
+        agentRuntimeController = new AgentRuntimeController(dependencies.agentTaskRepository);
+        agentRuntimeController.recoverInFlightTasks();
+
         // === initControllers ===
         MainControllerInitializer.init(this, dependencies);
 
@@ -231,6 +238,9 @@ public final class MainCoordinator implements MainUiController {
         requestSshFileTreeLoad(false);
         requestIpcFileTreeLoad(false);
         projectWorkspaceController.validateSelectedProjectAvailabilityOnStartup();
+        chatInteractionController.resumePendingTasksForConversation(
+                chatSessionStore.getCurrentConversationId()
+        );
     }
 
     @Override
@@ -242,9 +252,11 @@ public final class MainCoordinator implements MainUiController {
     public void destroy() {
         ipcProviderManager.removeStateListener(ipcProviderController);
         detachView();
+        agentRuntimeController.cancelActiveTask("Activity уничтожена.");
         generationLifecycleController.cancelActiveGeneration();
         generationLifecycleController.stopKeepAlive();
         backgroundTasks.shutdownNow();
+        agentRuntimeController.shutdown();
     }
 
     /**
@@ -1046,6 +1058,7 @@ public final class MainCoordinator implements MainUiController {
         conversationPersistenceController.loadConversation(id);
         contextCompactionController.onConversationChanged();
         chatInteractionController.resetModelTracking();
+        chatInteractionController.resumePendingTasksForConversation(id);
     }
 
     private void applyConversation(ConversationRecord conversation) {
@@ -1058,6 +1071,37 @@ public final class MainCoordinator implements MainUiController {
 
     void persistCurrentConversation() {
         conversationPersistenceController.persistCurrentConversation();
+    }
+
+
+    AgentRuntimeController agentRuntimeController() {
+        return agentRuntimeController;
+    }
+
+    void onGenerationCheckpoint(int generationId, String phase, int toolCallCount, String payloadJson) {
+        agentRuntimeController.checkpoint(generationId, phase, toolCallCount, payloadJson);
+    }
+
+    void onGenerationFinished(int generationId, boolean success, String error) {
+        AgentTaskState state = success ? AgentTaskState.SUCCEEDED : AgentTaskState.FAILED;
+        agentRuntimeController.finishGeneration(generationId, state, error);
+        if (chatSessionStore.isStreaming()) {
+            return;
+        }
+        AgentTaskRecord next = agentRuntimeController.findNextQueuedTask(
+                chatSessionStore.getCurrentConversationId()
+        );
+        if (next != null) {
+            chatInteractionController.startQueuedTask(next);
+        }
+    }
+
+    boolean isGenerationDeadlineExceeded(int generationId) {
+        return agentRuntimeController.isDeadlineExceeded(generationId);
+    }
+
+    String generationBudgetExceededMessage() {
+        return agentRuntimeController.deadlineMessage();
     }
 
     String nextId() {
