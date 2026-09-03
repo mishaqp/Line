@@ -4,7 +4,7 @@ import cn.lineai.model.tool.ToolResult;
 
 import cn.lineai.data.repository.ToolSettingsStore;
 import cn.lineai.tool.BaseTool;
-import cn.lineai.tool.PermissionResult;
+import cn.lineai.tool.ToolApprovalPolicy;
 import cn.lineai.tool.ToolExecutionCoordinator;
 import cn.lineai.tool.ToolRegistry;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public final class ToolRunController {
     }
 
     public ToolExecutionCoordinator.ToolExecutionPlan createPlan(List<ToolCall> toolCalls) {
-        return executionCoordinator.createPlan(toolCalls);
+        return executionCoordinator.createPlan(toolCalls, this::shouldPauseForConfirmation);
     }
 
     public ArrayList<ToolResult> orderedResults(List<ToolCall> toolCalls, HashMap<String, ToolResult> resultById) {
@@ -66,13 +66,6 @@ public final class ToolRunController {
             return false;
         }
         BaseTool tool = toolRegistry.get(call.getName());
-        if (tool == null || !tool.needsConfirmation()) {
-            return false;
-        }
-        PermissionResult permission = toolSettingsRepository.canExecuteTool(tool.getName(), tool.getCategory());
-        if (!permission.isAllowed()) {
-            return false;
-        }
-        return toolSettingsRepository.needsConfirmation(tool.getName());
+        return ToolApprovalPolicy.requiresConfirmation(toolSettingsRepository, tool);
     }
 }
