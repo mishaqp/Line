@@ -24,6 +24,7 @@ import cn.lineai.model.AiBehaviorSettings;
 import cn.lineai.ai.ModelCancellationToken;
 import cn.lineai.model.ModelConfig;
 import cn.lineai.tool.BaseTool;
+import cn.lineai.tool.ToolApprovalPolicy;
 import cn.lineai.tool.ToolCategory;
 import cn.lineai.tool.ToolContext;
 import cn.lineai.tool.ToolDisplayCategory;
@@ -986,10 +987,8 @@ public final class AgentExecutionController {
         }
         BaseTool tool = toolRegistry.get(call.getName());
         return tool != null
-                && tool.needsConfirmation()
                 && !toolReviewAwaiter.isAutoConfirmed(call)
-                && toolSettingsRepository.canExecuteTool(tool.getName(), tool.getCategory()).isAllowed()
-                && (FileDeleteTool.NAME.equals(tool.getName()) || toolSettingsRepository.needsConfirmation(tool.getName()));
+                && ToolApprovalPolicy.requiresConfirmation(toolSettingsRepository, tool);
     }
 
     public String agentRolePrompt(String type) {
