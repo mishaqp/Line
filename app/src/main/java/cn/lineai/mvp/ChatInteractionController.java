@@ -266,6 +266,9 @@ final class ChatInteractionController {
         chatSessionStore.setStreaming(true);
         host.startGenerationKeepAlive();
         host.render();
+        generationFlowController.seedInitialToolCallCount(
+                generationId, task.getToolCallCount()
+        );
 
         if (contextCompactionController.shouldAutoCompactBeforeRequest(selectedModel, activeUserMessageId)) {
             contextCompactionController.startContextCompaction(

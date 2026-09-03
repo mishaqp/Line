@@ -367,6 +367,10 @@ final class GenerationFlowController {
         }
     }
 
+    void seedInitialToolCallCount(int generationId, int toolCallCount) {
+        initialToolCallCounts.put(generationId, Math.max(0, toolCallCount));
+    }
+
     void startInitialModelRequest(
             int generationId,
             ModelConfig selectedModel,
