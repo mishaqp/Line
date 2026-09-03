@@ -1212,4 +1212,48 @@
     <string name="toolcall_preview_section_note">以下为模拟数据，状态不代表真实工具运行结果。</string>
     <string name="settings_row_tutorial_title">查看教程</string>
     <string name="settings_row_tutorial_desc">从零到进阶：模型配置、工作区、Termux、SSH 与 MCP</string>
+
+    <!-- Codex account and usage -->
+    <string name="settings_row_codex_account_title">Codex / ChatGPT</string>
+    <string name="settings_row_codex_account_desc">登录 OpenAI，查看套餐、实时额度和重置时间</string>
+    <string name="screen_codex_account_title">Codex 账户</string>
+    <string name="screen_codex_account_section_auth">账户</string>
+    <string name="screen_codex_account_signed_out">未登录</string>
+    <string name="screen_codex_account_login_desc">使用官方 OpenAI 浏览器登录。OAuth 令牌保存在 Android Keystore 中。</string>
+    <string name="screen_codex_account_login">使用 ChatGPT 登录</string>
+    <string name="screen_codex_account_login_wait">正在等待 OpenAI 授权…</string>
+    <string name="screen_codex_account_loading">正在加载账户额度…</string>
+    <string name="screen_codex_account_refresh">刷新额度</string>
+    <string name="screen_codex_account_add_model">添加 Codex 模型</string>
+    <string name="screen_codex_account_logout">退出登录</string>
+    <string name="screen_codex_account_email">邮箱</string>
+    <string name="screen_codex_account_plan">套餐</string>
+    <string name="screen_codex_account_id">账户 ID</string>
+    <string name="screen_codex_account_unknown">暂无数据</string>
+    <string name="screen_codex_account_error_title">授权错误</string>
+    <string name="screen_codex_account_security_title">凭据存储</string>
+    <string name="screen_codex_account_security_desc">令牌不会显示、写入日志或保存到模型配置中。</string>
+    <string name="screen_codex_account_session_expired">Codex 会话已失效，请重新登录。</string>
+    <string name="screen_codex_usage_section">实时额度</string>
+    <string name="screen_codex_primary_limit">主窗口</string>
+    <string name="screen_codex_secondary_limit">次级窗口</string>
+    <string name="screen_codex_used">已使用</string>
+    <string name="screen_codex_remaining">剩余</string>
+    <string name="screen_codex_window">窗口</string>
+    <string name="screen_codex_window_minutes">%1$d 分钟</string>
+    <string name="screen_codex_window_hours">%1$d 小时</string>
+    <string name="screen_codex_window_days">%1$d 天</string>
+    <string name="screen_codex_reset">重置</string>
+    <string name="screen_codex_reset_in">%1$s 后</string>
+    <string name="screen_codex_reset_now">现在</string>
+    <string name="screen_codex_reset_unknown">未提供</string>
+    <string name="screen_codex_usage_unavailable">额度数据不可用</string>
+    <string name="screen_codex_usage_unavailable_desc">账户服务没有返回限额窗口。</string>
+    <string name="screen_codex_usage_failed_title">无法加载额度</string>
+    <string name="screen_codex_models_section">可用模型</string>
+    <string name="screen_codex_models_count">%1$d 个模型</string>
+    <string name="screen_codex_models_unavailable">模型目录不可用</string>
+    <string name="screen_codex_models_unavailable_desc">重新登录后刷新，或检查网络连接。</string>
+    <string name="screen_codex_request_failed">Codex 账户请求失败，请稍后重试。</string>
+
 </resources>
