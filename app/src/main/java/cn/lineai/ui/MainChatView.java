@@ -434,6 +434,7 @@ public final class MainChatView extends FrameLayout implements MainContract.View
 
     private void registerScreenFactories() {
         screenRegistry.register(new ScreenFactories.SettingsScreenFactory());
+        screenRegistry.register(new ScreenFactories.CodexAccountScreenFactory());
         screenRegistry.register(new ScreenFactories.LlmSettingsScreenFactory());
         screenRegistry.register(new ScreenFactories.PromptTemplatesScreenFactory());
         screenRegistry.register(new ScreenFactories.InputSettingsScreenFactory());

@@ -19,6 +19,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import cn.lineai.R;
+import cn.lineai.data.codex.CodexAuthManager;
 import cn.lineai.log.ErrorLog;
 import cn.lineai.log.ErrorLogRedactor;
 import cn.lineai.model.ContextSizeParser;
@@ -512,7 +513,7 @@ public final class ModelAddScreenView extends LinearLayout {
             Toast.makeText(context, R.string.screen_model_add_require_name_id, Toast.LENGTH_SHORT).show();
             return null;
         }
-        if (apiKey.length() == 0) {
+        if (apiKey.length() == 0 && !canUseCodexOAuth()) {
             Toast.makeText(context, R.string.screen_model_add_require_api_key, Toast.LENGTH_SHORT).show();
             return null;
         }
@@ -552,7 +553,7 @@ public final class ModelAddScreenView extends LinearLayout {
         if (name.length() == 0) {
             name = modelId;
         }
-        if (baseUrl.length() == 0 || apiKey.length() == 0 || modelId.length() == 0) {
+        if (baseUrl.length() == 0 || (apiKey.length() == 0 && !canUseCodexOAuth()) || modelId.length() == 0) {
             Toast.makeText(context, R.string.screen_model_add_test_missing, Toast.LENGTH_SHORT).show();
             return null;
         }
@@ -643,7 +644,7 @@ public final class ModelAddScreenView extends LinearLayout {
             boolean compressionReady = compressionSection == null || compressionSection.isReady();
             canSave = (name.length() > 0 || id.length() > 0)
                     && id.length() > 0
-                    && ModelFormHelper.value(apiKeyInput).length() > 0
+                    && (ModelFormHelper.value(apiKeyInput).length() > 0 || canUseCodexOAuth())
                     && parseToolCallLimit() != null
                     && compressionReady;
         }
@@ -669,8 +670,16 @@ public final class ModelAddScreenView extends LinearLayout {
         return ModelProtocolType.OPENAI_COMPATIBLE;
     }
 
+    private boolean canUseCodexOAuth() {
+        return !local
+                && protocolType[0] == ModelProtocolType.CODEX_RESPONSES
+                && CodexAuthManager.isAuthenticated(getContext());
+    }
+
     private boolean canQuery() {
-        return !local && effectiveBaseUrl().length() > 0 && ModelFormHelper.value(apiKeyInput).length() > 0;
+        return !local
+                && effectiveBaseUrl().length() > 0
+                && (ModelFormHelper.value(apiKeyInput).length() > 0 || canUseCodexOAuth());
     }
 
     private String effectiveBaseUrl() {

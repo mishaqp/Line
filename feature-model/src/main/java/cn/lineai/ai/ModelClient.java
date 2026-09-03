@@ -1,5 +1,6 @@
 package cn.lineai.ai;
 
+import android.content.Context;
 import cn.lineai.ai.message.ModelMessage;
 import cn.lineai.ai.protocol.ModelProtocol;
 import cn.lineai.ai.protocol.ModelProtocolFactory;
@@ -7,7 +8,15 @@ import cn.lineai.model.ModelConfig;
 import java.util.List;
 
 public final class ModelClient {
-    private final ModelProtocolFactory protocolFactory = new ModelProtocolFactory();
+    private final ModelProtocolFactory protocolFactory;
+
+    public ModelClient() {
+        this(null);
+    }
+
+    public ModelClient(Context context) {
+        this.protocolFactory = new ModelProtocolFactory(context);
+    }
 
     public ModelCompletionResponse complete(ModelConfig config, List<ModelMessage> messages) throws ModelCompletionException {
         ModelProtocol protocol = protocolFactory.create(config.getProtocolType());

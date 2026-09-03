@@ -189,12 +189,12 @@ public final class MainDependencies {
         sshFileTreeRepository = new SshFileTreeRepository(sshService);
         ipcFileTreeRepository = new IpcFileTreeRepository(ipcProviderManager);
         contextManager = new ContextManager();
-        modelClient = new ModelClient();
+        modelClient = new ModelClient(appContext);
         tokenUsageTracker = new TokenUsageTracker();
         contextCompactionService = new ContextCompactionService(
                 modelClient,
                 new OpenAiResponsesCompactionProtocol(),
-                new CodexResponsesProtocol(),
+                new CodexResponsesProtocol(appContext),
                 promptTemplateRepository,
                 tokenUsageTracker);
         toolRegistry = new ToolRegistry(context, ipcProviderManager);

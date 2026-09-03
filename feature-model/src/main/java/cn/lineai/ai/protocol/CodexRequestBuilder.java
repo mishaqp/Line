@@ -16,6 +16,7 @@ import org.json.JSONObject;
 final class CodexRequestBuilder {
 
     static final String CODEX_PROTOCOL_VERSION = "0.120.0";
+    static final String CODEX_OAUTH_CLIENT_VERSION = "0.144.5";
     static final String CODEX_ORIGINATOR = "codex_cli_rs";
     private static final String CODEX_INSTALLATION_ID = UUID.nameUUIDFromBytes(
             "cn.lineai.linecode.codex".getBytes(StandardCharsets.UTF_8)
@@ -65,16 +66,30 @@ final class CodexRequestBuilder {
     }
 
     HashMap<String, String> codexHeaders(String apiKey) {
+        return codexHeaders(apiKey, "", false);
+    }
+
+    HashMap<String, String> codexHeaders(String apiKey, String accountId, boolean oauth) {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + apiKey);
-        headers.put("version", CODEX_PROTOCOL_VERSION);
+        headers.put("version", oauth ? CODEX_OAUTH_CLIENT_VERSION : CODEX_PROTOCOL_VERSION);
         headers.put("originator", CODEX_ORIGINATOR);
-        headers.put("User-Agent", codexUserAgent());
+        headers.put("User-Agent", oauth ? oauthUserAgent() : codexUserAgent());
+        if (oauth) {
+            headers.put("OpenAI-Beta", "responses=experimental");
+        }
+        if (accountId != null && accountId.length() > 0) {
+            headers.put("ChatGPT-Account-Id", accountId);
+        }
         return headers;
     }
 
     static String codexUserAgent() {
         return CODEX_ORIGINATOR + "/" + CODEX_PROTOCOL_VERSION + " (Android; LineCode)";
+    }
+
+    static String oauthUserAgent() {
+        return CODEX_ORIGINATOR + "/" + CODEX_OAUTH_CLIENT_VERSION + " (Android; LineCode)";
     }
 
     static boolean isAzureResponsesEndpoint(String baseUrl) {
@@ -88,6 +103,10 @@ final class CodexRequestBuilder {
                 || normalized.contains("azure-api.")
                 || normalized.contains("azurefd.")
                 || normalized.contains("windows.net/openai");
+    }
+
+    String oauthResponsesEndpoint() {
+        return "https://chatgpt.com/backend-api/codex/responses";
     }
 
     String responsesEndpoint(String baseUrl) {

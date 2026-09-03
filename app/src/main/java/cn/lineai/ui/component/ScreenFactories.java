@@ -135,6 +135,11 @@ public final class ScreenFactories {
 
             @Override
             public List<String> onFetchModelCatalog(cn.lineai.model.ModelProtocolType type, String baseUrl, String apiKey) throws Exception {
+                if (type == cn.lineai.model.ModelProtocolType.CODEX_RESPONSES
+                        && (apiKey == null || apiKey.trim().length() == 0)
+                        && cn.lineai.data.codex.CodexAuthManager.isAuthenticated(context)) {
+                    return cn.lineai.data.codex.CodexModelsRepository.fetchModelIds(context);
+                }
                 return catalogClient.fetch(type, baseUrl, apiKey);
             }
         });
@@ -161,6 +166,22 @@ public final class ScreenFactories {
         @Override
         public String screenId() {
             return "settings";
+        }
+    }
+
+    public static final class CodexAccountScreenFactory implements ScreenFactory {
+        @Override
+        public View createScreen(MainChatView view, MainUiController controller, Context context) {
+            return new CodexAccountScreenView(
+                    context,
+                    view::handleScreenBack,
+                    () -> controller.onSettingsItemSelected("modelAdd:preset:codex")
+            );
+        }
+
+        @Override
+        public String screenId() {
+            return "codexAccount";
         }
     }
 

@@ -1,11 +1,13 @@
 package cn.lineai.ai.protocol;
 
+import android.content.Context;
 import cn.lineai.ai.ModelCompletionException;
 import cn.lineai.ai.ModelCompletionResponse;
 import cn.lineai.ai.ModelCancellationToken;
 import cn.lineai.ai.ModelRequestOptions;
 import cn.lineai.ai.ModelStreamCallback;
 import cn.lineai.ai.message.ModelMessage;
+import cn.lineai.data.codex.CodexAuthManager;
 import cn.lineai.model.ModelConfig;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -15,7 +17,16 @@ import org.json.JSONObject;
 
 public final class CodexResponsesProtocol extends AbstractHttpModelProtocol {
 
+    private final Context context;
     private final CodexRequestBuilder requestBuilder = new CodexRequestBuilder();
+
+    public CodexResponsesProtocol() {
+        this(null);
+    }
+
+    public CodexResponsesProtocol(Context context) {
+        this.context = context;
+    }
     private final CodexOutputMerger outputMerger = new CodexOutputMerger();
 
     @Override
@@ -41,8 +52,13 @@ public final class CodexResponsesProtocol extends AbstractHttpModelProtocol {
         String raw = "";
         try {
             JSONObject body = requestBuilder.buildCompleteBody(config, messages);
-            HashMap<String, String> headers = requestBuilder.codexHeaders(config.getApiKey());
-            raw = postJson(requestBuilder.responsesEndpoint(config.getBaseUrl()), body, headers);
+            CodexRequestAuth auth = resolveAuth(config);
+            HashMap<String, String> headers = requestBuilder.codexHeaders(
+                    auth.accessToken, auth.accountId, auth.oauth);
+            String endpoint = auth.oauth
+                    ? requestBuilder.oauthResponsesEndpoint()
+                    : requestBuilder.responsesEndpoint(config.getBaseUrl());
+            raw = postJson(endpoint, body, headers);
             JSONObject response = new JSONObject(raw);
             StringBuilder text = new StringBuilder(response.optString("output_text"));
             StringBuilder reasoning = new StringBuilder();
@@ -68,7 +84,12 @@ public final class CodexResponsesProtocol extends AbstractHttpModelProtocol {
         try {
             ModelRequestOptions requestOptions = options == null ? ModelRequestOptions.defaults() : options;
             JSONObject body = requestBuilder.buildRequestBody(config, messages, requestOptions);
-            HashMap<String, String> headers = requestBuilder.codexHeaders(config.getApiKey());
+            CodexRequestAuth auth = resolveAuth(config);
+            HashMap<String, String> headers = requestBuilder.codexHeaders(
+                    auth.accessToken, auth.accountId, auth.oauth);
+            String endpoint = auth.oauth
+                    ? requestBuilder.oauthResponsesEndpoint()
+                    : requestBuilder.responsesEndpoint(config.getBaseUrl());
 
             StringBuilder text = new StringBuilder();
             StringBuilder reasoning = new StringBuilder();
@@ -217,6 +238,40 @@ public final class CodexResponsesProtocol extends AbstractHttpModelProtocol {
 
     static String codexUserAgent() {
         return CodexRequestBuilder.codexUserAgent();
+    }
+
+    private CodexRequestAuth resolveAuth(ModelConfig config) throws ModelCompletionException {
+        String configuredToken = config == null ? "" : config.getApiKey();
+        if (configuredToken == null) {
+            configuredToken = "";
+        }
+        if (configuredToken.length() > 0) {
+            return new CodexRequestAuth(configuredToken, "", false);
+        }
+        if (context != null) {
+            String oauthToken = new CodexAuthManager(context).getValidAccessToken();
+            if (oauthToken != null && oauthToken.length() > 0) {
+                return new CodexRequestAuth(
+                        oauthToken,
+                        new CodexAuthManager(context).getAccountId(),
+                        true
+                );
+            }
+        }
+        throw new ModelCompletionException(
+                "Codex is not authenticated. Sign in with ChatGPT or provide an API key.");
+    }
+
+    private static final class CodexRequestAuth {
+        final String accessToken;
+        final String accountId;
+        final boolean oauth;
+
+        CodexRequestAuth(String accessToken, String accountId, boolean oauth) {
+            this.accessToken = accessToken;
+            this.accountId = accountId == null ? "" : accountId;
+            this.oauth = oauth;
+        }
     }
 
     private void appendCustomToolInput(Map<String, StringBuilder> customToolInputs, String id, String delta) {
