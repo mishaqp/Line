@@ -77,7 +77,7 @@ public final class ToolExecutor {
         if (!permission.isAllowed()) {
             return ToolResult.of(toolCall.getId(), tool.getName(), permission.getReason(), true);
         }
-        if (tool.needsConfirmation() && settingsRepository.needsConfirmation(tool.getName()) && !confirmed) {
+        if (ToolApprovalPolicy.requiresConfirmation(settingsRepository, tool) && !confirmed) {
             return ToolResult.of(toolCall.getId(), tool.getName(), "工具需要确认后才能执行: " + tool.getName(), true);
         }
         JSONObject input;
