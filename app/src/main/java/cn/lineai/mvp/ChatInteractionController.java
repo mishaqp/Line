@@ -192,8 +192,9 @@ final class ChatInteractionController {
     private void dispatchMessage(String text, List<InputAttachment> attachments, String rawInputJson) {
         String trimmed = text == null ? "" : text.trim();
         ArrayList<InputAttachment> safeAttachments = sanitizeAttachments(attachments);
+        String safeRawInputJson = rawInputJson == null ? "" : rawInputJson;
         boolean wasStreaming = chatSessionStore.isStreaming();
-        if (trimmed.isEmpty() && safeAttachments.isEmpty() && rawInputJson.length() == 0) {
+        if (trimmed.isEmpty() && safeAttachments.isEmpty() && safeRawInputJson.length() == 0) {
             return;
         }
         host.ensureCurrentConversation();
@@ -204,7 +205,7 @@ final class ChatInteractionController {
                 Collections.<cn.lineai.model.tool.ToolCall>emptyList(),
                 Collections.<cn.lineai.model.tool.ToolResult>emptyList(),
                 "", "", false, "", "", "",
-                "", rawInputJson, safeAttachments);
+                "", safeRawInputJson, safeAttachments);
         messages.add(userMessage);
         host.persistCurrentConversation();
         ModelConfig selectedModel = modelRepository.getSelectedModel();
@@ -231,7 +232,7 @@ final class ChatInteractionController {
                 host.projectPath(),
                 activeUserMessageId,
                 userContent,
-                "",
+                safeRawInputJson,
                 selectedModel.getId(),
                 selectedModel.getToolCallLimit()
         );

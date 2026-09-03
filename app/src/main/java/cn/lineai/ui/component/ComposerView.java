@@ -739,11 +739,23 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         }
         // Сохраняем queued input через Agent Runtime сразу, чтобы очередь переживала
         // остановку генерации и перезапуск процесса.
+        List<InputAttachment> queuedAttachments = new ArrayList<>(attachments);
+        boolean hasImage = hasPendingImage();
+        String imageBase64 = pendingImageBase64;
+        String imageMimeType = pendingImageMimeType;
+        String imageName = pendingImageName;
         if (listener != null) {
-            listener.onSend(text, new ArrayList<>(attachments));
+            if (hasImage) {
+                listener.onSendWithImage(
+                        text, queuedAttachments, imageBase64, imageMimeType, imageName
+                );
+            } else {
+                listener.onSend(text, queuedAttachments);
+            }
         }
         input.setText("");
         clearAttachments();
+        clearImage();
         updatePendingBlock();
         updateSendButton();
     }
