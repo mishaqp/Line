@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.data.repository.ToolSettingsRepositoryTest" tests="22" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.126Z" hostname="runnervmgx7h7" time="0.037">
+<testsuite name="cn.lineai.data.repository.ToolSettingsRepositoryTest" tests="22" skipped="0" failures="0" errors="0" timestamp="2026-09-04T04:08:55.245Z" hostname="runnervmgx7h7" time="0.041">
   <properties/>
-  <testcase name="nativeToolPromptForbidsInlineToolMarkup" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
+  <testcase name="nativeToolPromptForbidsInlineToolMarkup" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.002"/>
   <testcase name="rootExecutionTargetIsNormalizedAndScopedLikeRemoteTargets" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="rootTargetPromptWarnsAboutWholeFilesystemAccess" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
   <testcase name="terminalProviderToolPromptEmptyEnabledReturnsNoToolsMessage" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="normalizeExecutionModeAcceptsTerminalProvider" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
-  <testcase name="imageGenerationHasGenerateCategory" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
+  <testcase name="imageGenerationHasGenerateCategory" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="terminalProviderShellConfigUsesIpcName" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="remoteExecutionModesUseSeparateToolSettingKeys" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="normalizeExecutionModeDefaultsToLocalForNull" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
-  <testcase name="learningModeGateRemovesMemoryUpdateWhenDisabled" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
+  <testcase name="learningModeGateRemovesMemoryUpdateWhenDisabled" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.002"/>
   <testcase name="toolPromptUsesRegisteredToolMetadata" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.002"/>
   <testcase name="learningModeGateKeepsMemoryUpdateWhenEnabled" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
-  <testcase name="normalizeExecutionModeDefaultsToLocalForUnknown" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
+  <testcase name="normalizeExecutionModeDefaultsToLocalForUnknown" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="terminalProviderToolPromptUsesNativeToolProtocolNotice" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="sshReadonlyKeepsRemoteShellAgentAndReadTools" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="terminalProviderToolPromptIncludesCustomMcpTools" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
-  <testcase name="terminalProviderToolPromptUsesToolCallsMarkupWhenNotNative" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
+  <testcase name="terminalProviderToolPromptUsesToolCallsMarkupWhenNotNative" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
   <testcase name="extensionToolsAreRenderedInStableNameOrder" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="sshToolPromptIncludesCustomMcpTools" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
   <testcase name="fullAccessPermissionModeIsNormalized" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="skillMutatingToolsResolveToWriteCategory" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
-  <testcase name="terminalProviderToolPromptIncludesShellAndImageTools" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
+  <testcase name="terminalProviderToolPromptIncludesShellAndImageTools" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

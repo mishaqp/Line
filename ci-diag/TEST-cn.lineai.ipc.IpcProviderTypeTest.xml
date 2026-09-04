@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.ipc.IpcProviderTypeTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.185Z" hostname="runnervmgx7h7" time="0.008">
+<testsuite name="cn.lineai.ipc.IpcProviderTypeTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T04:08:55.304Z" hostname="runnervmgx7h7" time="0.003">
   <properties/>
-  <testcase name="fromIdThrowsForUnknownId" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.006"/>
+  <testcase name="fromIdThrowsForUnknownId" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.001"/>
   <testcase name="terminalTypeHasCorrectId" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.0"/>
   <testcase name="fromIdThrowsForNullId" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.0"/>
   <testcase name="terminalTypeHasCorrectPermissionName" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.0"/>

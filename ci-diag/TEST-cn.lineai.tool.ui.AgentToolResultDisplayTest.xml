@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.tool.ui.AgentToolResultDisplayTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.481Z" hostname="runnervmgx7h7" time="0.001">
+<testsuite name="cn.lineai.tool.ui.AgentToolResultDisplayTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-04T04:08:55.606Z" hostname="runnervmgx7h7" time="0.001">
   <properties/>
   <testcase name="unknownJsonNotDumpedAsOutput" classname="cn.lineai.tool.ui.AgentToolResultDisplayTest" time="0.0"/>
   <testcase name="nonRefProgressStillParsed" classname="cn.lineai.tool.ui.AgentToolResultDisplayTest" time="0.001"/>

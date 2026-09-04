@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.workspace.SafPathResolverTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.506Z" hostname="runnervmgx7h7" time="0.001">
+<testsuite name="cn.lineai.workspace.SafPathResolverTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-04T04:08:55.625Z" hostname="runnervmgx7h7" time="0.001">
   <properties/>
-  <testcase name="mapsPrimaryExternalStorageTree" classname="cn.lineai.workspace.SafPathResolverTest" time="0.0"/>
+  <testcase name="mapsPrimaryExternalStorageTree" classname="cn.lineai.workspace.SafPathResolverTest" time="0.001"/>
   <testcase name="mapsDownloadsProviderTree" classname="cn.lineai.workspace.SafPathResolverTest" time="0.0"/>
-  <testcase name="mapsRawPath" classname="cn.lineai.workspace.SafPathResolverTest" time="0.001"/>
+  <testcase name="mapsRawPath" classname="cn.lineai.workspace.SafPathResolverTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

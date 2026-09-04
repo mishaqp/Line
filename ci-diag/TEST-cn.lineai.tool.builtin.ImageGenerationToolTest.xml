@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.tool.builtin.ImageGenerationToolTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:44:01.368Z" hostname="runnervmgx7h7" time="0.015">
+<testsuite name="cn.lineai.tool.builtin.ImageGenerationToolTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-09-04T04:09:01.116Z" hostname="runnervmgx7h7" time="0.012">
   <properties/>
-  <testcase name="responsesParserRejectsNullStringResult" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.003"/>
-  <testcase name="legacyImageRequestCanAskForBase64" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.008"/>
-  <testcase name="responsesImageToolForcesGenerationAction" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.001"/>
-  <testcase name="imagesParserAcceptsPngBase64Result" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.0"/>
+  <testcase name="responsesParserRejectsNullStringResult" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.001"/>
+  <testcase name="legacyImageRequestCanAskForBase64" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.006"/>
+  <testcase name="responsesImageToolForcesGenerationAction" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.0"/>
+  <testcase name="imagesParserAcceptsPngBase64Result" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.001"/>
   <testcase name="imagesParserRejectsNullStringFields" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.0"/>
-  <testcase name="responsesParserAcceptsPngBase64Result" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.0"/>
+  <testcase name="responsesParserAcceptsPngBase64Result" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.001"/>
   <testcase name="gptImageRequestAvoidsDeprecatedResponseFormat" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.0"/>
   <testcase name="responsesRequestBodyForcesImageGenerationToolChoice" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.002"/>
   <testcase name="responsesEndpointDerivesFromCommonBaseUrls" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.0"/>

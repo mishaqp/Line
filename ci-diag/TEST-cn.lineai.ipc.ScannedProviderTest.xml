@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.ipc.ScannedProviderTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.195Z" hostname="runnervmgx7h7" time="0.0">
+<testsuite name="cn.lineai.ipc.ScannedProviderTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-09-04T04:08:55.308Z" hostname="runnervmgx7h7" time="0.0">
   <properties/>
   <testcase name="constructorHandlesNullValues" classname="cn.lineai.ipc.ScannedProviderTest" time="0.0"/>
   <testcase name="constructorSetsAllFields" classname="cn.lineai.ipc.ScannedProviderTest" time="0.0"/>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.mvp.QuoteControllerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.379Z" hostname="runnervmgx7h7" time="0.004">
+<testsuite name="cn.lineai.mvp.QuoteControllerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-09-04T04:08:55.481Z" hostname="runnervmgx7h7" time="0.004">
   <properties/>
-  <testcase name="composeWithoutQuoteReturnsInputUnchanged" classname="cn.lineai.mvp.QuoteControllerTest" time="0.0"/>
-  <testcase name="composeWithQuotePrefixesQuote" classname="cn.lineai.mvp.QuoteControllerTest" time="0.0"/>
+  <testcase name="composeWithoutQuoteReturnsInputUnchanged" classname="cn.lineai.mvp.QuoteControllerTest" time="0.001"/>
+  <testcase name="composeWithQuotePrefixesQuote" classname="cn.lineai.mvp.QuoteControllerTest" time="0.001"/>
   <testcase name="setQuoteNotifiesPreview" classname="cn.lineai.mvp.QuoteControllerTest" time="0.0"/>
   <testcase name="composeWithQuoteClearsAfterSend" classname="cn.lineai.mvp.QuoteControllerTest" time="0.0"/>
   <testcase name="clearQuoteRemovesQuote" classname="cn.lineai.mvp.QuoteControllerTest" time="0.0"/>
-  <testcase name="setQuoteStoresText" classname="cn.lineai.mvp.QuoteControllerTest" time="0.0"/>
-  <testcase name="clearQuoteHidesPreview" classname="cn.lineai.mvp.QuoteControllerTest" time="0.001"/>
+  <testcase name="setQuoteStoresText" classname="cn.lineai.mvp.QuoteControllerTest" time="0.002"/>
+  <testcase name="clearQuoteHidesPreview" classname="cn.lineai.mvp.QuoteControllerTest" time="0.0"/>
   <testcase name="longQuoteIsTruncatedInPreview" classname="cn.lineai.mvp.QuoteControllerTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

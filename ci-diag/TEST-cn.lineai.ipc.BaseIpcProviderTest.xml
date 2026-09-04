@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.ipc.BaseIpcProviderTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.173Z" hostname="runnervmgx7h7" time="0.003">
+<testsuite name="cn.lineai.ipc.BaseIpcProviderTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T04:08:55.295Z" hostname="runnervmgx7h7" time="0.005">
   <properties/>
   <testcase name="getServiceBinderDefaultsToNull" classname="cn.lineai.ipc.BaseIpcProviderTest" time="0.001"/>
-  <testcase name="getConfigReturnsConstructorConfig" classname="cn.lineai.ipc.BaseIpcProviderTest" time="0.0"/>
-  <testcase name="requiresConfirmationDefaultsToFalse" classname="cn.lineai.ipc.BaseIpcProviderTest" time="0.0"/>
-  <testcase name="isBoundDefaultsToFalse" classname="cn.lineai.ipc.BaseIpcProviderTest" time="0.0"/>
+  <testcase name="getConfigReturnsConstructorConfig" classname="cn.lineai.ipc.BaseIpcProviderTest" time="0.001"/>
+  <testcase name="requiresConfirmationDefaultsToFalse" classname="cn.lineai.ipc.BaseIpcProviderTest" time="0.001"/>
+  <testcase name="isBoundDefaultsToFalse" classname="cn.lineai.ipc.BaseIpcProviderTest" time="0.001"/>
   <testcase name="unbindWhenNotBoundIsNoop" classname="cn.lineai.ipc.BaseIpcProviderTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

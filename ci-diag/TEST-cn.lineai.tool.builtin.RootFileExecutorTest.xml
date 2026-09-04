@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.tool.builtin.RootFileExecutorTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:44:01.386Z" hostname="runnervmgx7h7" time="0.006">
+<testsuite name="cn.lineai.tool.builtin.RootFileExecutorTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-09-04T04:09:01.131Z" hostname="runnervmgx7h7" time="0.008">
   <properties/>
   <testcase name="statParsesExistsDirectoryAndSize" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.002"/>
   <testcase name="collectTreeRendersRelativeEntries" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
-  <testcase name="displayPathStripsWorkspacePrefix" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
-  <testcase name="timeoutIsReportedAsRootFsException" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
+  <testcase name="displayPathStripsWorkspacePrefix" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.002"/>
+  <testcase name="timeoutIsReportedAsRootFsException" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.001"/>
   <testcase name="deleteUsesRmRfAndReportsFailure" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
   <testcase name="readRangeUsesDdWithSkipAndCount" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
-  <testcase name="listChildrenSortsDirectoriesFirst" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.001"/>
+  <testcase name="listChildrenSortsDirectoriesFirst" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
   <testcase name="writeSendsBase64ThroughStdinNotArgv" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.001"/>
   <testcase name="writeReportsFailureExitCode" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
   <testcase name="writeRejectsDirectoryTarget" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>

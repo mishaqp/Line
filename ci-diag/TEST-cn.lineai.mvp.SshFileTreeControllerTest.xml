@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.mvp.SshFileTreeControllerTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.394Z" hostname="runnervmgx7h7" time="0.009">
+<testsuite name="cn.lineai.mvp.SshFileTreeControllerTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T04:08:55.497Z" hostname="runnervmgx7h7" time="0.01">
   <properties/>
-  <testcase name="loadFailureAppearsUnderRoot" classname="cn.lineai.mvp.SshFileTreeControllerTest" time="0.005"/>
+  <testcase name="loadFailureAppearsUnderRoot" classname="cn.lineai.mvp.SshFileTreeControllerTest" time="0.006"/>
   <testcase name="expandedPrefetchedDirectoryShowsCachedChildren" classname="cn.lineai.mvp.SshFileTreeControllerTest" time="0.003"/>
-  <testcase name="requestFileTreeLoadBuildsRootTreeAndCapturesRemoteRoot" classname="cn.lineai.mvp.SshFileTreeControllerTest" time="0.0"/>
-  <testcase name="getFileTreeReturnsPlaceholderBeforeLoad" classname="cn.lineai.mvp.SshFileTreeControllerTest" time="0.001"/>
+  <testcase name="requestFileTreeLoadBuildsRootTreeAndCapturesRemoteRoot" classname="cn.lineai.mvp.SshFileTreeControllerTest" time="0.001"/>
+  <testcase name="getFileTreeReturnsPlaceholderBeforeLoad" classname="cn.lineai.mvp.SshFileTreeControllerTest" time="0.0"/>
   <testcase name="refreshDirectoryAfterFileOperationReloadsExpandedDirectory" classname="cn.lineai.mvp.SshFileTreeControllerTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

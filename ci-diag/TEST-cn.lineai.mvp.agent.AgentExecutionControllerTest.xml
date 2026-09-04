@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.mvp.agent.AgentExecutionControllerTest" tests="19" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.411Z" hostname="runnervmgx7h7" time="0.022">
+<testsuite name="cn.lineai.mvp.agent.AgentExecutionControllerTest" tests="19" skipped="0" failures="0" errors="0" timestamp="2026-09-04T04:08:55.520Z" hostname="runnervmgx7h7" time="0.032">
   <properties/>
-  <testcase name="subAgentToolReviewClearsMainFlowAfterReject" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.01"/>
-  <testcase name="localExploreAllowsReadToolsOnly" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.0"/>
-  <testcase name="mergeToolCallsDeduplicatesByIdAcrossChannels" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.001"/>
+  <testcase name="subAgentToolReviewClearsMainFlowAfterReject" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.017"/>
+  <testcase name="localExploreAllowsReadToolsOnly" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.001"/>
+  <testcase name="mergeToolCallsDeduplicatesByIdAcrossChannels" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.0"/>
   <testcase name="localExploreRejectsShellExecute" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.0"/>
   <testcase name="subCodingRejectsCustomToolNotInWhitelist" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.0"/>
   <testcase name="mergeToolCallsDeduplicatesSameCallAcrossNativeAndTextChannels" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.0"/>
@@ -13,13 +13,13 @@
   <testcase name="agentRolePromptExploreInRemoteModeRecommendsShell" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.0"/>
   <testcase name="subCodingRolePromptMentionsShellExecuteAndWriteScope" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.0"/>
   <testcase name="snapshotResultPropagatesStatusToOuterReviewState" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.0"/>
-  <testcase name="exploreRolePromptRemainsReadOnly" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.0"/>
+  <testcase name="exploreRolePromptRemainsReadOnly" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.001"/>
   <testcase name="subCodingAllowsCustomToolInWhitelist" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.0"/>
-  <testcase name="subAgentToolReviewNotifiesMainFlowBeforeAwaiting" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.006"/>
+  <testcase name="subAgentToolReviewNotifiesMainFlowBeforeAwaiting" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.007"/>
   <testcase name="shellExecuteWaitsForReviewAndResumesOnAccept" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.001"/>
   <testcase name="subCodingAllowsShellExecute" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.0"/>
   <testcase name="mergeToolCallsKeepsDistinctCallsWithDifferentArguments" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.0"/>
-  <testcase name="shellExecuteAutoConfirmedSkipsReviewAndExecutesConfirmed" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.001"/>
+  <testcase name="shellExecuteAutoConfirmedSkipsReviewAndExecutesConfirmed" classname="cn.lineai.mvp.agent.AgentExecutionControllerTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.data.db.LineCodeSchemaTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.013Z" hostname="runnervmgx7h7" time="0.003">
+<testsuite name="cn.lineai.data.db.LineCodeSchemaTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-09-04T04:08:55.122Z" hostname="runnervmgx7h7" time="0.006">
   <properties/>
-  <testcase name="versionIsAtLeastTwo" classname="cn.lineai.data.db.LineCodeSchemaTest" time="0.001"/>
-  <testcase name="addColumnsSqlTargetsToolCallsObservability" classname="cn.lineai.data.db.LineCodeSchemaTest" time="0.0"/>
+  <testcase name="versionIsAtLeastTwo" classname="cn.lineai.data.db.LineCodeSchemaTest" time="0.0"/>
+  <testcase name="addColumnsSqlTargetsToolCallsObservability" classname="cn.lineai.data.db.LineCodeSchemaTest" time="0.001"/>
   <testcase name="createSqlAddsToolCallObservabilityColumns" classname="cn.lineai.data.db.LineCodeSchemaTest" time="0.0"/>
-  <testcase name="createSqlContainsCoreDataSystems" classname="cn.lineai.data.db.LineCodeSchemaTest" time="0.0"/>
+  <testcase name="createSqlContainsCoreDataSystems" classname="cn.lineai.data.db.LineCodeSchemaTest" time="0.001"/>
   <testcase name="dropSqlIncludesSchemaMigrationsTable" classname="cn.lineai.data.db.LineCodeSchemaTest" time="0.0"/>
   <testcase name="addColumnsSqlEntriesAreUnique" classname="cn.lineai.data.db.LineCodeSchemaTest" time="0.0"/>
   <testcase name="addColumnsSqlAndMigrationsAreNonEmpty" classname="cn.lineai.data.db.LineCodeSchemaTest" time="0.001"/>
