@@ -397,7 +397,7 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
         if (isReadonlyAllowed(category) || isReadonlyAlwaysAllowed(toolName)) {
             return true;
         }
-        if (!isRemoteExecution(executionMode)) {
+        if (!ToolSettingsStore.isRemoteExecution(executionMode)) {
             return false;
         }
         return ToolNames.SHELL_EXECUTE.equals(toolName)
@@ -410,10 +410,10 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
             return false;
         }
         String executionMode = getExecutionMode();
-        if (isRemoteExecution(executionMode) && !ToolRegistry.isCustomMcpToolName(toolName)) {
+        if (ToolSettingsStore.isRemoteExecution(executionMode) && !ToolRegistry.isCustomMcpToolName(toolName)) {
             return false;
         }
-        if (!isKnownExecution(executionMode)) {
+        if (!ToolSettingsStore.isKnownExecution(executionMode)) {
             return false;
         }
         return !PERMISSION_READONLY.equals(getPermissionMode()) || isReadonlyAllowed(category);
