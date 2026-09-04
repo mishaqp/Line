@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.tool.builtin.RootFileExecutorTest" tests="11" skipped="0" failures="1" errors="0" timestamp="2026-09-04T03:39:41.217Z" hostname="runnervmgx7h7" time="0.01">
+<testsuite name="cn.lineai.tool.builtin.RootFileExecutorTest" tests="11" skipped="0" failures="1" errors="0" timestamp="2026-09-04T03:41:48.639Z" hostname="runnervmejwal" time="0.007">
   <properties/>
-  <testcase name="statParsesExistsDirectoryAndSize" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.004"/>
+  <testcase name="statParsesExistsDirectoryAndSize" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.001"/>
   <testcase name="collectTreeRendersRelativeEntries" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
-  <testcase name="displayPathStripsWorkspacePrefix" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.001"/>
+  <testcase name="displayPathStripsWorkspacePrefix" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
   <testcase name="timeoutIsReportedAsRootFsException" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
   <testcase name="deleteUsesRmRfAndReportsFailure" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
   <testcase name="readRangeUsesDdWithSkipAndCount" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
   <testcase name="listChildrenSortsDirectoriesFirst" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.001"/>
   <testcase name="writeSendsBase64ThroughStdinNotArgv" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.001"/>
-  <testcase name="writeReportsFailureExitCode" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.001"/>
+  <testcase name="writeReportsFailureExitCode" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
   <testcase name="writeRejectsDirectoryTarget" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0"/>
-  <testcase name="absolutePathResolvesRelativeAgainstWorkspace" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.0">
+  <testcase name="absolutePathResolvesRelativeAgainstWorkspace" classname="cn.lineai.tool.builtin.RootFileExecutorTest" time="0.003">
     <failure message="org.junit.ComparisonFailure: expected:&lt;/data/project[]&gt; but was:&lt;/data/project[/]&gt;" type="org.junit.ComparisonFailure">org.junit.ComparisonFailure: expected:&lt;/data/project[]&gt; but was:&lt;/data/project[/]&gt;
 	at org.junit.Assert.assertEquals(Assert.java:117)
 	at org.junit.Assert.assertEquals(Assert.java:146)

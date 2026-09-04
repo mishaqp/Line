@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.tool.ToolDisplayResolverFallbackTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:36.351Z" hostname="runnervmgx7h7" time="0.0">
+<testsuite name="cn.lineai.tool.ToolDisplayResolverFallbackTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:44.039Z" hostname="runnervmejwal" time="0.001">
   <properties/>
   <testcase name="customAgentPrefixUsesAgentCategory" classname="cn.lineai.tool.ToolDisplayResolverFallbackTest" time="0.0"/>
   <testcase name="agentPipelineUsesPipelineCategory" classname="cn.lineai.tool.ToolDisplayResolverFallbackTest" time="0.0"/>
-  <testcase name="builtInAgentUsesAgentCategory" classname="cn.lineai.tool.ToolDisplayResolverFallbackTest" time="0.0"/>
+  <testcase name="builtInAgentUsesAgentCategory" classname="cn.lineai.tool.ToolDisplayResolverFallbackTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.tool.ToolPermissionServiceModesTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:41.194Z" hostname="runnervmgx7h7" time="0.002">
+<testsuite name="cn.lineai.tool.ToolPermissionServiceModesTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:48.621Z" hostname="runnervmejwal" time="0.002">
   <properties/>
   <testcase name="rootTargetIsAcceptedForToolsAndExtensions" classname="cn.lineai.tool.ToolPermissionServiceModesTest" time="0.001"/>
   <testcase name="autoModeStillConfirmsDangerousTools" classname="cn.lineai.tool.ToolPermissionServiceModesTest" time="0.0"/>

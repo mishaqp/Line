@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.model.ChatUiStateTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:36.227Z" hostname="runnervmgx7h7" time="0.001">
+<testsuite name="cn.lineai.model.ChatUiStateTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:43.947Z" hostname="runnervmejwal" time="0.001">
   <properties/>
-  <testcase name="getAvailableModelsReturnsUnmodifiableView" classname="cn.lineai.model.ChatUiStateTest" time="0.001"/>
+  <testcase name="getAvailableModelsReturnsUnmodifiableView" classname="cn.lineai.model.ChatUiStateTest" time="0.0"/>
   <testcase name="fieldsAreStableAcrossReads" classname="cn.lineai.model.ChatUiStateTest" time="0.0"/>
   <testcase name="constructorDefensivelyCopiesAvailableModelsInput" classname="cn.lineai.model.ChatUiStateTest" time="0.0"/>
   <testcase name="constructorDefensivelyCopiesMessagesInput" classname="cn.lineai.model.ChatUiStateTest" time="0.0"/>

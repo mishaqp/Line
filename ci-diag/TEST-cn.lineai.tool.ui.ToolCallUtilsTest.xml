@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.tool.ui.ToolCallUtilsTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:36.378Z" hostname="runnervmgx7h7" time="0.001">
+<testsuite name="cn.lineai.tool.ui.ToolCallUtilsTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:44.061Z" hostname="runnervmejwal" time="0.001">
   <properties/>
-  <testcase name="workspaceDisplayPathKeepsFullPathOutsideWorkspace" classname="cn.lineai.tool.ui.ToolCallUtilsTest" time="0.0"/>
+  <testcase name="workspaceDisplayPathKeepsFullPathOutsideWorkspace" classname="cn.lineai.tool.ui.ToolCallUtilsTest" time="0.001"/>
   <testcase name="workspaceDisplayPathTrimsFileSchemeBeforeFormatting" classname="cn.lineai.tool.ui.ToolCallUtilsTest" time="0.0"/>
   <testcase name="workspaceDisplayPathKeepsRelativeInputRelative" classname="cn.lineai.tool.ui.ToolCallUtilsTest" time="0.0"/>
   <testcase name="workspaceDisplayPathShowsDotForWorkspaceRoot" classname="cn.lineai.tool.ui.ToolCallUtilsTest" time="0.0"/>

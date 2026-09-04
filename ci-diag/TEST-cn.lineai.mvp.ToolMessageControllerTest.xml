@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.mvp.ToolMessageControllerTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:36.309Z" hostname="runnervmgx7h7" time="0.001">
+<testsuite name="cn.lineai.mvp.ToolMessageControllerTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:44.009Z" hostname="runnervmejwal" time="0.001">
   <properties/>
-  <testcase name="acceptReviewKeepsSuccessContent" classname="cn.lineai.mvp.ToolMessageControllerTest" time="0.001"/>
-  <testcase name="terminationDoesNotReplaceCompletedToolResult" classname="cn.lineai.mvp.ToolMessageControllerTest" time="0.0"/>
+  <testcase name="acceptReviewKeepsSuccessContent" classname="cn.lineai.mvp.ToolMessageControllerTest" time="0.0"/>
+  <testcase name="terminationDoesNotReplaceCompletedToolResult" classname="cn.lineai.mvp.ToolMessageControllerTest" time="0.001"/>
   <testcase name="rejectReviewMarksToolResultAsErrorAndRewritesContent" classname="cn.lineai.mvp.ToolMessageControllerTest" time="0.0"/>
   <testcase name="terminationReplacesRunningToolResult" classname="cn.lineai.mvp.ToolMessageControllerTest" time="0.0"/>
   <testcase name="terminationAddsToolResultsForAllUnfinishedToolCalls" classname="cn.lineai.mvp.ToolMessageControllerTest" time="0.0"/>

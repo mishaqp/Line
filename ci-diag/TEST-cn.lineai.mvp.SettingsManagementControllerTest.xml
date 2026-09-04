@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.mvp.SettingsManagementControllerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:36.297Z" hostname="runnervmgx7h7" time="0.004">
+<testsuite name="cn.lineai.mvp.SettingsManagementControllerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:43.999Z" hostname="runnervmejwal" time="0.002">
   <properties/>
-  <testcase name="imageUnderstandingModelSelectionReturnsToToolSettingsAndRenders" classname="cn.lineai.mvp.SettingsManagementControllerTest" time="0.002"/>
+  <testcase name="imageUnderstandingModelSelectionReturnsToToolSettingsAndRenders" classname="cn.lineai.mvp.SettingsManagementControllerTest" time="0.001"/>
   <testcase name="thinkingScrollChangeRenders" classname="cn.lineai.mvp.SettingsManagementControllerTest" time="0.001"/>
   <testcase name="mcpToolGroupChangeRefreshesAndRenders" classname="cn.lineai.mvp.SettingsManagementControllerTest" time="0.0"/>
   <testcase name="mcpExecutionModeChangeCallsHostWithStoredMode" classname="cn.lineai.mvp.SettingsManagementControllerTest" time="0.0"/>

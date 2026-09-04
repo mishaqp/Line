@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.mvp.ProjectSheetControllerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:36.285Z" hostname="runnervmgx7h7" time="0.001">
+<testsuite name="cn.lineai.mvp.ProjectSheetControllerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:43.991Z" hostname="runnervmejwal" time="0.001">
   <properties/>
-  <testcase name="remoteSshSheetOmitsLocalOpenAndStorageForNonTermuxHost" classname="cn.lineai.mvp.ProjectSheetControllerTest" time="0.001"/>
-  <testcase name="termuxSshSheetIncludesLocalOpenAndStoragePermission" classname="cn.lineai.mvp.ProjectSheetControllerTest" time="0.0"/>
+  <testcase name="remoteSshSheetOmitsLocalOpenAndStorageForNonTermuxHost" classname="cn.lineai.mvp.ProjectSheetControllerTest" time="0.0"/>
+  <testcase name="termuxSshSheetIncludesLocalOpenAndStoragePermission" classname="cn.lineai.mvp.ProjectSheetControllerTest" time="0.001"/>
   <testcase name="localSheetIncludesProjectsOpenCreateAndStorage" classname="cn.lineai.mvp.ProjectSheetControllerTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

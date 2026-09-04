@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.mvp.ChatSessionStoreTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:36.235Z" hostname="runnervmgx7h7" time="0.002">
+<testsuite name="cn.lineai.mvp.ChatSessionStoreTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:43.954Z" hostname="runnervmejwal" time="0.001">
   <properties/>
-  <testcase name="startsConversationAndTracksGenerationState" classname="cn.lineai.mvp.ChatSessionStoreTest" time="0.001"/>
+  <testcase name="startsConversationAndTracksGenerationState" classname="cn.lineai.mvp.ChatSessionStoreTest" time="0.0"/>
   <testcase name="messageIdsAreUniqueAcrossConversations" classname="cn.lineai.mvp.ChatSessionStoreTest" time="0.0"/>
-  <testcase name="applyConversationResetsNextMessageIdAfterExistingMessages" classname="cn.lineai.mvp.ChatSessionStoreTest" time="0.0"/>
-  <testcase name="messageRecordRestoresAttachmentsFromRawJson" classname="cn.lineai.mvp.ChatSessionStoreTest" time="0.001"/>
+  <testcase name="applyConversationResetsNextMessageIdAfterExistingMessages" classname="cn.lineai.mvp.ChatSessionStoreTest" time="0.001"/>
+  <testcase name="messageRecordRestoresAttachmentsFromRawJson" classname="cn.lineai.mvp.ChatSessionStoreTest" time="0.0"/>
   <testcase name="sequenceFromMessageIdParsesScopedAndLegacyForms" classname="cn.lineai.mvp.ChatSessionStoreTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.tool.builtin.AgentOutputToolTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:41.198Z" hostname="runnervmgx7h7" time="0.003">
+<testsuite name="cn.lineai.tool.builtin.AgentOutputToolTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:48.624Z" hostname="runnervmejwal" time="0.003">
   <properties/>
   <testcase name="metaIncludeReturnsJsonFields" classname="cn.lineai.tool.builtin.AgentOutputToolTest" time="0.002"/>
   <testcase name="missingIdIsError" classname="cn.lineai.tool.builtin.AgentOutputToolTest" time="0.0"/>
-  <testcase name="doneReturnsFullOutput" classname="cn.lineai.tool.builtin.AgentOutputToolTest" time="0.0"/>
+  <testcase name="doneReturnsFullOutput" classname="cn.lineai.tool.builtin.AgentOutputToolTest" time="0.001"/>
   <testcase name="unknownIdIsError" classname="cn.lineai.tool.builtin.AgentOutputToolTest" time="0.0"/>
   <testcase name="runningReturnsStatusPayload" classname="cn.lineai.tool.builtin.AgentOutputToolTest" time="0.0"/>
   <testcase name="errorRecordReturnsErrorResult" classname="cn.lineai.tool.builtin.AgentOutputToolTest" time="0.0"/>
