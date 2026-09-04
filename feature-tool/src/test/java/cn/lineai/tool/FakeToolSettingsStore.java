@@ -18,6 +18,7 @@ final class FakeToolSettingsStore implements ToolSettingsStore {
 
     private String permissionMode = PERMISSION_AUTO;
     private String executionMode = EXECUTION_LOCAL;
+    private boolean fullAccessEnabled;
     private final Set<String> enabledTools = new HashSet<>();
 
     FakeToolSettingsStore permissionMode(String mode) {
@@ -43,6 +44,16 @@ final class FakeToolSettingsStore implements ToolSettingsStore {
     @Override
     public void setPermissionMode(String mode) {
         this.permissionMode = mode;
+    }
+
+    @Override
+    public boolean isFullAccessEnabled() {
+        return fullAccessEnabled || PERMISSION_FULL_ACCESS.equals(permissionMode);
+    }
+
+    @Override
+    public void setFullAccessEnabled(boolean enabled) {
+        this.fullAccessEnabled = enabled;
     }
 
     @Override
