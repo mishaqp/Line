@@ -18,8 +18,17 @@ public final class RootFileExecutorTest {
                 RootFileExecutor.absolutePath("/data/project", "app/Main.java"));
         Assert.assertEquals("/system/build.prop",
                 RootFileExecutor.absolutePath("/data/project", "/system/build.prop"));
-        Assert.assertEquals("/data/project",
+        // 空路径回落到工作区根目录，且保持 homePath 原样（含尾斜杠）。
+        Assert.assertEquals("/data/project/",
                 RootFileExecutor.absolutePath("/data/project/", "  "));
+        Assert.assertEquals("/data/project",
+                RootFileExecutor.absolutePath("/data/project", null));
+        try {
+            RootFileExecutor.absolutePath("  ", "");
+            Assert.fail("expected RootFsException");
+        } catch (RootFileExecutor.RootFsException e) {
+            Assert.assertTrue(e.getMessage(), e.getMessage().contains("no workspace path"));
+        }
     }
 
     @Test
