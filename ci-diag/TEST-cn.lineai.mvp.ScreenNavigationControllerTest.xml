@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.mvp.ScreenNavigationControllerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:43.996Z" hostname="runnervmejwal" time="0.002">
+<testsuite name="cn.lineai.mvp.ScreenNavigationControllerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.385Z" hostname="runnervmgx7h7" time="0.002">
   <properties/>
-  <testcase name="directBackUsesParentScreenWhenStackIsEmpty" classname="cn.lineai.mvp.ScreenNavigationControllerTest" time="0.001"/>
-  <testcase name="refreshVisibleScreenDoesNotAnimateCurrentScreenRebuild" classname="cn.lineai.mvp.ScreenNavigationControllerTest" time="0.0"/>
+  <testcase name="directBackUsesParentScreenWhenStackIsEmpty" classname="cn.lineai.mvp.ScreenNavigationControllerTest" time="0.0"/>
+  <testcase name="refreshVisibleScreenDoesNotAnimateCurrentScreenRebuild" classname="cn.lineai.mvp.ScreenNavigationControllerTest" time="0.001"/>
   <testcase name="imageUnderstandingModelBackReturnsToToolSettings" classname="cn.lineai.mvp.ScreenNavigationControllerTest" time="0.0"/>
   <testcase name="backFallsThroughParentMappingThenChat" classname="cn.lineai.mvp.ScreenNavigationControllerTest" time="0.0"/>
   <testcase name="backNavigationAnimatesInReverseDirection" classname="cn.lineai.mvp.ScreenNavigationControllerTest" time="0.0"/>
   <testcase name="forwardNavigationMarksForwardDirection" classname="cn.lineai.mvp.ScreenNavigationControllerTest" time="0.0"/>
-  <testcase name="inputSettingsBackReturnsToSettings" classname="cn.lineai.mvp.ScreenNavigationControllerTest" time="0.001"/>
+  <testcase name="inputSettingsBackReturnsToSettings" classname="cn.lineai.mvp.ScreenNavigationControllerTest" time="0.0"/>
   <testcase name="promptTemplatesBackReturnsToAiBehavior" classname="cn.lineai.mvp.ScreenNavigationControllerTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

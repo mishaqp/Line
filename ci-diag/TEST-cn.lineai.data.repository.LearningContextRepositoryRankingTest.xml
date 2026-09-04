@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.data.repository.LearningContextRepositoryRankingTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:43.802Z" hostname="runnervmejwal" time="0.005">
+<testsuite name="cn.lineai.data.repository.LearningContextRepositoryRankingTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.098Z" hostname="runnervmgx7h7" time="0.005">
   <properties/>
-  <testcase name="recencyDecaysWithAge" classname="cn.lineai.data.repository.LearningContextRepositoryRankingTest" time="0.001"/>
+  <testcase name="recencyDecaysWithAge" classname="cn.lineai.data.repository.LearningContextRepositoryRankingTest" time="0.002"/>
   <testcase name="relevantDocumentScoresHigherThanUnrelatedDocument" classname="cn.lineai.data.repository.LearningContextRepositoryRankingTest" time="0.001"/>
-  <testcase name="extractsMultilingualTechnicalKeywords" classname="cn.lineai.data.repository.LearningContextRepositoryRankingTest" time="0.0"/>
+  <testcase name="extractsMultilingualTechnicalKeywords" classname="cn.lineai.data.repository.LearningContextRepositoryRankingTest" time="0.001"/>
   <testcase name="rankingScoreAddsSmallRecencyAndBoost" classname="cn.lineai.data.repository.LearningContextRepositoryRankingTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.tool.RootModeShellToolTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:48.184Z" hostname="runnervmejwal" time="0.031">
+<testsuite name="cn.lineai.tool.RootModeShellToolTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:44:01.008Z" hostname="runnervmgx7h7" time="0.051">
   <properties/>
-  <testcase name="timeoutIsReportedAsError" classname="cn.lineai.tool.RootModeShellToolTest" time="0.016"/>
-  <testcase name="rootModeChangesDirectoryWhenCwdGiven" classname="cn.lineai.tool.RootModeShellToolTest" time="0.003"/>
-  <testcase name="localModeStillUsesSshOrIpcPath" classname="cn.lineai.tool.RootModeShellToolTest" time="0.002"/>
-  <testcase name="rootModeRunsCommandThroughSu" classname="cn.lineai.tool.RootModeShellToolTest" time="0.002"/>
-  <testcase name="rootUnavailableFailsFastWithoutRunningCommand" classname="cn.lineai.tool.RootModeShellToolTest" time="0.002"/>
+  <testcase name="timeoutIsReportedAsError" classname="cn.lineai.tool.RootModeShellToolTest" time="0.026"/>
+  <testcase name="rootModeChangesDirectoryWhenCwdGiven" classname="cn.lineai.tool.RootModeShellToolTest" time="0.005"/>
+  <testcase name="localModeStillUsesSshOrIpcPath" classname="cn.lineai.tool.RootModeShellToolTest" time="0.004"/>
+  <testcase name="rootModeRunsCommandThroughSu" classname="cn.lineai.tool.RootModeShellToolTest" time="0.005"/>
+  <testcase name="rootUnavailableFailsFastWithoutRunningCommand" classname="cn.lineai.tool.RootModeShellToolTest" time="0.003"/>
   <testcase name="nonZeroExitCodeReturnsOutputAsError" classname="cn.lineai.tool.RootModeShellToolTest" time="0.002"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

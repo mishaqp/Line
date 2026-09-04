@@ -108,30 +108,16 @@
 > Task :markdown:processDebugJavaRes NO-SOURCE
 > Task :tool-ui:bundleLibRuntimeToJarDebug UP-TO-DATE
 > Task :tool-ui:processDebugJavaRes NO-SOURCE
-> Task :ui-theme:bundleLibRuntimeToJarDebug UP-TO-DATE
 > Task :feature-tool:javaPreCompileDebugUnitTest
+> Task :ui-theme:bundleLibRuntimeToJarDebug UP-TO-DATE
 > Task :ui-theme:processDebugJavaRes NO-SOURCE
 > Task :feature-tool:generateDebugUnitTestStubRFile
 > Task :feature-tool:compileDebugUnitTestKotlin NO-SOURCE
 > Task :feature-tool:compileDebugUnitTestJavaWithJavac
 > Task :feature-tool:processDebugUnitTestJavaRes NO-SOURCE
+> Task :feature-tool:testDebugUnitTest
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1788493437076.json
 
-> Task :feature-tool:testDebugUnitTest FAILED
-
-RootFileExecutorTest > absolutePathResolvesRelativeAgainstWorkspace FAILED
-    org.junit.ComparisonFailure at RootFileExecutorTest.java:21
-
-100 tests completed, 1 failed
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1788493305290.json
-
-FAILURE: Build failed with an exception.
-
-* What went wrong:
-Execution failed for task ':feature-tool:testDebugUnitTest'.
-> There were failing tests. See the report at: file:///home/runner/work/Line/Line/feature-tool/build/reports/tests/testDebugUnitTest/index.html
-
-* Try:
-> Run with --scan to get full insights from a Build Scan (powered by Develocity).
-
-BUILD FAILED in 3s
+BUILD SUCCESSFUL in 5s
 78 actionable tasks: 4 executed, 74 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.4.1/userguide/configuration_cache_enabling.html

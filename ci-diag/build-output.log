@@ -69,94 +69,94 @@ Note: Recompile with -Xlint:deprecation for details.
 > Task :data:generateDebugResources
 > Task :data:packageDebugResources
 > Task :app:parseDebugLocalResources
-> Task :ipc:generateDebugResources
 > Task :data:parseDebugLocalResources
+> Task :ipc:generateDebugResources
 > Task :ipc:packageDebugResources
-> Task :ipc:javaPreCompileDebug
-> Task :data:javaPreCompileDebug
-> Task :ipc:parseDebugLocalResources
-> Task :feature-model:generateDebugResources
-> Task :ipc:generateDebugRFile
 > Task :data:generateDebugRFile
+> Task :ipc:parseDebugLocalResources
+> Task :data:javaPreCompileDebug
+> Task :ipc:javaPreCompileDebug
+> Task :feature-model:generateDebugResources
 > Task :app:generateDebugRFile
+> Task :ipc:generateDebugRFile
 > Task :feature-model:packageDebugResources
 > Task :ipc:compileDebugKotlin NO-SOURCE
 > Task :ipc:compileDebugJavaWithJavac
 > Task :feature-model:javaPreCompileDebug
 > Task :feature-share:generateDebugResources
 > Task :feature-model:parseDebugLocalResources
-> Task :feature-share:packageDebugResources
-> Task :feature-model:generateDebugRFile
-> Task :feature-share:javaPreCompileDebug
-> Task :feature-share:parseDebugLocalResources
-> Task :feature-ssh:generateDebugResources
 > Task :ipc:bundleLibCompileToJarDebug
+> Task :feature-share:packageDebugResources
 > Task :data:compileDebugKotlin NO-SOURCE
 > Task :data:compileDebugJavaWithJavac
 > Task :data:bundleLibCompileToJarDebug
+> Task :feature-model:generateDebugRFile
+> Task :feature-share:javaPreCompileDebug
+> Task :feature-share:parseDebugLocalResources
 > Task :feature-model:compileDebugKotlin NO-SOURCE
-> Task :feature-share:generateDebugRFile
 > Task :feature-model:compileDebugJavaWithJavac
-> Task :feature-share:compileDebugKotlin NO-SOURCE
 > Task :feature-model:bundleLibCompileToJarDebug
+> Task :feature-share:generateDebugRFile
+> Task :feature-ssh:generateDebugResources
+> Task :feature-share:compileDebugKotlin NO-SOURCE
 > Task :feature-share:compileDebugJavaWithJavac
 > Task :feature-share:bundleLibCompileToJarDebug
 > Task :feature-ssh:packageDebugResources
 > Task :feature-ssh:javaPreCompileDebug
-> Task :feature-tool:generateDebugResources
 > Task :feature-ssh:parseDebugLocalResources
-> Task :feature-tool:packageDebugResources
-> Task :markdown:generateDebugResources
+> Task :feature-tool:generateDebugResources
 > Task :feature-ssh:generateDebugRFile
-> Task :feature-tool:parseDebugLocalResources
+> Task :feature-tool:packageDebugResources
 > Task :feature-ssh:compileDebugKotlin NO-SOURCE
 > Task :feature-ssh:compileDebugJavaWithJavac
 > Task :feature-ssh:bundleLibCompileToJarDebug
-> Task :feature-tool:generateDebugRFile
+> Task :markdown:generateDebugResources
+> Task :feature-tool:parseDebugLocalResources
 > Task :markdown:packageDebugResources
+> Task :feature-tool:generateDebugRFile
 > Task :ui-theme:generateDebugResources
 > Task :markdown:parseDebugLocalResources
-> Task :markdown:generateDebugRFile
 > Task :ui-theme:packageDebugResources
+> Task :markdown:generateDebugRFile
 > Task :ui-theme:javaPreCompileDebug
 > Task :markdown:javaPreCompileDebug
 > Task :tool-ui:generateDebugResources
-> Task :ui-theme:parseDebugLocalResources
 > Task :tool-ui:packageDebugResources
-> Task :ui-theme:generateDebugRFile
-> Task :tool-ui:parseDebugLocalResources
 > Task :tool-ui:javaPreCompileDebug
+> Task :feature-tool:javaPreCompileDebug
+> Task :app:javaPreCompileDebug
+> Task :ui-theme:parseDebugLocalResources
+> Task :tool-ui:parseDebugLocalResources
+> Task :data:writeDebugAarMetadata
+> Task :ui-theme:generateDebugRFile
+> Task :tool-ui:generateDebugRFile
+> Task :feature-model:writeDebugAarMetadata
 > Task :ui-theme:compileDebugKotlin NO-SOURCE
 > Task :ui-theme:compileDebugJavaWithJavac
 > Task :ui-theme:bundleLibCompileToJarDebug
-> Task :tool-ui:generateDebugRFile
+> Task :feature-share:writeDebugAarMetadata
 > Task :markdown:compileDebugKotlin NO-SOURCE
 > Task :markdown:compileDebugJavaWithJavac
 > Task :markdown:bundleLibCompileToJarDebug
-> Task :feature-tool:javaPreCompileDebug
-> Task :app:javaPreCompileDebug
+> Task :feature-ssh:writeDebugAarMetadata
 > Task :tool-ui:compileDebugKotlin NO-SOURCE
 > Task :tool-ui:compileDebugJavaWithJavac
 > Task :tool-ui:bundleLibCompileToJarDebug
+> Task :feature-tool:writeDebugAarMetadata
 > Task :feature-tool:compileDebugKotlin NO-SOURCE
-> Task :data:writeDebugAarMetadata
 > Task :feature-tool:compileDebugJavaWithJavac
 > Task :feature-tool:bundleLibCompileToJarDebug
-> Task :feature-model:writeDebugAarMetadata
-> Task :feature-share:writeDebugAarMetadata
+> Task :ipc:writeDebugAarMetadata
+> Task :markdown:writeDebugAarMetadata
+> Task :tool-ui:writeDebugAarMetadata
 > Task :app:compileDebugKotlin NO-SOURCE
 
 > Task :app:compileDebugJavaWithJavac
 Note: Some input files use or override a deprecated API.
 Note: Recompile with -Xlint:deprecation for details.
 
-> Task :feature-ssh:writeDebugAarMetadata
-> Task :feature-tool:writeDebugAarMetadata
-> Task :ipc:writeDebugAarMetadata
-> Task :markdown:writeDebugAarMetadata
-> Task :tool-ui:writeDebugAarMetadata
-> Task :ui-theme:writeDebugAarMetadata
 > Task :app:mapDebugSourceSetPaths
+> Task :ui-theme:writeDebugAarMetadata
 > Task :app:checkDebugAarMetadata
 > Task :app:compileDebugNavigationResources
 > Task :app:createDebugCompatibleScreenManifests
@@ -166,15 +166,15 @@ Note: Recompile with -Xlint:deprecation for details.
 > Task :feature-share:extractDeepLinksDebug
 > Task :app:mergeDebugResources
 > Task :feature-ssh:extractDeepLinksDebug
-> Task :feature-ssh:processDebugManifest
 > Task :feature-share:processDebugManifest
 > Task :data:processDebugManifest
-> Task :feature-model:processDebugManifest
 > Task :feature-tool:extractDeepLinksDebug
+> Task :feature-ssh:processDebugManifest
+> Task :feature-model:processDebugManifest
 > Task :ipc:extractDeepLinksDebug
 > Task :feature-tool:processDebugManifest
-> Task :markdown:extractDeepLinksDebug
 > Task :ipc:processDebugManifest
+> Task :markdown:extractDeepLinksDebug
 > Task :markdown:processDebugManifest
 > Task :tool-ui:extractDeepLinksDebug
 > Task :ui-theme:extractDeepLinksDebug
@@ -183,10 +183,10 @@ Note: Recompile with -Xlint:deprecation for details.
 > Task :data:mapDebugSourceSetPaths
 > Task :app:processDebugMainManifest
 > Task :app:processDebugManifest
-> Task :app:processDebugManifestForPackage
 > Task :data:compileDebugLibraryResources
 > Task :feature-model:mapDebugSourceSetPaths
 > Task :feature-model:compileDebugLibraryResources
+> Task :app:processDebugManifestForPackage
 > Task :feature-share:mapDebugSourceSetPaths
 > Task :feature-share:compileDebugLibraryResources
 > Task :feature-ssh:mapDebugSourceSetPaths
@@ -196,43 +196,43 @@ Note: Recompile with -Xlint:deprecation for details.
 > Task :ipc:mapDebugSourceSetPaths
 > Task :ipc:compileDebugLibraryResources
 > Task :markdown:mapDebugSourceSetPaths
-> Task :markdown:compileDebugLibraryResources
 > Task :tool-ui:mapDebugSourceSetPaths
+> Task :markdown:compileDebugLibraryResources
 > Task :tool-ui:compileDebugLibraryResources
 > Task :ui-theme:mapDebugSourceSetPaths
 > Task :app:preDebugUnitTestBuild UP-TO-DATE
-> Task :app:javaPreCompileDebugUnitTest
 > Task :app:processDebugJavaRes NO-SOURCE
+> Task :app:javaPreCompileDebugUnitTest
 > Task :data:processDebugJavaRes NO-SOURCE
-> Task :feature-model:bundleLibRuntimeToJarDebug
-> Task :feature-model:processDebugJavaRes NO-SOURCE
 > Task :data:bundleLibRuntimeToJarDebug
-> Task :feature-share:bundleLibRuntimeToJarDebug
+> Task :feature-model:processDebugJavaRes NO-SOURCE
+> Task :feature-model:bundleLibRuntimeToJarDebug
 > Task :feature-share:processDebugJavaRes NO-SOURCE
-> Task :ui-theme:compileDebugLibraryResources
+> Task :feature-share:bundleLibRuntimeToJarDebug
 > Task :feature-ssh:bundleLibRuntimeToJarDebug
 > Task :feature-ssh:processDebugJavaRes NO-SOURCE
+> Task :ui-theme:compileDebugLibraryResources
 > Task :feature-tool:bundleLibRuntimeToJarDebug
 > Task :feature-tool:processDebugJavaRes NO-SOURCE
-> Task :ipc:processDebugJavaRes NO-SOURCE
 > Task :ipc:bundleLibRuntimeToJarDebug
-> Task :markdown:processDebugJavaRes NO-SOURCE
+> Task :ipc:processDebugJavaRes NO-SOURCE
 > Task :markdown:bundleLibRuntimeToJarDebug
+> Task :markdown:processDebugJavaRes NO-SOURCE
 > Task :tool-ui:processDebugJavaRes NO-SOURCE
 > Task :tool-ui:bundleLibRuntimeToJarDebug
 > Task :ui-theme:processDebugJavaRes NO-SOURCE
 > Task :ui-theme:bundleLibRuntimeToJarDebug
 > Task :app:processDebugResources
-> Task :app:bundleDebugClassesToCompileJar
 > Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:bundleDebugClassesToCompileJar
 > Task :app:compileDebugUnitTestKotlin NO-SOURCE
 > Task :app:compileDebugUnitTestJavaWithJavac
 > Task :app:processDebugUnitTestJavaRes NO-SOURCE
 > Task :app:testDebugUnitTest
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1788493267959.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1788493401523.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/Line/Line/build/reports/problems/problems-report.html
 
-BUILD SUCCESSFUL in 53s
+BUILD SUCCESSFUL in 44s
 159 actionable tasks: 159 executed
 Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.4.1/userguide/configuration_cache_enabling.html

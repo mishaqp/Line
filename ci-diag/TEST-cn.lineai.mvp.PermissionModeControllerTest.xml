@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.mvp.PermissionModeControllerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:43.985Z" hostname="runnervmejwal" time="0.004">
+<testsuite name="cn.lineai.mvp.PermissionModeControllerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.368Z" hostname="runnervmgx7h7" time="0.005">
   <properties/>
-  <testcase name="unknownOptionIsIgnored" classname="cn.lineai.mvp.PermissionModeControllerTest" time="0.001"/>
-  <testcase name="fullAccessAliasesAreAccepted" classname="cn.lineai.mvp.PermissionModeControllerTest" time="0.001"/>
-  <testcase name="readonlyPermissionSwitchesChatModeToChat" classname="cn.lineai.mvp.PermissionModeControllerTest" time="0.0"/>
+  <testcase name="unknownOptionIsIgnored" classname="cn.lineai.mvp.PermissionModeControllerTest" time="0.002"/>
+  <testcase name="fullAccessAliasesAreAccepted" classname="cn.lineai.mvp.PermissionModeControllerTest" time="0.0"/>
+  <testcase name="readonlyPermissionSwitchesChatModeToChat" classname="cn.lineai.mvp.PermissionModeControllerTest" time="0.001"/>
   <testcase name="showPermissionSheetMarksCurrentModeAndStorageStatus" classname="cn.lineai.mvp.PermissionModeControllerTest" time="0.001"/>
   <testcase name="nonReadonlyPermissionMovesChatModeBackToAgent" classname="cn.lineai.mvp.PermissionModeControllerTest" time="0.0"/>
   <testcase name="fullAccessIsSelectableAndKeepsAgentMode" classname="cn.lineai.mvp.PermissionModeControllerTest" time="0.0"/>

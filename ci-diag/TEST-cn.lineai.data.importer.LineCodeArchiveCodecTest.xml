@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.data.importer.LineCodeArchiveCodecTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:43.766Z" hostname="runnervmejwal" time="0.019">
+<testsuite name="cn.lineai.data.importer.LineCodeArchiveCodecTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.042Z" hostname="runnervmgx7h7" time="0.029">
   <properties/>
-  <testcase name="writesZipArchiveWithLegacyPayloadAndWorkspaceRoots" classname="cn.lineai.data.importer.LineCodeArchiveCodecTest" time="0.017"/>
+  <testcase name="writesZipArchiveWithLegacyPayloadAndWorkspaceRoots" classname="cn.lineai.data.importer.LineCodeArchiveCodecTest" time="0.026"/>
   <testcase name="rejectsZipEntriesOutsideTargetDirectory" classname="cn.lineai.data.importer.LineCodeArchiveCodecTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

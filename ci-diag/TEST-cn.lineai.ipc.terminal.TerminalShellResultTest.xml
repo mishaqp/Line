@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.ipc.terminal.TerminalShellResultTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:41:43.880Z" hostname="runnervmejwal" time="0.0">
+<testsuite name="cn.lineai.ipc.terminal.TerminalShellResultTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:43:55.206Z" hostname="runnervmgx7h7" time="0.001">
   <properties/>
-  <testcase name="nonZeroExitCodeIsNotSuccess" classname="cn.lineai.ipc.terminal.TerminalShellResultTest" time="0.0"/>
+  <testcase name="nonZeroExitCodeIsNotSuccess" classname="cn.lineai.ipc.terminal.TerminalShellResultTest" time="0.001"/>
   <testcase name="negativeExitCodeIsNotSuccess" classname="cn.lineai.ipc.terminal.TerminalShellResultTest" time="0.0"/>
   <testcase name="zeroExitCodeIsSuccess" classname="cn.lineai.ipc.terminal.TerminalShellResultTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
