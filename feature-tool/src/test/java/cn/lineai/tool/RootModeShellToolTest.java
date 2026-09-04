@@ -91,7 +91,7 @@ public final class RootModeShellToolTest {
 
     @Test
     public void localModeStillUsesSshOrIpcPath() throws Exception {
-        RecordingRunner runner = new RecordingRunner(new RootCommandRunner.Result("", 0));
+        RecordingRunner runner = new RecordingRunner(new RootCommandRunner.Result("uid=0(root)\n", 0));
         install(runner, true);
         ToolContext context = ToolContext.builder()
                 .homePath("/data/project")
@@ -102,9 +102,12 @@ public final class RootModeShellToolTest {
         ToolResult result = new ShellExecuteTool(null).execute(
                 new JSONObject().put("command", "id"), context);
 
-        // 本地目标没有 SSH 服务，必须走原有的 SSH 分支报错，而不是偷偷用 su。
-        Assert.assertTrue(result.getContent(), result.isError());
+        // Local mode must use sh -c on the device/runner, even when a root
+        // runner is installed. It must not sneak through RootSupport su.
         Assert.assertTrue(runner.scripts.isEmpty());
+        Assert.assertFalse(result.getContent(), result.isError());
+        Assert.assertTrue(result.getContent(), result.getContent().contains("uid="));
+        Assert.assertFalse(result.getContent(), result.getContent().contains("uid=0(root)"));
     }
 
     private ToolContext rootContext() {
