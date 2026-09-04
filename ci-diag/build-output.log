@@ -71,38 +71,38 @@ Note: Recompile with -Xlint:deprecation for details.
 > Task :data:generateDebugResources
 > Task :data:packageDebugResources
 > Task :app:parseDebugLocalResources
-> Task :ipc:generateDebugResources
 > Task :data:parseDebugLocalResources
+> Task :ipc:generateDebugResources
 > Task :ipc:packageDebugResources
-> Task :ipc:parseDebugLocalResources
 > Task :ipc:javaPreCompileDebug
+> Task :ipc:parseDebugLocalResources
 > Task :data:javaPreCompileDebug
 > Task :data:generateDebugRFile
+> Task :app:generateDebugRFile
 > Task :feature-model:generateDebugResources
 > Task :ipc:generateDebugRFile
-> Task :app:generateDebugRFile
 > Task :feature-model:packageDebugResources
 > Task :ipc:compileDebugKotlin NO-SOURCE
 > Task :ipc:compileDebugJavaWithJavac
-> Task :feature-model:javaPreCompileDebug
-> Task :feature-share:generateDebugResources
 > Task :feature-model:parseDebugLocalResources
+> Task :feature-share:generateDebugResources
+> Task :feature-model:javaPreCompileDebug
 > Task :feature-share:packageDebugResources
 > Task :ipc:bundleLibCompileToJarDebug
-> Task :feature-share:javaPreCompileDebug
-> Task :data:compileDebugKotlin NO-SOURCE
 > Task :feature-model:generateDebugRFile
+> Task :data:compileDebugKotlin NO-SOURCE
 > Task :feature-share:parseDebugLocalResources
 > Task :data:compileDebugJavaWithJavac
-> Task :data:bundleLibCompileToJarDebug
-> Task :feature-ssh:generateDebugResources
 > Task :feature-share:generateDebugRFile
+> Task :data:bundleLibCompileToJarDebug
+> Task :feature-share:javaPreCompileDebug
+> Task :feature-share:compileDebugKotlin NO-SOURCE
 > Task :feature-model:compileDebugKotlin NO-SOURCE
 > Task :feature-model:compileDebugJavaWithJavac
 > Task :feature-model:bundleLibCompileToJarDebug
-> Task :feature-share:compileDebugKotlin NO-SOURCE
 > Task :feature-share:compileDebugJavaWithJavac
 > Task :feature-share:bundleLibCompileToJarDebug
+> Task :feature-ssh:generateDebugResources
 > Task :feature-ssh:packageDebugResources
 > Task :feature-ssh:javaPreCompileDebug
 > Task :feature-tool:generateDebugResources
@@ -110,12 +110,12 @@ Note: Recompile with -Xlint:deprecation for details.
 > Task :feature-tool:packageDebugResources
 > Task :feature-ssh:generateDebugRFile
 > Task :markdown:generateDebugResources
-> Task :feature-ssh:compileDebugKotlin NO-SOURCE
 > Task :feature-tool:parseDebugLocalResources
+> Task :feature-ssh:compileDebugKotlin NO-SOURCE
 > Task :feature-ssh:compileDebugJavaWithJavac
 > Task :feature-ssh:bundleLibCompileToJarDebug
-> Task :markdown:packageDebugResources
 > Task :feature-tool:generateDebugRFile
+> Task :markdown:packageDebugResources
 > Task :ui-theme:generateDebugResources
 > Task :markdown:parseDebugLocalResources
 > Task :ui-theme:packageDebugResources
@@ -126,78 +126,82 @@ Note: Recompile with -Xlint:deprecation for details.
 > Task :ui-theme:parseDebugLocalResources
 > Task :tool-ui:packageDebugResources
 > Task :ui-theme:generateDebugRFile
-> Task :ui-theme:compileDebugKotlin NO-SOURCE
+> Task :tool-ui:javaPreCompileDebug
+> Task :feature-tool:javaPreCompileDebug
 > Task :tool-ui:parseDebugLocalResources
+> Task :ui-theme:compileDebugKotlin NO-SOURCE
 > Task :ui-theme:compileDebugJavaWithJavac
 > Task :ui-theme:bundleLibCompileToJarDebug
-> Task :markdown:compileDebugKotlin NO-SOURCE
 > Task :tool-ui:generateDebugRFile
+> Task :markdown:compileDebugKotlin NO-SOURCE
 > Task :markdown:compileDebugJavaWithJavac
 > Task :markdown:bundleLibCompileToJarDebug
-> Task :tool-ui:javaPreCompileDebug
+> Task :app:javaPreCompileDebug
 > Task :tool-ui:compileDebugKotlin NO-SOURCE
 > Task :tool-ui:compileDebugJavaWithJavac
 > Task :tool-ui:bundleLibCompileToJarDebug
-> Task :feature-tool:javaPreCompileDebug
-> Task :app:javaPreCompileDebug
 > Task :feature-tool:compileDebugKotlin NO-SOURCE
+> Task :data:writeDebugAarMetadata
 > Task :feature-tool:compileDebugJavaWithJavac
 > Task :feature-tool:bundleLibCompileToJarDebug
-> Task :data:writeDebugAarMetadata
+> Task :feature-model:writeDebugAarMetadata
+> Task :feature-share:writeDebugAarMetadata
+> Task :feature-ssh:writeDebugAarMetadata
 > Task :app:compileDebugKotlin NO-SOURCE
 
 > Task :app:compileDebugJavaWithJavac
-/home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:400: error: cannot find symbol
-        if (!isRemoteExecution(executionMode)) {
-             ^
-  symbol:   method isRemoteExecution(String)
-  location: class ToolSettingsRepository
-/home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:413: error: cannot find symbol
-        if (isRemoteExecution(executionMode) && !ToolRegistry.isCustomMcpToolName(toolName)) {
-            ^
-  symbol:   method isRemoteExecution(String)
-  location: class ToolSettingsRepository
-/home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:416: error: cannot find symbol
-        if (!isKnownExecution(executionMode)) {
-             ^
-  symbol:   method isKnownExecution(String)
-  location: class ToolSettingsRepository
 Note: Some input files use or override a deprecated API.
 Note: Recompile with -Xlint:deprecation for details.
-3 errors
 
-> Task :app:compileDebugJavaWithJavac FAILED
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1788491894096.json
+> Task :feature-tool:writeDebugAarMetadata
+> Task :ipc:writeDebugAarMetadata
+> Task :markdown:writeDebugAarMetadata
+> Task :tool-ui:writeDebugAarMetadata
+> Task :ui-theme:writeDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:checkDebugAarMetadata
+> Task :app:compileDebugNavigationResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :data:extractDeepLinksDebug
+> Task :feature-model:extractDeepLinksDebug
+> Task :feature-share:extractDeepLinksDebug
+
+> Task :app:mergeDebugResources FAILED
+/home/runner/work/Line/Line/feature-tool/build/intermediates/packaged_res/debug/packageDebugResources/values-ru/values-ru.xml:177:4: Failed to flatten XML for resource 'tool_root_unavailable' with error: Invalid unicode escape sequence in string
+"{str}"
+/home/runner/work/Line/Line/feature-tool/build/intermediates/packaged_res/debug/packageDebugResources/values-zh/values-zh.xml:177:4: Failed to flatten XML for resource 'tool_root_unavailable' with error: Invalid unicode escape sequence in string
+"{str}"
+/home/runner/work/Line/Line/feature-tool/build/intermediates/packaged_res/debug/packageDebugResources/values-ru/values-ru.xml:177:4: string/tool_root_unavailable does not contain a valid string resource.
+/home/runner/work/Line/Line/feature-tool/build/intermediates/packaged_res/debug/packageDebugResources/values/values.xml:177:4: Failed to flatten XML for resource 'tool_root_unavailable' with error: Invalid unicode escape sequence in string
+"{str}"
+/home/runner/work/Line/Line/feature-tool/build/intermediates/packaged_res/debug/packageDebugResources/values/values.xml:177:4: string/tool_root_unavailable does not contain a valid string resource.
+/home/runner/work/Line/Line/feature-tool/build/intermediates/packaged_res/debug/packageDebugResources/values-zh/values-zh.xml:177:4: string/tool_root_unavailable does not contain a valid string resource.
+
+> Task :feature-model:processDebugManifest
+> Task :data:processDebugManifest
+> Task :feature-share:processDebugManifest
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1788492171112.json
 
 [Incubating] Problems report is available at: file:///home/runner/work/Line/Line/build/reports/problems/problems-report.html
 
 FAILURE: Build failed with an exception.
 
 * What went wrong:
-Execution failed for task ':app:compileDebugJavaWithJavac'.
-> Compilation failed; see the compiler output below.
-  Note: Recompile with -Xlint:deprecation for details.
-  Note: Some input files use or override a deprecated API.
-  /home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:400: error: cannot find symbol
-          if (!isRemoteExecution(executionMode)) {
-               ^
-    symbol:   method isRemoteExecution(String)
-    location: class ToolSettingsRepository
-  /home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:413: error: cannot find symbol
-          if (isRemoteExecution(executionMode) && !ToolRegistry.isCustomMcpToolName(toolName)) {
-              ^
-    symbol:   method isRemoteExecution(String)
-    location: class ToolSettingsRepository
-  /home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:416: error: cannot find symbol
-          if (!isKnownExecution(executionMode)) {
-               ^
-    symbol:   method isKnownExecution(String)
-    location: class ToolSettingsRepository
-  3 errors
+Execution failed for task ':app:mergeDebugResources'.
+> Multiple task action failures occurred:
+   > A failure occurred while executing com.android.build.gradle.internal.res.ResourceCompilerRunnable
+      > Resource compilation failed (Failed to compile values resource file /home/runner/work/Line/Line/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values/values.xml. Cause: java.lang.IllegalStateException: Can not extract resource from com.android.aaptcompiler.ParsedResource@2d83e7bf.). Check logs for more details.
+   > A failure occurred while executing com.android.build.gradle.internal.res.ResourceCompilerRunnable
+      > Resource compilation failed (Failed to compile values resource file /home/runner/work/Line/Line/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ru/values-ru.xml. Cause: java.lang.IllegalStateException: Can not extract resource from com.android.aaptcompiler.ParsedResource@26cb7bc7.). Check logs for more details.
+   > A failure occurred while executing com.android.build.gradle.internal.res.ResourceCompilerRunnable
+      > Resource compilation failed (Failed to compile values resource file /home/runner/work/Line/Line/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-zh/values-zh.xml. Cause: java.lang.IllegalStateException: Can not extract resource from com.android.aaptcompiler.ParsedResource@3ae62988.). Check logs for more details.
 
 * Try:
-> Check your code and dependencies to fix the compilation error(s)
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
 > Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
 
-BUILD FAILED in 2m 48s
-91 actionable tasks: 91 executed
+BUILD FAILED in 2m 26s
+111 actionable tasks: 111 executed

@@ -1,9 +1,6 @@
-/home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:400: error: cannot find symbol
-/home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:413: error: cannot find symbol
-/home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:416: error: cannot find symbol
-> Task :app:compileDebugJavaWithJavac FAILED
-Execution failed for task ':app:compileDebugJavaWithJavac'.
-  /home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:400: error: cannot find symbol
-  /home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:413: error: cannot find symbol
-  /home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:416: error: cannot find symbol
-BUILD FAILED in 2m 48s
+> Task :app:mergeDebugResources FAILED
+/home/runner/work/Line/Line/feature-tool/build/intermediates/packaged_res/debug/packageDebugResources/values-ru/values-ru.xml:177:4: Failed to flatten XML for resource 'tool_root_unavailable' with error: Invalid unicode escape sequence in string
+/home/runner/work/Line/Line/feature-tool/build/intermediates/packaged_res/debug/packageDebugResources/values-zh/values-zh.xml:177:4: Failed to flatten XML for resource 'tool_root_unavailable' with error: Invalid unicode escape sequence in string
+/home/runner/work/Line/Line/feature-tool/build/intermediates/packaged_res/debug/packageDebugResources/values/values.xml:177:4: Failed to flatten XML for resource 'tool_root_unavailable' with error: Invalid unicode escape sequence in string
+Execution failed for task ':app:mergeDebugResources'.
+BUILD FAILED in 2m 26s
