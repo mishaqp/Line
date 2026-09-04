@@ -1,0 +1,203 @@
+Downloading https://mirrors.cloud.tencent.com/gradle/gradle-9.4.1-bin.zip
+.............10%.............20%.............30%.............40%.............50%.............60%..............70%.............80%.............90%.............100%
+
+Welcome to Gradle 9.4.1!
+
+Here are the highlights of this release:
+ - Java 26 support
+ - Non-class-based JVM tests
+ - Enhanced console progress bar
+
+For more details see https://docs.gradle.org/9.4.1/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+> Task :build-logic:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :build-logic:pluginDescriptors
+> Task :build-logic:processResources
+> Task :build-logic:compileKotlin
+> Task :build-logic:compileJava NO-SOURCE
+> Task :build-logic:classes
+> Task :build-logic:jar
+> Task :core-model:compileJava
+> Task :core-api:compileJava
+> Task :core-api:processResources NO-SOURCE
+> Task :core-api:classes
+> Task :core-api:jar
+> Task :core-model:processResources NO-SOURCE
+> Task :core-model:classes
+> Task :core-model:jar
+
+> Task :core-security:compileJava
+Note: /home/runner/work/Line/Line/core-security/src/main/java/cn/lineai/security/SimpleHttpClient.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :core-security:processResources NO-SOURCE
+> Task :core-security:classes
+> Task :core-security:jar
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :ipc:preBuild UP-TO-DATE
+> Task :ipc:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :data:preBuild UP-TO-DATE
+> Task :data:preDebugBuild UP-TO-DATE
+> Task :data:processDebugNavigationResources
+> Task :feature-model:preBuild UP-TO-DATE
+> Task :feature-model:preDebugBuild UP-TO-DATE
+> Task :feature-model:processDebugNavigationResources
+> Task :feature-share:preBuild UP-TO-DATE
+> Task :feature-share:preDebugBuild UP-TO-DATE
+> Task :feature-share:processDebugNavigationResources
+> Task :feature-ssh:preBuild UP-TO-DATE
+> Task :feature-ssh:preDebugBuild UP-TO-DATE
+> Task :feature-ssh:processDebugNavigationResources
+> Task :feature-tool:preBuild UP-TO-DATE
+> Task :feature-tool:preDebugBuild UP-TO-DATE
+> Task :feature-tool:processDebugNavigationResources
+> Task :ipc:processDebugNavigationResources
+> Task :markdown:preBuild UP-TO-DATE
+> Task :markdown:preDebugBuild UP-TO-DATE
+> Task :markdown:processDebugNavigationResources
+> Task :tool-ui:preBuild UP-TO-DATE
+> Task :tool-ui:preDebugBuild UP-TO-DATE
+> Task :tool-ui:processDebugNavigationResources
+> Task :ui-theme:preBuild UP-TO-DATE
+> Task :ui-theme:preDebugBuild UP-TO-DATE
+> Task :ui-theme:processDebugNavigationResources
+> Task :app:processDebugNavigationResources
+> Task :ipc:compileDebugAidl
+> Task :app:compileDebugAidl NO-SOURCE
+> Task :data:generateDebugResources
+> Task :data:packageDebugResources
+> Task :app:parseDebugLocalResources
+> Task :ipc:generateDebugResources
+> Task :data:parseDebugLocalResources
+> Task :ipc:packageDebugResources
+> Task :ipc:parseDebugLocalResources
+> Task :ipc:javaPreCompileDebug
+> Task :data:javaPreCompileDebug
+> Task :data:generateDebugRFile
+> Task :feature-model:generateDebugResources
+> Task :ipc:generateDebugRFile
+> Task :app:generateDebugRFile
+> Task :feature-model:packageDebugResources
+> Task :ipc:compileDebugKotlin NO-SOURCE
+> Task :ipc:compileDebugJavaWithJavac
+> Task :feature-model:javaPreCompileDebug
+> Task :feature-share:generateDebugResources
+> Task :feature-model:parseDebugLocalResources
+> Task :feature-share:packageDebugResources
+> Task :ipc:bundleLibCompileToJarDebug
+> Task :feature-share:javaPreCompileDebug
+> Task :data:compileDebugKotlin NO-SOURCE
+> Task :feature-model:generateDebugRFile
+> Task :feature-share:parseDebugLocalResources
+> Task :data:compileDebugJavaWithJavac
+> Task :data:bundleLibCompileToJarDebug
+> Task :feature-ssh:generateDebugResources
+> Task :feature-share:generateDebugRFile
+> Task :feature-model:compileDebugKotlin NO-SOURCE
+> Task :feature-model:compileDebugJavaWithJavac
+> Task :feature-model:bundleLibCompileToJarDebug
+> Task :feature-share:compileDebugKotlin NO-SOURCE
+> Task :feature-share:compileDebugJavaWithJavac
+> Task :feature-share:bundleLibCompileToJarDebug
+> Task :feature-ssh:packageDebugResources
+> Task :feature-ssh:javaPreCompileDebug
+> Task :feature-tool:generateDebugResources
+> Task :feature-ssh:parseDebugLocalResources
+> Task :feature-tool:packageDebugResources
+> Task :feature-ssh:generateDebugRFile
+> Task :markdown:generateDebugResources
+> Task :feature-ssh:compileDebugKotlin NO-SOURCE
+> Task :feature-tool:parseDebugLocalResources
+> Task :feature-ssh:compileDebugJavaWithJavac
+> Task :feature-ssh:bundleLibCompileToJarDebug
+> Task :markdown:packageDebugResources
+> Task :feature-tool:generateDebugRFile
+> Task :ui-theme:generateDebugResources
+> Task :markdown:parseDebugLocalResources
+> Task :ui-theme:packageDebugResources
+> Task :markdown:generateDebugRFile
+> Task :ui-theme:javaPreCompileDebug
+> Task :markdown:javaPreCompileDebug
+> Task :tool-ui:generateDebugResources
+> Task :ui-theme:parseDebugLocalResources
+> Task :tool-ui:packageDebugResources
+> Task :ui-theme:generateDebugRFile
+> Task :ui-theme:compileDebugKotlin NO-SOURCE
+> Task :tool-ui:parseDebugLocalResources
+> Task :ui-theme:compileDebugJavaWithJavac
+> Task :ui-theme:bundleLibCompileToJarDebug
+> Task :markdown:compileDebugKotlin NO-SOURCE
+> Task :tool-ui:generateDebugRFile
+> Task :markdown:compileDebugJavaWithJavac
+> Task :markdown:bundleLibCompileToJarDebug
+> Task :tool-ui:javaPreCompileDebug
+> Task :tool-ui:compileDebugKotlin NO-SOURCE
+> Task :tool-ui:compileDebugJavaWithJavac
+> Task :tool-ui:bundleLibCompileToJarDebug
+> Task :feature-tool:javaPreCompileDebug
+> Task :app:javaPreCompileDebug
+> Task :feature-tool:compileDebugKotlin NO-SOURCE
+> Task :feature-tool:compileDebugJavaWithJavac
+> Task :feature-tool:bundleLibCompileToJarDebug
+> Task :data:writeDebugAarMetadata
+> Task :app:compileDebugKotlin NO-SOURCE
+
+> Task :app:compileDebugJavaWithJavac
+/home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:400: error: cannot find symbol
+        if (!isRemoteExecution(executionMode)) {
+             ^
+  symbol:   method isRemoteExecution(String)
+  location: class ToolSettingsRepository
+/home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:413: error: cannot find symbol
+        if (isRemoteExecution(executionMode) && !ToolRegistry.isCustomMcpToolName(toolName)) {
+            ^
+  symbol:   method isRemoteExecution(String)
+  location: class ToolSettingsRepository
+/home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:416: error: cannot find symbol
+        if (!isKnownExecution(executionMode)) {
+             ^
+  symbol:   method isKnownExecution(String)
+  location: class ToolSettingsRepository
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+3 errors
+
+> Task :app:compileDebugJavaWithJavac FAILED
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1788491894096.json
+
+[Incubating] Problems report is available at: file:///home/runner/work/Line/Line/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugJavaWithJavac'.
+> Compilation failed; see the compiler output below.
+  Note: Recompile with -Xlint:deprecation for details.
+  Note: Some input files use or override a deprecated API.
+  /home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:400: error: cannot find symbol
+          if (!isRemoteExecution(executionMode)) {
+               ^
+    symbol:   method isRemoteExecution(String)
+    location: class ToolSettingsRepository
+  /home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:413: error: cannot find symbol
+          if (isRemoteExecution(executionMode) && !ToolRegistry.isCustomMcpToolName(toolName)) {
+              ^
+    symbol:   method isRemoteExecution(String)
+    location: class ToolSettingsRepository
+  /home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:416: error: cannot find symbol
+          if (!isKnownExecution(executionMode)) {
+               ^
+    symbol:   method isKnownExecution(String)
+    location: class ToolSettingsRepository
+  3 errors
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 2m 48s
+91 actionable tasks: 91 executed

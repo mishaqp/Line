@@ -1,0 +1,9 @@
+/home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:400: error: cannot find symbol
+/home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:413: error: cannot find symbol
+/home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:416: error: cannot find symbol
+> Task :app:compileDebugJavaWithJavac FAILED
+Execution failed for task ':app:compileDebugJavaWithJavac'.
+  /home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:400: error: cannot find symbol
+  /home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:413: error: cannot find symbol
+  /home/runner/work/Line/Line/app/src/main/java/cn/lineai/data/repository/ToolSettingsRepository.java:416: error: cannot find symbol
+BUILD FAILED in 2m 48s
