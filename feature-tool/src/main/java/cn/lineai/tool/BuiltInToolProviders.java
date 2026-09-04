@@ -25,6 +25,11 @@ import cn.lineai.tool.builtin.PhoneScreenshotTool;
 import cn.lineai.tool.builtin.PhoneSwipeTool;
 import cn.lineai.tool.builtin.PhoneViewHierarchyTool;
 import cn.lineai.tool.builtin.ShellExecuteTool;
+import cn.lineai.tool.builtin.SkillCreateTool;
+import cn.lineai.tool.builtin.SkillDeleteTool;
+import cn.lineai.tool.builtin.SkillInstallTool;
+import cn.lineai.tool.builtin.SkillListTool;
+import cn.lineai.tool.builtin.SkillSetEnabledTool;
 import cn.lineai.tool.builtin.TodoUpdateTool;
 import cn.lineai.tool.builtin.WebFetchTool;
 import cn.lineai.tool.builtin.WebSearchTool;
@@ -53,6 +58,12 @@ public final class BuiltInToolProviders {
         list.add((context, ipc) -> new AgentOutputTool());
         list.add((context, ipc) -> new TodoUpdateTool());
         list.add((context, ipc) -> new MemoryUpdateTool());
+        // Skill 管理工具：通过 ToolContext 里的 ExtensionStore 复用扩展系统。
+        list.add((context, ipc) -> new SkillListTool());
+        list.add((context, ipc) -> new SkillCreateTool());
+        list.add((context, ipc) -> new SkillInstallTool());
+        list.add((context, ipc) -> new SkillSetEnabledTool());
+        list.add((context, ipc) -> new SkillDeleteTool());
         list.add((context, ipc) -> new WebFetchTool());
         // Phone control tools need the accessibility service.
         list.add((context, ipc) -> new PhoneScreenshotTool(context));

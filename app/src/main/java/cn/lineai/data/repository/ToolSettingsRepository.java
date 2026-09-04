@@ -41,7 +41,9 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
 
     private static final Set<String> MODE_LOCAL = java.util.Collections.singleton(EXECUTION_LOCAL);
     private static final Set<String> MODE_REMOTE = java.util.Collections.unmodifiableSet(new HashSet<>(java.util.Arrays.asList(EXECUTION_SSH, EXECUTION_TERMINAL_PROVIDER)));
-    private static final Set<String> MODE_ALL = java.util.Collections.unmodifiableSet(new HashSet<>(java.util.Arrays.asList(EXECUTION_LOCAL, EXECUTION_SSH, EXECUTION_TERMINAL_PROVIDER)));
+    /** 本机文件系统目标：本地工作区 + Root (su)。 */
+    private static final Set<String> MODE_LOCAL_FS = java.util.Collections.unmodifiableSet(new HashSet<>(java.util.Arrays.asList(EXECUTION_LOCAL, EXECUTION_ROOT)));
+    private static final Set<String> MODE_ALL = java.util.Collections.unmodifiableSet(new HashSet<>(java.util.Arrays.asList(EXECUTION_LOCAL, EXECUTION_SSH, EXECUTION_TERMINAL_PROVIDER, EXECUTION_ROOT)));
 
     private final ResourceProvider resourceProvider;
     private final SettingsRepository settingsRepository;
@@ -67,7 +69,7 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
                 resourceProvider.getString(R.string.tool_group_file_ops_desc),
                 true,
                 new String[] {ToolNames.FILE_READ, ToolNames.FILE_WRITE, ToolNames.FILE_EDIT, ToolNames.FILE_DELETE, ToolNames.GLOB, ToolNames.LIST_DIR},
-                MODE_LOCAL, "file_ops"));
+                MODE_LOCAL_FS, "file_ops"));
         configs.add(new McpToolConfig(ToolNames.AGENT,
                 "Agent",
                 resourceProvider.getString(R.string.tool_group_agent_desc),
@@ -103,13 +105,19 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
                 resourceProvider.getString(R.string.tool_group_shell_desc),
                 true,
                 new String[] {ToolNames.SHELL_EXECUTE},
-                MODE_REMOTE, "shell"));
+                java.util.Collections.unmodifiableSet(new HashSet<>(java.util.Arrays.asList(EXECUTION_SSH, EXECUTION_TERMINAL_PROVIDER, EXECUTION_ROOT))), "shell"));
         configs.add(new McpToolConfig(ToolNames.WEB_SEARCH,
                 resourceProvider.getString(R.string.tool_group_web_search_name),
                 resourceProvider.getString(R.string.tool_group_web_search_desc),
                 true,
                 new String[] {ToolNames.WEB_SEARCH, ToolNames.WEB_FETCH},
                 MODE_ALL, "web_search"));
+        configs.add(new McpToolConfig("skills",
+                resourceProvider.getString(R.string.tool_group_skills_name),
+                resourceProvider.getString(R.string.tool_group_skills_desc),
+                true,
+                new String[] {ToolNames.SKILL_LIST, ToolNames.SKILL_CREATE, ToolNames.SKILL_INSTALL, ToolNames.SKILL_SET_ENABLED, ToolNames.SKILL_DELETE},
+                MODE_LOCAL_FS, "skills"));
         configs.add(new McpToolConfig("memory",
                 resourceProvider.getString(R.string.tool_group_memory_name),
                 resourceProvider.getString(R.string.tool_group_memory_desc),
@@ -153,6 +161,8 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
     @Override
     public synchronized void setExecutionMode(String mode) {
         settingsRepository.setString(KEY_MCP_EXECUTION_MODE, normalizeExecutionMode(mode));
+        // 切换执行目标后，root 健康检查缓存必须作废，否则会沿用上一个目标的探测结果。
+        cn.lineai.tool.builtin.RootSupport.invalidateAvailability();
     }
 
     @Override
@@ -222,7 +232,7 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
             return settingsRepository.getBoolean(key, config.isEnabled());
         }
         String mode = normalizeExecutionMode(executionMode);
-        if (EXECUTION_SSH.equals(mode) || EXECUTION_TERMINAL_PROVIDER.equals(mode)) {
+        if (EXECUTION_SSH.equals(mode) || EXECUTION_TERMINAL_PROVIDER.equals(mode) || EXECUTION_ROOT.equals(mode)) {
             return config.isEnabled();
         }
         return settingsRepository.getBoolean(KEY_MCP_PREFIX + config.getId(), config.isEnabled());
@@ -230,7 +240,7 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
 
     static String mcpEnabledKey(String executionMode, String id) {
         String mode = normalizeExecutionMode(executionMode);
-        if (EXECUTION_SSH.equals(mode) || EXECUTION_TERMINAL_PROVIDER.equals(mode)) {
+        if (EXECUTION_SSH.equals(mode) || EXECUTION_TERMINAL_PROVIDER.equals(mode) || EXECUTION_ROOT.equals(mode)) {
             return KEY_MCP_PREFIX + mode + "_" + id;
         }
         return KEY_MCP_PREFIX + id;
@@ -351,12 +361,16 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
         if (PERMISSION_CONFIRM.equals(mode) || "ask".equals(mode)) {
             return PERMISSION_CONFIRM;
         }
+        if (PERMISSION_FULL_ACCESS.equals(mode) || "full".equals(mode) || "yolo".equals(mode)) {
+            return PERMISSION_FULL_ACCESS;
+        }
         return PERMISSION_AUTO;
     }
 
     public static String normalizeExecutionMode(String mode) {
         if (EXECUTION_SSH.equals(mode)) return EXECUTION_SSH;
         if (EXECUTION_TERMINAL_PROVIDER.equals(mode)) return EXECUTION_TERMINAL_PROVIDER;
+        if (EXECUTION_ROOT.equals(mode) || "su".equals(mode)) return EXECUTION_ROOT;
         return EXECUTION_LOCAL;
     }
 
@@ -383,7 +397,7 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
         if (isReadonlyAllowed(category) || isReadonlyAlwaysAllowed(toolName)) {
             return true;
         }
-        if (!EXECUTION_SSH.equals(executionMode) && !EXECUTION_TERMINAL_PROVIDER.equals(executionMode)) {
+        if (!isRemoteExecution(executionMode)) {
             return false;
         }
         return ToolNames.SHELL_EXECUTE.equals(toolName)
@@ -396,13 +410,10 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
             return false;
         }
         String executionMode = getExecutionMode();
-        if (EXECUTION_SSH.equals(executionMode) && !ToolRegistry.isCustomMcpToolName(toolName)) {
+        if (isRemoteExecution(executionMode) && !ToolRegistry.isCustomMcpToolName(toolName)) {
             return false;
         }
-        if (EXECUTION_TERMINAL_PROVIDER.equals(executionMode) && !ToolRegistry.isCustomMcpToolName(toolName)) {
-            return false;
-        }
-        if (!EXECUTION_LOCAL.equals(executionMode) && !EXECUTION_SSH.equals(executionMode) && !EXECUTION_TERMINAL_PROVIDER.equals(executionMode)) {
+        if (!isKnownExecution(executionMode)) {
             return false;
         }
         return !PERMISSION_READONLY.equals(getPermissionMode()) || isReadonlyAllowed(category);

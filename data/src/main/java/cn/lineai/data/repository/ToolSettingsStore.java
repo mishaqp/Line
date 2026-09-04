@@ -27,9 +27,28 @@ public interface ToolSettingsStore {
     String PERMISSION_READONLY = "readonly";
     String PERMISSION_AUTO = "auto";
     String PERMISSION_CONFIRM = "confirm";
+    /** 完全访问：所有已启用工具都不再弹出确认对话框（含删除、shell、root）。 */
+    String PERMISSION_FULL_ACCESS = "full_access";
     String EXECUTION_LOCAL = "local";
     String EXECUTION_SSH = "ssh";
     String EXECUTION_TERMINAL_PROVIDER = "terminal_provider";
+    /** Root 执行目标：shell 与文件工具通过 `su -c` 以 root 身份在本机执行。 */
+    String EXECUTION_ROOT = "root";
+
+    /** 是否为远程执行目标（SSH / 终端提供者）。 */
+    static boolean isRemoteExecution(String mode) {
+        return EXECUTION_SSH.equals(mode) || EXECUTION_TERMINAL_PROVIDER.equals(mode);
+    }
+
+    /** 是否使用本机文件系统（本地工作区或 root）。 */
+    static boolean isLocalFileSystemExecution(String mode) {
+        return EXECUTION_LOCAL.equals(mode) || EXECUTION_ROOT.equals(mode);
+    }
+
+    /** 是否为已知的执行目标。 */
+    static boolean isKnownExecution(String mode) {
+        return isLocalFileSystemExecution(mode) || isRemoteExecution(mode);
+    }
 
     /**
      * 获取当前权限模式。

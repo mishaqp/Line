@@ -68,6 +68,9 @@ public final class ListDirectoryTool extends BaseTool {
 
     @Override
     public ToolResult execute(JSONObject input, ToolContext context) {
+        if (RootSupport.isRootMode(context)) {
+            return executeViaRoot(input, context);
+        }
         try {
             File dir = FileToolPathPolicy.resolve(context, input.optString("path"));
             if (!dir.exists()) {
@@ -92,6 +95,37 @@ public final class ListDirectoryTool extends BaseTool {
                 builder.append(item.isDirectory() ? "[DIR]  " : "[FILE] ")
                         .append(item.getName())
                         .append(item.isDirectory() ? "/" : "")
+                        .append('\n');
+            }
+            return ok(builder.toString().trim());
+        } catch (Exception e) {
+            return error(context.getString(R.string.tool_list_dir_failed, e.getMessage()));
+        }
+    }
+
+    /** Root 执行目标：目录内容通过 {@code su} 的 find 收集。 */
+    private ToolResult executeViaRoot(JSONObject input, ToolContext context) {
+        String requested = input.optString("path");
+        try {
+            RootFileExecutor executor = RootSupport.fileExecutor();
+            String path = RootSupport.resolve(context, requested);
+            RootFileExecutor.Meta meta = executor.stat(path);
+            if (!meta.exists()) {
+                return error(context.getString(R.string.tool_list_dir_not_found, requested.length() == 0 ? "." : requested));
+            }
+            if (!meta.isDirectory()) {
+                return error(context.getString(R.string.tool_list_dir_not_directory, requested.length() == 0 ? "." : requested));
+            }
+            java.util.List<RootFileExecutor.Entry> entries = executor.listChildren(path);
+            if (entries.isEmpty()) {
+                return ok(context.getString(R.string.tool_list_dir_empty, RootSupport.displayPath(context, path)));
+            }
+            StringBuilder builder = new StringBuilder();
+            builder.append(context.getString(R.string.tool_list_dir_content, RootSupport.displayPath(context, path)));
+            for (RootFileExecutor.Entry entry : entries) {
+                builder.append(entry.isDirectory() ? "[DIR]  " : "[FILE] ")
+                        .append(entry.getName())
+                        .append(entry.isDirectory() ? "/" : "")
                         .append('\n');
             }
             return ok(builder.toString().trim());

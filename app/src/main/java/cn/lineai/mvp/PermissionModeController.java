@@ -119,6 +119,12 @@ public final class PermissionModeController {
                 ToolSettingsRepository.PERMISSION_CONFIRM.equals(permissionMode)
         ));
         options.add(new SheetOption(
+                ToolSettingsRepository.PERMISSION_FULL_ACCESS,
+                localizedString(R.string.permission_mode_full_access, "完全访问"),
+                localizedString(R.string.permission_mode_full_access_desc, "所有已启用工具直接执行，不再弹出任何确认（含删除、Shell 与 Root）"),
+                ToolSettingsRepository.PERMISSION_FULL_ACCESS.equals(permissionMode)
+        ));
+        options.add(new SheetOption(
                 ToolSettingsRepository.PERMISSION_READONLY,
                 localizedString(R.string.permission_mode_readonly, "只读"),
                 localizedString(R.string.permission_mode_readonly_desc, "仅允许读取、搜索和列目录，禁止写入与 Shell"),
@@ -142,6 +148,7 @@ public final class PermissionModeController {
     public boolean isPermissionModeOption(String id) {
         return ToolSettingsRepository.PERMISSION_AUTO.equals(id)
                 || ToolSettingsRepository.PERMISSION_CONFIRM.equals(id)
+                || ToolSettingsRepository.PERMISSION_FULL_ACCESS.equals(id)
                 || ToolSettingsRepository.PERMISSION_READONLY.equals(id)
                 || "ask".equals(id)
                 || "workspace".equals(id)

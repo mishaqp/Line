@@ -220,7 +220,7 @@ public final class MainDependencies {
         cn.lineai.tool.ui.ToolCallViewFactoryRegistry.setDefault(toolCallViewFactoryRegistry);
         toolExecutor = new ToolExecutor(toolRegistry, toolSettingsRepository, new cn.lineai.tool.DiffRecorder(diffRepository),
                 (ModelStore) modelRepository, sshFileTreeRepository, new cn.lineai.ai.DefaultModelServiceProvider(),
-                promptTemplateRepository, learningContextRepository);
+                promptTemplateRepository, learningContextRepository, extensionRepository);
         toolExecutionCoordinator = new ToolExecutionCoordinator(toolRegistry);
         systemPromptProvider = new SystemPromptProvider(context, promptTemplateRepository);
         storagePermissionManager = new StoragePermissionManager(context);

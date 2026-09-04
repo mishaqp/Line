@@ -1209,4 +1209,10 @@
     <string name="toolcall_preview_section_note">Тестовые данные — состояния не отражают реальные запуски инструментов.</string>
     <string name="settings_row_tutorial_title">Руководство</string>
     <string name="settings_row_tutorial_desc">От новичка до профи: модели, рабочее пространство, Termux, SSH и MCP</string>
+    <string name="screen_mcp_execution_root">Root (su)</string>
+    <string name="screen_mcp_execution_root_desc">Выполнять shell и файловые инструменты на этом устройстве от имени root через su. Требуется root (KernelSU/Magisk) и выданное приложению LineCode root-разрешение; доступной становится вся файловая система.</string>
+    <string name="tool_group_skills_name">Навыки</string>
+    <string name="tool_group_skills_desc">Позволяет агенту смотреть список, создавать, устанавливать, включать/выключать и удалять навыки</string>
+    <string name="permission_mode_full_access">Полный доступ</string>
+    <string name="permission_mode_full_access_desc">Выполнять все включённые инструменты сразу, без диалогов подтверждения (включая удаление, shell и root)</string>
 </resources>

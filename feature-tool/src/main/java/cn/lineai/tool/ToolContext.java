@@ -2,6 +2,7 @@ package cn.lineai.tool;
 import cn.lineai.model.tool.ToolResult;
 
 import android.content.Context;
+import cn.lineai.data.repository.ExtensionStore;
 import cn.lineai.data.repository.LearningContextStore;
 import cn.lineai.data.repository.PromptTemplateRepository;
 import cn.lineai.data.repository.SshFileTreeStore;
@@ -58,6 +59,7 @@ public final class ToolContext {
     private final Context appContext;
     private final StringResolver stringResolver;
     private final AgentResultStore agentResultStore;
+    private final ExtensionStore extensionStore;
 
     private ToolContext(
             String homePath,
@@ -75,7 +77,8 @@ public final class ToolContext {
             boolean bypassPathProtection,
             Context appContext,
             StringResolver stringResolver,
-            AgentResultStore agentResultStore
+            AgentResultStore agentResultStore,
+            ExtensionStore extensionStore
     ) {
         this.homePath = homePath == null ? "" : homePath;
         this.extraWriteRoots = immutableRoots(extraWriteRoots);
@@ -93,6 +96,7 @@ public final class ToolContext {
         this.appContext = appContext;
         this.stringResolver = stringResolver;
         this.agentResultStore = agentResultStore;
+        this.extensionStore = extensionStore;
     }
 
     public static Builder builder() {
@@ -120,11 +124,18 @@ public final class ToolContext {
     }
 
     public ToolContext withToolCallId(String nextToolCallId) {
-        return new ToolContext(homePath, extraWriteRoots, agentRunner, nextToolCallId, progressListener, todoStateStore, learningContextStore, toolSettingsStore, modelRepository, sshFileTreeRepository, modelServiceProvider, promptTemplateRepository, bypassPathProtection, appContext, stringResolver, agentResultStore);
+        return new ToolContext(homePath, extraWriteRoots, agentRunner, nextToolCallId, progressListener, todoStateStore, learningContextStore, toolSettingsStore, modelRepository, sshFileTreeRepository, modelServiceProvider, promptTemplateRepository, bypassPathProtection, appContext, stringResolver, agentResultStore, extensionStore);
     }
 
     public AgentResultStore getAgentResultStore() {
         return agentResultStore;
+    }
+
+    /**
+     * 扩展仓库（Skills / 自定义 Agent / MCP）。skill_* 工具通过它操作已安装的 Skills。
+     */
+    public ExtensionStore getExtensionStore() {
+        return extensionStore;
     }
 
     public ProgressListener getProgressListener() {
@@ -148,6 +159,7 @@ public final class ToolContext {
         private Context appContext;
         private StringResolver stringResolver;
         private AgentResultStore agentResultStore;
+        private ExtensionStore extensionStore;
 
         public Builder homePath(String v) { this.homePath = v; return this; }
         public Builder extraWriteRoots(List<String> v) { this.extraWriteRoots = v; return this; }
@@ -165,12 +177,13 @@ public final class ToolContext {
         public Builder appContext(Context v) { this.appContext = v; return this; }
         public Builder stringResolver(StringResolver v) { this.stringResolver = v; return this; }
         public Builder agentResultStore(AgentResultStore v) { this.agentResultStore = v; return this; }
+        public Builder extensionStore(ExtensionStore v) { this.extensionStore = v; return this; }
 
         public ToolContext build() {
             return new ToolContext(homePath, extraWriteRoots, agentRunner, toolCallId,
                     progressListener, todoStateStore, learningContextStore, toolSettingsStore, modelRepository,
                     sshFileTreeRepository, modelServiceProvider, promptTemplateRepository,
-                    bypassPathProtection, appContext, stringResolver, agentResultStore);
+                    bypassPathProtection, appContext, stringResolver, agentResultStore, extensionStore);
         }
     }
 

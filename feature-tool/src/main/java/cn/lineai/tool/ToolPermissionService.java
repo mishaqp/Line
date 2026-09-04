@@ -34,6 +34,9 @@ public final class ToolPermissionService {
     }
 
     public boolean needsConfirmation(String toolName) {
+        if (isFullAccess()) {
+            return false;
+        }
         if (toolRegistry != null) {
             ToolInfo tool = toolRegistry.get(toolName);
             if (tool != null && tool.needsConfirmation()) {
@@ -58,10 +61,17 @@ public final class ToolPermissionService {
         if (ToolSettingsStore.EXECUTION_TERMINAL_PROVIDER.equals(executionMode) && !ToolRegistry.isCustomMcpToolName(toolName)) {
             return false;
         }
-        if (!ToolSettingsStore.EXECUTION_LOCAL.equals(executionMode) && !ToolSettingsStore.EXECUTION_SSH.equals(executionMode) && !ToolSettingsStore.EXECUTION_TERMINAL_PROVIDER.equals(executionMode)) {
+        if (!ToolSettingsStore.isKnownExecution(executionMode)) {
             return false;
         }
         return !ToolSettingsStore.PERMISSION_READONLY.equals(toolSettingsStore.getPermissionMode()) || isReadonlyAllowed(category);
+    }
+
+    /**
+     * 完全访问模式下所有工具都不需要确认。
+     */
+    public boolean isFullAccess() {
+        return ToolSettingsStore.PERMISSION_FULL_ACCESS.equals(toolSettingsStore.getPermissionMode());
     }
 
     private static boolean isReadonlyAllowed(ToolCategory category) {
@@ -72,7 +82,7 @@ public final class ToolPermissionService {
         if (isReadonlyAllowed(category) || isReadonlyAlwaysAllowed(toolName)) {
             return true;
         }
-        if (!ToolSettingsStore.EXECUTION_SSH.equals(executionMode) && !ToolSettingsStore.EXECUTION_TERMINAL_PROVIDER.equals(executionMode)) {
+        if (!ToolSettingsStore.isRemoteExecution(executionMode)) {
             return false;
         }
         return ToolNames.SHELL_EXECUTE.equals(toolName)

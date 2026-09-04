@@ -23,6 +23,11 @@ public final class ToolNames {
     public static final String WEB_FETCH = "web_fetch";
     public static final String IMAGE_UNDERSTANDING = "image_understanding";
     public static final String IMAGE_GENERATION = "image_generation";
+    public static final String SKILL_CREATE = "skill_create";
+    public static final String SKILL_INSTALL = "skill_install";
+    public static final String SKILL_LIST = "skill_list";
+    public static final String SKILL_SET_ENABLED = "skill_set_enabled";
+    public static final String SKILL_DELETE = "skill_delete";
     public static final String PHONE_SCREENSHOT = "phone_screenshot";
     public static final String PHONE_CLICK = "phone_click";
     public static final String PHONE_CLICK_VIEW = "phone_click_view";

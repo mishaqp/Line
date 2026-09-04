@@ -58,13 +58,10 @@ public final class ToolPromptService {
             return false;
         }
         String executionMode = toolSettingsStore.getExecutionMode();
-        if (ToolSettingsStore.EXECUTION_SSH.equals(executionMode) && !ToolRegistry.isCustomMcpToolName(toolName)) {
+        if (ToolSettingsStore.isRemoteExecution(executionMode) && !ToolRegistry.isCustomMcpToolName(toolName)) {
             return false;
         }
-        if (ToolSettingsStore.EXECUTION_TERMINAL_PROVIDER.equals(executionMode) && !ToolRegistry.isCustomMcpToolName(toolName)) {
-            return false;
-        }
-        if (!ToolSettingsStore.EXECUTION_LOCAL.equals(executionMode) && !ToolSettingsStore.EXECUTION_SSH.equals(executionMode) && !ToolSettingsStore.EXECUTION_TERMINAL_PROVIDER.equals(executionMode)) {
+        if (!ToolSettingsStore.isKnownExecution(executionMode)) {
             return false;
         }
         return !ToolSettingsStore.PERMISSION_READONLY.equals(toolSettingsStore.getPermissionMode()) || isReadonlyAllowed(category);

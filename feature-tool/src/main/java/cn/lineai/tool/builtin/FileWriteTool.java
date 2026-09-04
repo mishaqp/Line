@@ -52,6 +52,9 @@ public final class FileWriteTool extends BaseTool {
 
     @Override
     public ToolResult execute(JSONObject input, ToolContext context) {
+        if (RootSupport.isRootMode(context)) {
+            return executeViaRoot(input, context);
+        }
         try {
             String path = input.optString("file_path");
             ToolArgs.requireNonEmpty(path, "file_path");
@@ -73,6 +76,26 @@ public final class FileWriteTool extends BaseTool {
             }
             int lineCount = input.optString("content").split("\n", -1).length;
             return ok(context.getString(existed ? R.string.tool_file_write_updated : R.string.tool_file_write_created, path, lineCount));
+        } catch (Exception e) {
+            return error(context.getString(R.string.tool_file_write_failed, e.getMessage()));
+        }
+    }
+
+    /**
+     * Root 执行目标：内容通过 stdin 以 base64 交给 {@code su}，父目录由 root 创建。
+     */
+    private ToolResult executeViaRoot(JSONObject input, ToolContext context) {
+        String path = input.optString("file_path");
+        try {
+            ToolArgs.requireNonEmpty(path, "file_path");
+            RootFileExecutor executor = RootSupport.fileExecutor();
+            String absolute = RootSupport.resolve(context, path);
+            RootFileExecutor.WriteResult written = executor.write(absolute,
+                    input.optString("content").getBytes(StandardCharsets.UTF_8));
+            int lineCount = input.optString("content").split("\\n", -1).length;
+            return ok(context.getString(written.existed()
+                    ? R.string.tool_file_write_updated
+                    : R.string.tool_file_write_created, path, lineCount));
         } catch (Exception e) {
             return error(context.getString(R.string.tool_file_write_failed, e.getMessage()));
         }
