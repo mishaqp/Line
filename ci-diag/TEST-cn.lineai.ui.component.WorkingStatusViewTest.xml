@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.lineai.ui.component.WorkingStatusViewTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:28:26.008Z" hostname="runnervmejwal" time="0.005">
+  <properties/>
+  <testcase name="thinkingStateOnlyAppliesBeforeResponseTextStarts" classname="cn.lineai.ui.component.WorkingStatusViewTest" time="0.005"/>
+  <testcase name="highlightColorRemainsVisibleOnLightThemes" classname="cn.lineai.ui.component.WorkingStatusViewTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.lineai.data.repository.ConversationMessageIdScopeTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:28:25.610Z" hostname="runnervmejwal" time="0.002">
+  <properties/>
+  <testcase name="alreadyScopedIdsAreUnchanged" classname="cn.lineai.data.repository.ConversationMessageIdScopeTest" time="0.001"/>
+  <testcase name="emptyIdUsesConversationOrderFallback" classname="cn.lineai.data.repository.ConversationMessageIdScopeTest" time="0.0"/>
+  <testcase name="nonLegacyIdsAreUnchanged" classname="cn.lineai.data.repository.ConversationMessageIdScopeTest" time="0.0"/>
+  <testcase name="bareLegacyIdsAreScopedToConversation" classname="cn.lineai.data.repository.ConversationMessageIdScopeTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

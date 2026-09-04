@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.lineai.ui.util.SlashCommandCatalogTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:28:26.015Z" hostname="runnervmejwal" time="0.003">
+  <properties/>
+  <testcase name="filterReasoningLevelsMatchesPrefix" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.002"/>
+  <testcase name="filterMainMatchesByPrefixCaseInsensitively" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <testcase name="filterModelIdsMatchesByPrefix" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <testcase name="parseIgnoresInvalidReasoningLevelButKeepsModelId" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <testcase name="parseReturnsModelWithOptionalReasoningLevel" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <testcase name="filterReasoningLevelsReturnsAllForEmptyQuery" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <testcase name="filterMainReturnsEmptyForUnknownPrefix" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <testcase name="filterModelIdsReturnsEmptyForNullInput" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <testcase name="parseReturnsModeForKnownModeTokens" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <testcase name="parseReturnsNullForUnknownCommand" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <testcase name="parseReturnsNullForModelWithoutId" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <testcase name="reasoningLevelsExposeAllStandardValues" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <testcase name="filterMainReturnsAllForEmptyQuery" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <testcase name="parseReturnsNullForNonSlashInput" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <testcase name="filterModelIdsReturnsAllForEmptyQuery" classname="cn.lineai.ui.util.SlashCommandCatalogTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.lineai.data.repository.MemoryRankerRagInjectionTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:28:25.623Z" hostname="runnervmejwal" time="0.006">
+  <properties/>
+  <testcase name="rankWithNoMatchesAndNoFallbackReturnsEmpty" classname="cn.lineai.data.repository.MemoryRankerRagInjectionTest" time="0.001"/>
+  <testcase name="matchingRankFiltersOutIrrelevantCandidates" classname="cn.lineai.data.repository.MemoryRankerRagInjectionTest" time="0.002"/>
+  <testcase name="rankWithNoMatchesAndRecentFallbackReturnsRecentCandidates" classname="cn.lineai.data.repository.MemoryRankerRagInjectionTest" time="0.001"/>
+  <testcase name="matchingMemoryCandidateIsRankedFirstWithPositiveRelevance" classname="cn.lineai.data.repository.MemoryRankerRagInjectionTest" time="0.001"/>
+  <testcase name="maxCountLimitsRankedCandidatesAndPreservesOrdering" classname="cn.lineai.data.repository.MemoryRankerRagInjectionTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

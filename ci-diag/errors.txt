@@ -1,6 +1,6 @@
-> Task :app:mergeDebugResources FAILED
-/home/runner/work/Line/Line/feature-tool/build/intermediates/packaged_res/debug/packageDebugResources/values-ru/values-ru.xml:177:4: Failed to flatten XML for resource 'tool_root_unavailable' with error: Invalid unicode escape sequence in string
-/home/runner/work/Line/Line/feature-tool/build/intermediates/packaged_res/debug/packageDebugResources/values-zh/values-zh.xml:177:4: Failed to flatten XML for resource 'tool_root_unavailable' with error: Invalid unicode escape sequence in string
-/home/runner/work/Line/Line/feature-tool/build/intermediates/packaged_res/debug/packageDebugResources/values/values.xml:177:4: Failed to flatten XML for resource 'tool_root_unavailable' with error: Invalid unicode escape sequence in string
-Execution failed for task ':app:mergeDebugResources'.
+ToolSettingsRepositoryTest > rootTargetPromptWarnsAboutWholeFilesystemAccess FAILED
+ToolSettingsRepositoryTest > skillMutatingToolsResolveToWriteCategory FAILED
+PermissionModeControllerTest > fullAccessAliasesAreAccepted FAILED
+> Task :app:testDebugUnitTest FAILED
+Execution failed for task ':app:testDebugUnitTest'.
 BUILD FAILED in 2m 26s

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.lineai.ipc.terminal.TerminalIpcProviderTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:28:25.698Z" hostname="runnervmejwal" time="0.003">
+  <properties/>
+  <testcase name="executeShellThrowsWhenNotBound" classname="cn.lineai.ipc.terminal.TerminalIpcProviderTest" time="0.001"/>
+  <testcase name="readFileThrowsWhenNotBound" classname="cn.lineai.ipc.terminal.TerminalIpcProviderTest" time="0.0"/>
+  <testcase name="fileExistsThrowsWhenNotBound" classname="cn.lineai.ipc.terminal.TerminalIpcProviderTest" time="0.0"/>
+  <testcase name="listDirThrowsWhenNotBound" classname="cn.lineai.ipc.terminal.TerminalIpcProviderTest" time="0.001"/>
+  <testcase name="getProviderTypeReturnsTerminal" classname="cn.lineai.ipc.terminal.TerminalIpcProviderTest" time="0.0"/>
+  <testcase name="requiresConfirmationReturnsTrue" classname="cn.lineai.ipc.terminal.TerminalIpcProviderTest" time="0.0"/>
+  <testcase name="getConfigReturnsConstructorConfig" classname="cn.lineai.ipc.terminal.TerminalIpcProviderTest" time="0.0"/>
+  <testcase name="isBaseIpcProviderSubclass" classname="cn.lineai.ipc.terminal.TerminalIpcProviderTest" time="0.0"/>
+  <testcase name="fileSizeThrowsWhenNotBound" classname="cn.lineai.ipc.terminal.TerminalIpcProviderTest" time="0.0"/>
+  <testcase name="deleteFileThrowsWhenNotBound" classname="cn.lineai.ipc.terminal.TerminalIpcProviderTest" time="0.0"/>
+  <testcase name="isBoundDefaultsToFalse" classname="cn.lineai.ipc.terminal.TerminalIpcProviderTest" time="0.001"/>
+  <testcase name="writeFileThrowsWhenNotBound" classname="cn.lineai.ipc.terminal.TerminalIpcProviderTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

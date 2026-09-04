@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.lineai.log.ErrorLogRedactorTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:28:25.703Z" hostname="runnervmejwal" time="0.107">
+  <properties/>
+  <testcase name="redactsSecretsAndLargeImagePayloads" classname="cn.lineai.log.ErrorLogRedactorTest" time="0.002"/>
+  <testcase name="redactsLargePayloadWithoutOom" classname="cn.lineai.log.ErrorLogRedactorTest" time="0.105"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

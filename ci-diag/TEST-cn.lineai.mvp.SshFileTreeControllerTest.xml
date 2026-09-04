@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.lineai.mvp.SshFileTreeControllerTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:28:25.909Z" hostname="runnervmejwal" time="0.012">
+  <properties/>
+  <testcase name="loadFailureAppearsUnderRoot" classname="cn.lineai.mvp.SshFileTreeControllerTest" time="0.007"/>
+  <testcase name="expandedPrefetchedDirectoryShowsCachedChildren" classname="cn.lineai.mvp.SshFileTreeControllerTest" time="0.005"/>
+  <testcase name="requestFileTreeLoadBuildsRootTreeAndCapturesRemoteRoot" classname="cn.lineai.mvp.SshFileTreeControllerTest" time="0.0"/>
+  <testcase name="getFileTreeReturnsPlaceholderBeforeLoad" classname="cn.lineai.mvp.SshFileTreeControllerTest" time="0.0"/>
+  <testcase name="refreshDirectoryAfterFileOperationReloadsExpandedDirectory" classname="cn.lineai.mvp.SshFileTreeControllerTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
