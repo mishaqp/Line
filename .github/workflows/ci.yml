@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -36,7 +36,20 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run unit tests
-        run: ./gradlew :app:testDebugUnitTest :feature-model:testDebugUnitTest :feature-tool:testDebugUnitTest
+        run: |
+          set +e
+          ./gradlew :app:testDebugUnitTest :feature-model:testDebugUnitTest :feature-tool:testDebugUnitTest > /tmp/gradle-unit.log 2>&1
+          status=$?
+          if [ $status -ne 0 ]; then
+            mkdir -p diag
+            cp /tmp/gradle-unit.log diag/gradle-unit.log
+            git config user.name "ci-diag"
+            git config user.email "ci-diag@users.noreply.github.com"
+            git add diag/gradle-unit.log
+            git commit -m "diag: capture failing unit test log"
+            git push https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:ci-diag/arena 2>&1 | tail -2
+          fi
+          exit $status
 
       - name: Run lint
         run: ./gradlew :app:lintDebug
