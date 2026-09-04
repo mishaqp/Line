@@ -1,0 +1,153 @@
+> Task :build-logic:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :build-logic:compileKotlin UP-TO-DATE
+> Task :build-logic:compileJava NO-SOURCE
+> Task :build-logic:pluginDescriptors UP-TO-DATE
+> Task :build-logic:processResources UP-TO-DATE
+> Task :build-logic:classes UP-TO-DATE
+> Task :build-logic:jar UP-TO-DATE
+> Task :core-model:compileJava UP-TO-DATE
+> Task :core-api:compileJava UP-TO-DATE
+> Task :core-api:processResources NO-SOURCE
+> Task :core-api:classes UP-TO-DATE
+> Task :core-api:jar UP-TO-DATE
+> Task :core-model:processResources NO-SOURCE
+> Task :core-model:classes UP-TO-DATE
+> Task :core-model:jar UP-TO-DATE
+> Task :core-security:compileJava UP-TO-DATE
+> Task :core-security:processResources NO-SOURCE
+> Task :core-security:classes UP-TO-DATE
+> Task :core-security:jar UP-TO-DATE
+> Task :data:preBuild UP-TO-DATE
+> Task :data:preDebugBuild UP-TO-DATE
+> Task :data:generateDebugResources UP-TO-DATE
+> Task :data:packageDebugResources UP-TO-DATE
+> Task :data:processDebugNavigationResources UP-TO-DATE
+> Task :data:parseDebugLocalResources UP-TO-DATE
+> Task :data:generateDebugRFile UP-TO-DATE
+> Task :ipc:preBuild UP-TO-DATE
+> Task :ipc:preDebugBuild UP-TO-DATE
+> Task :ipc:compileDebugAidl UP-TO-DATE
+> Task :ipc:generateDebugResources UP-TO-DATE
+> Task :ipc:packageDebugResources UP-TO-DATE
+> Task :ipc:processDebugNavigationResources UP-TO-DATE
+> Task :ipc:parseDebugLocalResources UP-TO-DATE
+> Task :ipc:generateDebugRFile UP-TO-DATE
+> Task :ipc:compileDebugKotlin NO-SOURCE
+> Task :ipc:javaPreCompileDebug UP-TO-DATE
+> Task :ipc:compileDebugJavaWithJavac UP-TO-DATE
+> Task :ipc:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :data:compileDebugKotlin NO-SOURCE
+> Task :data:javaPreCompileDebug UP-TO-DATE
+> Task :data:compileDebugJavaWithJavac UP-TO-DATE
+> Task :data:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :data:processDebugJavaRes NO-SOURCE
+> Task :data:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :feature-ssh:preBuild UP-TO-DATE
+> Task :feature-ssh:preDebugBuild UP-TO-DATE
+> Task :feature-ssh:generateDebugResources UP-TO-DATE
+> Task :feature-ssh:packageDebugResources UP-TO-DATE
+> Task :feature-ssh:processDebugNavigationResources UP-TO-DATE
+> Task :feature-ssh:parseDebugLocalResources UP-TO-DATE
+> Task :feature-ssh:generateDebugRFile UP-TO-DATE
+> Task :feature-ssh:compileDebugKotlin NO-SOURCE
+> Task :feature-ssh:javaPreCompileDebug UP-TO-DATE
+> Task :feature-ssh:compileDebugJavaWithJavac UP-TO-DATE
+> Task :feature-ssh:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :feature-ssh:processDebugJavaRes NO-SOURCE
+> Task :feature-ssh:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :feature-tool:preBuild UP-TO-DATE
+> Task :feature-tool:preDebugBuild UP-TO-DATE
+> Task :feature-tool:generateDebugResources UP-TO-DATE
+> Task :feature-tool:packageDebugResources UP-TO-DATE
+> Task :feature-tool:processDebugNavigationResources UP-TO-DATE
+> Task :feature-tool:parseDebugLocalResources UP-TO-DATE
+> Task :feature-tool:generateDebugRFile UP-TO-DATE
+> Task :markdown:preBuild UP-TO-DATE
+> Task :markdown:preDebugBuild UP-TO-DATE
+> Task :markdown:generateDebugResources UP-TO-DATE
+> Task :markdown:packageDebugResources UP-TO-DATE
+> Task :markdown:processDebugNavigationResources UP-TO-DATE
+> Task :markdown:parseDebugLocalResources UP-TO-DATE
+> Task :markdown:generateDebugRFile UP-TO-DATE
+> Task :ui-theme:preBuild UP-TO-DATE
+> Task :ui-theme:preDebugBuild UP-TO-DATE
+> Task :ui-theme:generateDebugResources UP-TO-DATE
+> Task :ui-theme:packageDebugResources UP-TO-DATE
+> Task :ui-theme:processDebugNavigationResources UP-TO-DATE
+> Task :ui-theme:parseDebugLocalResources UP-TO-DATE
+> Task :ui-theme:generateDebugRFile UP-TO-DATE
+> Task :ui-theme:compileDebugKotlin NO-SOURCE
+> Task :ui-theme:javaPreCompileDebug UP-TO-DATE
+> Task :ui-theme:compileDebugJavaWithJavac UP-TO-DATE
+> Task :ui-theme:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :markdown:compileDebugKotlin NO-SOURCE
+> Task :markdown:javaPreCompileDebug UP-TO-DATE
+> Task :markdown:compileDebugJavaWithJavac UP-TO-DATE
+> Task :markdown:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :tool-ui:preBuild UP-TO-DATE
+> Task :tool-ui:preDebugBuild UP-TO-DATE
+> Task :tool-ui:generateDebugResources UP-TO-DATE
+> Task :tool-ui:packageDebugResources UP-TO-DATE
+> Task :tool-ui:processDebugNavigationResources UP-TO-DATE
+> Task :tool-ui:parseDebugLocalResources UP-TO-DATE
+> Task :tool-ui:generateDebugRFile UP-TO-DATE
+> Task :tool-ui:compileDebugKotlin NO-SOURCE
+> Task :tool-ui:javaPreCompileDebug UP-TO-DATE
+> Task :tool-ui:compileDebugJavaWithJavac UP-TO-DATE
+> Task :tool-ui:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :feature-tool:compileDebugKotlin NO-SOURCE
+> Task :feature-tool:javaPreCompileDebug UP-TO-DATE
+> Task :feature-tool:compileDebugJavaWithJavac UP-TO-DATE
+> Task :feature-tool:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :feature-tool:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :feature-tool:preDebugUnitTestBuild UP-TO-DATE
+> Task :feature-tool:processDebugJavaRes NO-SOURCE
+> Task :ipc:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :ipc:processDebugJavaRes NO-SOURCE
+> Task :markdown:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :markdown:processDebugJavaRes NO-SOURCE
+> Task :tool-ui:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :feature-tool:javaPreCompileDebugUnitTest
+> Task :tool-ui:processDebugJavaRes NO-SOURCE
+> Task :ui-theme:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :ui-theme:processDebugJavaRes NO-SOURCE
+> Task :feature-tool:generateDebugUnitTestStubRFile
+> Task :feature-tool:compileDebugUnitTestKotlin NO-SOURCE
+
+> Task :feature-tool:compileDebugUnitTestJavaWithJavac FAILED
+/home/runner/work/Line/Line/feature-tool/src/test/java/cn/lineai/tool/FakeToolSettingsStore.java:70: error: constructor WebSearchConfig in class WebSearchConfig cannot be applied to given types;
+        return new WebSearchConfig();
+               ^
+  required: String,String,String,String,String,String,String
+  found:    no arguments
+  reason: actual and formal argument lists differ in length
+/home/runner/work/Line/Line/feature-tool/src/test/java/cn/lineai/tool/RootModeShellToolTest.java:153: error: RootTimeoutException(String) is not public in RootTimeoutException; cannot be accessed from outside package
+                throw new RootShellExecutor.RootTimeoutException("");
+                      ^
+2 errors
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1788493036919.json
+
+[Incubating] Problems report is available at: file:///home/runner/work/Line/Line/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':feature-tool:compileDebugUnitTestJavaWithJavac'.
+> Compilation failed; see the compiler output below.
+  /home/runner/work/Line/Line/feature-tool/src/test/java/cn/lineai/tool/FakeToolSettingsStore.java:70: error: constructor WebSearchConfig in class WebSearchConfig cannot be applied to given types;
+          return new WebSearchConfig();
+                 ^
+    required: String,String,String,String,String,String,String
+    found:    no arguments
+    reason: actual and formal argument lists differ in length
+  /home/runner/work/Line/Line/feature-tool/src/test/java/cn/lineai/tool/RootModeShellToolTest.java:153: error: RootTimeoutException(String) is not public in RootTimeoutException; cannot be accessed from outside package
+                  throw new RootShellExecutor.RootTimeoutException("");
+                        ^
+  2 errors
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 2s
+77 actionable tasks: 3 executed, 74 up-to-date

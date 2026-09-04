@@ -1,6 +1,0 @@
-ToolSettingsRepositoryTest > rootTargetPromptWarnsAboutWholeFilesystemAccess FAILED
-ToolSettingsRepositoryTest > skillMutatingToolsResolveToWriteCategory FAILED
-PermissionModeControllerTest > fullAccessAliasesAreAccepted FAILED
-> Task :app:testDebugUnitTest FAILED
-Execution failed for task ':app:testDebugUnitTest'.
-BUILD FAILED in 2m 26s

@@ -1,141 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.data.repository.ToolSettingsRepositoryTest" tests="22" skipped="0" failures="2" errors="0" timestamp="2026-09-04T03:28:25.641Z" hostname="runnervmejwal" time="0.038">
+<testsuite name="cn.lineai.data.repository.ToolSettingsRepositoryTest" tests="22" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:37:14.997Z" hostname="runnervmgx7h7" time="0.033">
   <properties/>
-  <testcase name="nativeToolPromptForbidsInlineToolMarkup" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.002"/>
+  <testcase name="nativeToolPromptForbidsInlineToolMarkup" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
   <testcase name="rootExecutionTargetIsNormalizedAndScopedLikeRemoteTargets" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
-  <testcase name="rootTargetPromptWarnsAboutWholeFilesystemAccess" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.004">
-    <failure message="java.lang.AssertionError: ## Available Tools&#10;The following tool list is dynamically generated from current MCP settings, permission mode, execution target, and registered tools. Unlisted tools are unavailable; tool execution must comply with the current permission mode.&#10;&#10;The current execution target is Root (su) on this device. shell_execute and the file tools run as root on the phone itself, so they reach every path on the filesystem; workspace boundary checks are lifted. Never leave a command waiting for interactive input.&#10;&#10;### Root&#10;  - shell_execute [system, needs confirmation]: Execute a shell command via the current execution target: SSH mode uses SSH, terminal provider mode uses IPC. The command requires user confirmation before execution.&#10;    Parameters: {&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;cwd&quot;:{&quot;description&quot;:&quot;Optional working directory; the command runs after cd into it&quot;,&quot;type&quot;:&quot;string&quot;},&quot;timeoutMs&quot;:{&quot;description&quot;:&quot;Optional timeout in milliseconds, default 30000, max 300000&quot;,&quot;type&quot;:&quot;number&quot;},&quot;command&quot;:{&quot;description&quot;:&quot;The shell command to execute&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;command&quot;]}&#10;  - skill_list [read]: List installed skills with id, name, location (app/project) and enabled state. Use the returned id for skill_set_enabled and skill_delete.&#10;    Parameters: {&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;enabled_only&quot;:{&quot;description&quot;:&quot;Only list skills that are currently enabled&quot;,&quot;type&quot;:&quot;boolean&quot;}},&quot;required&quot;:[]}&#10;&#10;Tool call format is locked: when you need to call a tool, you must output &lt;tool_calls&gt;&lt;tool_call name=&quot;tool_name&quot;&gt;&lt;argument name=&quot;param_name&quot;&gt;value&lt;/argument&gt;&lt;/tool_calls&gt;.Do not output OpenAI tool_calls JSON, Markdown code blocks, or natural language wrappers. After each tool returns, you must continue analyzing the result; if the task is not yet complete, continue calling appropriate tools for the next step." type="java.lang.AssertionError">java.lang.AssertionError: ## Available Tools
-The following tool list is dynamically generated from current MCP settings, permission mode, execution target, and registered tools. Unlisted tools are unavailable; tool execution must comply with the current permission mode.
-
-The current execution target is Root (su) on this device. shell_execute and the file tools run as root on the phone itself, so they reach every path on the filesystem; workspace boundary checks are lifted. Never leave a command waiting for interactive input.
-
-### Root
-  - shell_execute [system, needs confirmation]: Execute a shell command via the current execution target: SSH mode uses SSH, terminal provider mode uses IPC. The command requires user confirmation before execution.
-    Parameters: {&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;cwd&quot;:{&quot;description&quot;:&quot;Optional working directory; the command runs after cd into it&quot;,&quot;type&quot;:&quot;string&quot;},&quot;timeoutMs&quot;:{&quot;description&quot;:&quot;Optional timeout in milliseconds, default 30000, max 300000&quot;,&quot;type&quot;:&quot;number&quot;},&quot;command&quot;:{&quot;description&quot;:&quot;The shell command to execute&quot;,&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;command&quot;]}
-  - skill_list [read]: List installed skills with id, name, location (app/project) and enabled state. Use the returned id for skill_set_enabled and skill_delete.
-    Parameters: {&quot;type&quot;:&quot;object&quot;,&quot;properties&quot;:{&quot;enabled_only&quot;:{&quot;description&quot;:&quot;Only list skills that are currently enabled&quot;,&quot;type&quot;:&quot;boolean&quot;}},&quot;required&quot;:[]}
-
-Tool call format is locked: when you need to call a tool, you must output &lt;tool_calls&gt;&lt;tool_call name=&quot;tool_name&quot;&gt;&lt;argument name=&quot;param_name&quot;&gt;value&lt;/argument&gt;&lt;/tool_calls&gt;.Do not output OpenAI tool_calls JSON, Markdown code blocks, or natural language wrappers. After each tool returns, you must continue analyzing the result; if the task is not yet complete, continue calling appropriate tools for the next step.
-	at org.junit.Assert.fail(Assert.java:89)
-	at org.junit.Assert.assertTrue(Assert.java:42)
-	at cn.lineai.data.repository.ToolSettingsRepositoryTest.rootTargetPromptWarnsAboutWholeFilesystemAccess(ToolSettingsRepositoryTest.java:139)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
-	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
-	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
-	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
-	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
-	at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
-	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)
-	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
-	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
-	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
-	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
-	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
-	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
-	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
-	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
-	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
-	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
-	at org.gradle.api.internal.tasks.testing.junit.JUnitTestExecutor.runRequest(JUnitTestExecutor.java:175)
-	at org.gradle.api.internal.tasks.testing.junit.JUnitTestExecutor.accept(JUnitTestExecutor.java:84)
-	at org.gradle.api.internal.tasks.testing.junit.JUnitTestExecutor.accept(JUnitTestExecutor.java:47)
-	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestDefinitionProcessor.processTestDefinition(AbstractJUnitTestDefinitionProcessor.java:65)
-	at org.gradle.api.internal.tasks.testing.SuiteTestDefinitionProcessor.processTestDefinition(SuiteTestDefinitionProcessor.java:53)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at org.gradle.internal.dispatch.MethodInvocation.invokeOn(MethodInvocation.java:77)
-	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:28)
-	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:19)
-	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
-	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:88)
-	at jdk.proxy1/jdk.proxy1.$Proxy4.processTestDefinition(Unknown Source)
-	at org.gradle.api.internal.tasks.testing.worker.TestWorker$2.run(TestWorker.java:178)
-	at org.gradle.api.internal.tasks.testing.worker.TestWorker.executeAndMaintainThreadName(TestWorker.java:126)
-	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:103)
-	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:63)
-	at org.gradle.process.internal.worker.child.ActionExecutionWorker.execute(ActionExecutionWorker.java:56)
-	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:122)
-	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:72)
-	at worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)
-	at worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
-</failure>
-  </testcase>
-  <testcase name="terminalProviderToolPromptEmptyEnabledReturnsNoToolsMessage" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
+  <testcase name="rootTargetPromptWarnsAboutWholeFilesystemAccess" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
+  <testcase name="terminalProviderToolPromptEmptyEnabledReturnsNoToolsMessage" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="normalizeExecutionModeAcceptsTerminalProvider" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="imageGenerationHasGenerateCategory" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="terminalProviderShellConfigUsesIpcName" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
-  <testcase name="remoteExecutionModesUseSeparateToolSettingKeys" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
-  <testcase name="normalizeExecutionModeDefaultsToLocalForNull" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
+  <testcase name="remoteExecutionModesUseSeparateToolSettingKeys" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
+  <testcase name="normalizeExecutionModeDefaultsToLocalForNull" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="learningModeGateRemovesMemoryUpdateWhenDisabled" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="toolPromptUsesRegisteredToolMetadata" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
   <testcase name="learningModeGateKeepsMemoryUpdateWhenEnabled" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="normalizeExecutionModeDefaultsToLocalForUnknown" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="terminalProviderToolPromptUsesNativeToolProtocolNotice" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
   <testcase name="sshReadonlyKeepsRemoteShellAgentAndReadTools" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
-  <testcase name="terminalProviderToolPromptIncludesCustomMcpTools" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
-  <testcase name="terminalProviderToolPromptUsesToolCallsMarkupWhenNotNative" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
+  <testcase name="terminalProviderToolPromptIncludesCustomMcpTools" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
+  <testcase name="terminalProviderToolPromptUsesToolCallsMarkupWhenNotNative" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
   <testcase name="extensionToolsAreRenderedInStableNameOrder" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
   <testcase name="sshToolPromptIncludesCustomMcpTools" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
   <testcase name="fullAccessPermissionModeIsNormalized" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
-  <testcase name="skillMutatingToolsResolveToWriteCategory" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001">
-    <failure message="java.lang.AssertionError: expected:&lt;READ&gt; but was:&lt;SYSTEM&gt;" type="java.lang.AssertionError">java.lang.AssertionError: expected:&lt;READ&gt; but was:&lt;SYSTEM&gt;
-	at org.junit.Assert.fail(Assert.java:89)
-	at org.junit.Assert.failNotEquals(Assert.java:835)
-	at org.junit.Assert.assertEquals(Assert.java:120)
-	at org.junit.Assert.assertEquals(Assert.java:146)
-	at cn.lineai.data.repository.ToolSettingsRepositoryTest.skillMutatingToolsResolveToWriteCategory(ToolSettingsRepositoryTest.java:145)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
-	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
-	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
-	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
-	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
-	at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
-	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)
-	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
-	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
-	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
-	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
-	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
-	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
-	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
-	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
-	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
-	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
-	at org.gradle.api.internal.tasks.testing.junit.JUnitTestExecutor.runRequest(JUnitTestExecutor.java:175)
-	at org.gradle.api.internal.tasks.testing.junit.JUnitTestExecutor.accept(JUnitTestExecutor.java:84)
-	at org.gradle.api.internal.tasks.testing.junit.JUnitTestExecutor.accept(JUnitTestExecutor.java:47)
-	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestDefinitionProcessor.processTestDefinition(AbstractJUnitTestDefinitionProcessor.java:65)
-	at org.gradle.api.internal.tasks.testing.SuiteTestDefinitionProcessor.processTestDefinition(SuiteTestDefinitionProcessor.java:53)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at org.gradle.internal.dispatch.MethodInvocation.invokeOn(MethodInvocation.java:77)
-	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:28)
-	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:19)
-	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
-	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:88)
-	at jdk.proxy1/jdk.proxy1.$Proxy4.processTestDefinition(Unknown Source)
-	at org.gradle.api.internal.tasks.testing.worker.TestWorker$2.run(TestWorker.java:178)
-	at org.gradle.api.internal.tasks.testing.worker.TestWorker.executeAndMaintainThreadName(TestWorker.java:126)
-	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:103)
-	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:63)
-	at org.gradle.process.internal.worker.child.ActionExecutionWorker.execute(ActionExecutionWorker.java:56)
-	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:122)
-	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:72)
-	at worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)
-	at worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
-</failure>
-  </testcase>
-  <testcase name="terminalProviderToolPromptIncludesShellAndImageTools" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
+  <testcase name="skillMutatingToolsResolveToWriteCategory" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.0"/>
+  <testcase name="terminalProviderToolPromptIncludesShellAndImageTools" classname="cn.lineai.data.repository.ToolSettingsRepositoryTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

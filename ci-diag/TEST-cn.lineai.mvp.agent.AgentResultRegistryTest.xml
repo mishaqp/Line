@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.mvp.agent.AgentResultRegistryTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:28:25.958Z" hostname="runnervmejwal" time="0.002">
+<testsuite name="cn.lineai.mvp.agent.AgentResultRegistryTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:37:15.294Z" hostname="runnervmgx7h7" time="0.002">
   <properties/>
-  <testcase name="updateStatusError" classname="cn.lineai.mvp.agent.AgentResultRegistryTest" time="0.0"/>
+  <testcase name="updateStatusError" classname="cn.lineai.mvp.agent.AgentResultRegistryTest" time="0.001"/>
   <testcase name="compactJsonRoundTripPreservesRefMarkerAndFields" classname="cn.lineai.mvp.agent.AgentResultRegistryTest" time="0.0"/>
-  <testcase name="updateFullOutputMarksDoneAndStoresBody" classname="cn.lineai.mvp.agent.AgentResultRegistryTest" time="0.001"/>
-  <testcase name="getUnknownReturnsNull" classname="cn.lineai.mvp.agent.AgentResultRegistryTest" time="0.0"/>
+  <testcase name="updateFullOutputMarksDoneAndStoresBody" classname="cn.lineai.mvp.agent.AgentResultRegistryTest" time="0.0"/>
+  <testcase name="getUnknownReturnsNull" classname="cn.lineai.mvp.agent.AgentResultRegistryTest" time="0.001"/>
   <testcase name="putGetRoundTrip" classname="cn.lineai.mvp.agent.AgentResultRegistryTest" time="0.0"/>
   <testcase name="parseCompactRejectsNonRefPayload" classname="cn.lineai.mvp.agent.AgentResultRegistryTest" time="0.0"/>
   <testcase name="previewClampAt240Chars" classname="cn.lineai.mvp.agent.AgentResultRegistryTest" time="0.0"/>

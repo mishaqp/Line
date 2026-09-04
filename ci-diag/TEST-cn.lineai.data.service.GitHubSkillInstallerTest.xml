@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.data.service.GitHubSkillInstallerTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:28:25.681Z" hostname="runnervmejwal" time="0.003">
+<testsuite name="cn.lineai.data.service.GitHubSkillInstallerTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:37:15.032Z" hostname="runnervmgx7h7" time="0.004">
   <properties/>
   <testcase name="resolvesRepoRootToZipball" classname="cn.lineai.data.service.GitHubSkillInstallerTest" time="0.002"/>
-  <testcase name="resolvesBlobSkillMdToRaw" classname="cn.lineai.data.service.GitHubSkillInstallerTest" time="0.001"/>
+  <testcase name="resolvesBlobSkillMdToRaw" classname="cn.lineai.data.service.GitHubSkillInstallerTest" time="0.0"/>
   <testcase name="rejectsNonGithub" classname="cn.lineai.data.service.GitHubSkillInstallerTest" time="0.0"/>
   <testcase name="resolvesRawSkillMd" classname="cn.lineai.data.service.GitHubSkillInstallerTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>

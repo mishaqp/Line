@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.mvp.LineCodeArchiveControllerTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:28:25.865Z" hostname="runnervmejwal" time="0.005">
+<testsuite name="cn.lineai.mvp.LineCodeArchiveControllerTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:37:15.218Z" hostname="runnervmgx7h7" time="0.004">
   <properties/>
-  <testcase name="importCancelledClearsPendingImport" classname="cn.lineai.mvp.LineCodeArchiveControllerTest" time="0.003"/>
+  <testcase name="importCancelledClearsPendingImport" classname="cn.lineai.mvp.LineCodeArchiveControllerTest" time="0.002"/>
   <testcase name="requestExportUsesTimestampedArchiveName" classname="cn.lineai.mvp.LineCodeArchiveControllerTest" time="0.0"/>
   <testcase name="importFailureReportsErrorWithoutReloading" classname="cn.lineai.mvp.LineCodeArchiveControllerTest" time="0.001"/>
   <testcase name="importPickedConfirmsAndConfirmImportRunsLifecycle" classname="cn.lineai.mvp.LineCodeArchiveControllerTest" time="0.0"/>

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.ipc.IpcProviderTypeTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:28:25.694Z" hostname="runnervmejwal" time="0.001">
+<testsuite name="cn.lineai.ipc.IpcProviderTypeTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:37:15.046Z" hostname="runnervmgx7h7" time="0.01">
   <properties/>
-  <testcase name="fromIdThrowsForUnknownId" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.0"/>
-  <testcase name="terminalTypeHasCorrectId" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.0"/>
+  <testcase name="fromIdThrowsForUnknownId" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.008"/>
+  <testcase name="terminalTypeHasCorrectId" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.001"/>
   <testcase name="fromIdThrowsForNullId" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.0"/>
   <testcase name="terminalTypeHasCorrectPermissionName" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.0"/>
-  <testcase name="terminalTypeHasCorrectIntentAction" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.0"/>
+  <testcase name="terminalTypeHasCorrectIntentAction" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.001"/>
   <testcase name="fromIdReturnsTerminalForTerminalId" classname="cn.lineai.ipc.IpcProviderTypeTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

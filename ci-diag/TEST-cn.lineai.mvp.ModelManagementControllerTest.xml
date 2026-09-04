@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.mvp.ModelManagementControllerTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:28:25.871Z" hostname="runnervmejwal" time="0.005">
+<testsuite name="cn.lineai.mvp.ModelManagementControllerTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:37:15.223Z" hostname="runnervmgx7h7" time="0.002">
   <properties/>
   <testcase name="deleteModelsRefreshesModels" classname="cn.lineai.mvp.ModelManagementControllerTest" time="0.002"/>
   <testcase name="selectModelUpdatesSelectionAndRefreshesModels" classname="cn.lineai.mvp.ModelManagementControllerTest" time="0.0"/>
   <testcase name="saveModelSelectsSavedIdAndReturnsToModels" classname="cn.lineai.mvp.ModelManagementControllerTest" time="0.0"/>
-  <testcase name="gettersDelegateToStore" classname="cn.lineai.mvp.ModelManagementControllerTest" time="0.001"/>
+  <testcase name="gettersDelegateToStore" classname="cn.lineai.mvp.ModelManagementControllerTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
