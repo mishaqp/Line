@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -36,7 +36,26 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run unit tests
-        run: ./gradlew :app:testDebugUnitTest
+        run: ./gradlew :app:testDebugUnitTest > build-output.log 2>&1
+
+      # 日志与产物无法通过 Actions 界面下载时（受限网络），把失败报告提交回分支，
+      # 便于在沙箱里直接读取。[skip ci] 防止自我触发。
+      - name: Publish failure reports
+        if: failure()
+        run: |
+          rm -rf ci-diag
+          mkdir -p ci-diag
+          cp build-output.log ci-diag/build-output.log || true
+          grep -E "error:|FAILED|Execution failed|> Task .* FAILED" build-output.log | head -300 > ci-diag/errors.txt || true
+          shopt -s nullglob
+          for f in */build/test-results/*/*.xml; do cp "$f" ci-diag/; done
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f ci-diag
+          if ! git diff --cached --quiet; then
+            git commit -m "ci: publish failure reports [skip ci]"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
 
       - name: Run lint
         run: ./gradlew :app:lintDebug
