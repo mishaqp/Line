@@ -291,9 +291,15 @@ public final class LineTheme {
         };
     }
 
-    /** Outgoing (user) chat bubble: {@code SHAPE_LG} with a {@code SHAPE_XS} tail bottom-right. */
+    /**
+     * Outgoing (user) chat bubble: {@code SHAPE_MD} with a {@code SHAPE_XS} tail bottom-right.
+     *
+     * <p>Deliberately tighter than the incoming bubble. Outgoing messages are usually one
+     * short line, and at that height a {@code SHAPE_LG} radius consumes almost the whole
+     * edge, turning the bubble into a stretched capsule.</p>
+     */
     public static GradientDrawable userBubble(Context context) {
-        return bubble(context, USER_BUBBLE, true);
+        return bubble(context, USER_BUBBLE, true, SHAPE_MD);
     }
 
     /** Incoming (assistant) chat bubble: mirror of {@link #userBubble(Context)}. */
@@ -303,9 +309,14 @@ public final class LineTheme {
 
     /** Chat bubble drawable in {@code color}; see {@link #bubbleCornerRadii(float, float, boolean)}. */
     public static GradientDrawable bubble(Context context, int color, boolean tailOnEnd) {
+        return bubble(context, color, tailOnEnd, SHAPE_LG);
+    }
+
+    /** Chat bubble drawable with an explicit large-corner radius. */
+    public static GradientDrawable bubble(Context context, int color, boolean tailOnEnd, int largeDp) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setColor(color);
-        drawable.setCornerRadii(bubbleCornerRadii(dp(context, SHAPE_LG), dp(context, SHAPE_XS), tailOnEnd));
+        drawable.setCornerRadii(bubbleCornerRadii(dp(context, largeDp), dp(context, SHAPE_XS), tailOnEnd));
         return drawable;
     }
 

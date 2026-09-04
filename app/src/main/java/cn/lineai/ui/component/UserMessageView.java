@@ -40,10 +40,10 @@ public final class UserMessageView extends LinearLayout {
         contentText = LineTheme.chatText(context, "", LineTheme.TYPE_TITLE, LineTheme.TEXT_ON_COLOR, Typeface.NORMAL);
         contentText.setLineSpacing(LineTheme.dp(context, 2), 1.0f);
         contentText.setBackground(LineTheme.userBubble(context));
-        LineTheme.chatPadding(contentText, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
+        LineTheme.chatPadding(contentText, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
         int horizontalPaddingPx = LineTheme.dp(context, LineTheme.LG) * 2;
         int availableWidth = context.getResources().getDisplayMetrics().widthPixels - horizontalPaddingPx;
-        contentText.setMaxWidth((int) (availableWidth * 0.80f));
+        contentText.setMaxWidth((int) (availableWidth * 0.74f));
         addView(contentText, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         attachmentList = new LinearLayout(context);

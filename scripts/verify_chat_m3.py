@@ -91,9 +91,10 @@ check("LineTheme exposes bubbleCornerRadii(float,float,boolean)",
 check("LineTheme keeps userBubble(Context)", "public static GradientDrawable userBubble(Context context)" in theme)
 check("LineTheme adds assistantBubble(Context)",
       "public static GradientDrawable assistantBubble(Context context)" in theme)
-check("bubbles are built from SHAPE_LG / SHAPE_XS",
-      "bubbleCornerRadii(dp(context, SHAPE_LG), dp(context, SHAPE_XS), tailOnEnd)" in theme)
-check("userBubble keeps the tail on the end side", "return bubble(context, USER_BUBBLE, true);" in theme)
+check("bubbles are built from a large radius plus a SHAPE_XS tail",
+      "bubbleCornerRadii(dp(context, largeDp), dp(context, SHAPE_XS), tailOnEnd)" in theme)
+check("userBubble keeps the tail on the end side",
+      "return bubble(context, USER_BUBBLE, true, SHAPE_MD);" in theme)
 check("assistantBubble mirrors it", "return bubble(context, AI_BUBBLE, false);" in theme)
 
 ok, detail = parses("ui-theme/src/main/java/cn/lineai/ui/theme/LineTheme.java")
@@ -140,13 +141,16 @@ check("MessageActionBarView icons are SHAPE_FULL containers",
 check("MessageActionBarView icons are focusable", "icon.setFocusable(true)" in action_bar)
 for listener in ("ActionListener", "SelectListener", "RecallListener"):
     check("MessageActionBarView keeps %s" % listener, "interface %s" % listener in action_bar)
-check("action bar groups its icons in a tonal container",
-      "LineTheme.SHAPE_FULL))" in action_bar and "CONTAINER_ALPHA" in action_bar)
+check("action bar carries no container plate",
+      "CONTAINER_ALPHA" not in action_bar and "setBackground(LineTheme.rounded(" not in action_bar,
+      "a filled pill under every message competes with the bubble")
 check("action bar icons are readable (TEXT_SECONDARY, not TERTIARY)",
       "icon.setIconColor(LineTheme.TEXT_SECONDARY)" in action_bar
       and "TEXT_TERTIARY" not in action_bar)
-check("action bar touch targets are at least 30dp",
-      "ROW_HEIGHT_DP = 30" in action_bar and "ICON_WIDTH_DP = 32" in action_bar)
+check("action row is compact but still touchable",
+      "ROW_HEIGHT_DP = 26" in action_bar and "ICON_WIDTH_DP = 27" in action_bar)
+check("action row has no extra horizontal padding",
+      "LineTheme.padding(this, 0, 0, 0, 0)" in action_bar)
 
 # The message views must not pin the action row to the old 22dp height, which would
 # clip the taller touch targets.
@@ -155,8 +159,42 @@ for relative in ("app/src/main/java/cn/lineai/ui/component/UserMessageView.java"
     source = read(relative)
     check("%s lets the action row wrap its content" % Path(relative).name,
           "LineTheme.dp(context, 22))" not in source)
-    check("%s gives the bubble roomy padding" % Path(relative).name,
-          "LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD" in source)
+    check("%s scales the bubble padding" % Path(relative).name,
+          "LineTheme.chatPadding(" in source)
+
+# A one-word outgoing bubble must not read as a fat capsule.
+user_view = read("app/src/main/java/cn/lineai/ui/component/UserMessageView.java")
+check("outgoing bubble padding is trimmed",
+      "LineTheme.chatPadding(contentText, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM)" in user_view)
+check("outgoing bubble no longer runs to the edge",
+      "availableWidth * 0.74f" in user_view)
+theme_for_bubble = read("ui-theme/src/main/java/cn/lineai/ui/theme/LineTheme.java")
+check("outgoing bubble uses its own smaller radius",
+      "bubble(context, USER_BUBBLE, true, SHAPE_MD)" in theme_for_bubble)
+check("incoming bubble keeps SHAPE_LG",
+      "bubble(context, color, tailOnEnd, SHAPE_LG)" in theme_for_bubble)
+
+# ------------------------------------------------------------ Tool cards: error state
+base_card = read("tool-ui/src/main/java/cn/lineai/tool/ui/view/BaseToolCallView.java")
+check("tool cards expose a state-aware background",
+      "protected void applyCardBackground(boolean error)" in base_card)
+check("the failed card is a tonal container, not a flood of DANGER",
+      "ERROR_FILL_ALPHA" in base_card and "ERROR_STROKE_ALPHA" in base_card)
+card_views = sorted((ROOT / "tool-ui/src/main/java/cn/lineai/tool/ui/view").glob("ToolCall*View.java"))
+check("every tool card has views to check", len(card_views) >= 7)
+for card in card_views:
+    src = read("tool-ui/src/main/java/cn/lineai/tool/ui/view/%s" % card.name)
+    if "boolean error" not in src:
+        continue
+    check("%s applies the error container" % card.stem,
+          "applyCardBackground(error)" in src)
+read_card = read("tool-ui/src/main/java/cn/lineai/tool/ui/view/ToolCallReadView.java")
+check("failed read/list cards keep their label and path legible",
+      "int actionColor = LineTheme.TEXT_SECONDARY;" in read_card
+      and "ForegroundColorSpan(error ? LineTheme.DANGER" not in read_card)
+generic_card = read("tool-ui/src/main/java/cn/lineai/tool/ui/view/ToolCallGenericView.java")
+check("failed generic cards keep the tool name legible",
+      "LineTheme.FONT_SM, LineTheme.TEXT, Typeface.NORMAL)" in generic_card)
 
 # ----------------------------------------------------- Chat: list, FAB, empty state
 list_view = read("app/src/main/java/cn/lineai/ui/component/ChatMessageListView.java")

@@ -63,6 +63,7 @@ public final class ToolCallAgentPipelineView extends BaseToolCallView implements
         int failed = ps.failed;
         boolean complete = ps.complete;
         boolean error = ps.error;
+        applyCardBackground(error);
         lastSummarySignature = summarySignature(completed, running, pendingReview, failed, complete, error,
                 progress == null ? "" : progress.optString("summary"));
 

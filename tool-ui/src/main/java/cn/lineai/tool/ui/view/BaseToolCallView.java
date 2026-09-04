@@ -36,10 +36,31 @@ public abstract class BaseToolCallView extends LinearLayout {
         UNKNOWN
     }
 
+    /** Fill of the failed-call container; a tint, not a flood of the error colour. */
+    private static final float ERROR_FILL_ALPHA = 0.07f;
+    /** Stroke of the failed-call container. */
+    private static final float ERROR_STROKE_ALPHA = 0.32f;
+
     public BaseToolCallView(Context context) {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
-        setBackground(LineTheme.roundedStroke(context, LineTheme.CODE_BG, 8, LineTheme.CODE_BORDER));
+        applyCardBackground(false);
+    }
+
+    /**
+     * Card background for the current state.
+     *
+     * <p>A failed call used to paint its border, its label, its path and its status glyph all
+     * in {@code DANGER}, which turned a one-line card into a wide slab of red. M3 error
+     * styling puts the colour in a tonal container and keeps the content legible, so the
+     * failure now reads as a tint plus a single red glyph.</p>
+     */
+    protected void applyCardBackground(boolean error) {
+        setBackground(error
+                ? LineTheme.roundedStroke(getContext(),
+                        LineTheme.withAlpha(LineTheme.DANGER, ERROR_FILL_ALPHA), 8,
+                        LineTheme.withAlpha(LineTheme.DANGER, ERROR_STROKE_ALPHA))
+                : LineTheme.roundedStroke(getContext(), LineTheme.CODE_BG, 8, LineTheme.CODE_BORDER));
     }
 
     /**

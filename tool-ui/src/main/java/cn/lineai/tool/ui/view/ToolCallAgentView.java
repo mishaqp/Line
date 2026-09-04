@@ -73,6 +73,7 @@ public final class ToolCallAgentView extends BaseToolCallView implements ToolCal
         }
         boolean complete = result != null && !running && !pendingReview;
         boolean error = resultHasError || "error".equals(progressStatus) || interrupted;
+        applyCardBackground(error);
         String output = AgentToolResultDisplay.displayOutput(resultContent);
         String thinking = AgentToolResultDisplay.thinking(resultContent);
         JSONArray nestedToolCalls = AgentToolResultDisplay.nestedToolCalls(resultContent);

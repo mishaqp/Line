@@ -49,6 +49,7 @@ public final class ToolCallDeleteView extends BaseToolCallView implements ToolCa
         boolean rejected = "rejected".equals(state);
         boolean complete = result != null && result.getContent().length() > 0 && !pending && !rejected;
         boolean error = result != null && result.isError();
+        applyCardBackground(error);
 
         addHeader(reason, description(paths.size(), pending, accepted, rejected, complete, error), pending || rejected || error);
         addPathList(paths);

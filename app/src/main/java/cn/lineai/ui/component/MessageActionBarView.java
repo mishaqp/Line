@@ -14,11 +14,9 @@ public final class MessageActionBarView extends LinearLayout {
     public static final int ALIGN_RIGHT = 1;
 
     /** Height of the action row; also the icon touch-target height. */
-    private static final int ROW_HEIGHT_DP = 30;
-    /** Width of a single action button (comfortably above the 24dp visual size). */
-    private static final int ICON_WIDTH_DP = 32;
-    /** Opacity of the toolbar container — present, but well below the bubble. */
-    private static final float CONTAINER_ALPHA = 0.05f;
+    private static final int ROW_HEIGHT_DP = 26;
+    /** Width of a single action button. */
+    private static final int ICON_WIDTH_DP = 27;
     private final IconButtonView copyButton;
     private final IconButtonView quoteButton;
     private final IconButtonView shareButton;
@@ -35,11 +33,9 @@ public final class MessageActionBarView extends LinearLayout {
         setOrientation(HORIZONTAL);
         setGravity(align == ALIGN_RIGHT ? Gravity.END : Gravity.START);
         setMinimumHeight(LineTheme.chatDp(context, ROW_HEIGHT_DP));
-        // Subtle tonal container: groups the actions instead of leaving loose icons
-        // floating under the bubble, while staying quiet enough not to compete with it.
-        setBackground(LineTheme.rounded(context,
-                LineTheme.withAlpha(LineTheme.TEXT, CONTAINER_ALPHA), LineTheme.SHAPE_FULL));
-        LineTheme.padding(this, LineTheme.XS, 0, LineTheme.XS, 0);
+        // No container plate: the row repeats under every message, and a filled pill that
+        // wide competes with the bubble above it. The icons carry themselves.
+        LineTheme.padding(this, 0, 0, 0, 0);
 
         copyButton = icon(context, IconButtonView.COPY);
         copyButton.setContentDescription(context.getString(R.string.message_action_copy_desc));
