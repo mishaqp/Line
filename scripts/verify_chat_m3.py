@@ -595,6 +595,44 @@ working_src = read("app/src/main/java/cn/lineai/ui/component/WorkingStatusView.j
 check("WorkingStatusView follows the chat scale",
       "LineTheme.chatDp(context, 16)" in working_src and "LineTheme.chatSp(LineTheme.FONT_SM)" in working_src)
 
+# ------------------------------------------------------- R references actually resolve
+# A missing `import cn.lineai.R;` only shows up as a compile error on CI, several minutes
+# later, so check it here: every unqualified R.string.X needs the import, and every name
+# must exist in that module's strings.xml.
+import xml.etree.ElementTree as _ET
+
+_declared = {}
+for _res in ROOT.rglob("src/main/res/values/strings.xml"):
+    if "/build/" in str(_res):
+        continue
+    _module = str(_res.relative_to(ROOT)).split("/")[0]
+    for _entry in _ET.parse(_res).getroot():
+        _declared.setdefault(_module, set()).add(_entry.get("name"))
+
+_missing_import = []
+_unknown_name = []
+for _java in ROOT.rglob("src/main/java/**/*.java"):
+    if "/build/" in str(_java):
+        continue
+    _src = _java.read_text()
+    # unqualified only: cn.lineai.R.string.X needs no import
+    _names = set(re.findall(r"(?<![.\w])R\.string\.(\w+)", _src))
+    if not _names:
+        continue
+    _module = str(_java.relative_to(ROOT)).split("/")[0]
+    if not re.search(r"^import\s+[\w.]*\.R;", _src, re.M) \
+            and not re.search(r"^package\s+cn\.lineai;", _src, re.M):
+        _missing_import.append("%s %s" % (_java.name, sorted(_names)[:2]))
+    _pool = _declared.get(_module, set())
+    for _name in sorted(_names):
+        if _pool and _name not in _pool:
+            _unknown_name.append("%s -> %s" % (_java.name, _name))
+
+check("every unqualified R.string use has an R import", not _missing_import,
+      "; ".join(_missing_import[:3]))
+check("every R.string name exists in its module", not _unknown_name,
+      "; ".join(_unknown_name[:3]))
+
 # ---------------------------------------------------------------- No XML layouts added
 check("no XML layouts introduced", not list((ROOT / "app/src/main/res").glob("layout*/*.xml")))
 

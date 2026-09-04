@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import cn.lineai.model.ChatMessage;
+import cn.lineai.R;
 import cn.lineai.tool.ui.ToolCallBlockView;
 import cn.lineai.tool.ToolReviewListener;
 import cn.lineai.ui.markdown.MarkdownLinkHandler;
