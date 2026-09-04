@@ -247,4 +247,19 @@
     <string name="tool_agent_output_still_running">Агент ещё выполняется. Опросите позже или дождитесь завершения.</string>
     <string name="tool_agent_output_failed">Агент завершился с ошибкой.</string>
     <string name="tool_agent_output_empty">Агент завершился с пустым выводом.</string>
+    <string name="tool_root_unavailable">Root недоступен: su не вернул uid 0. Выдайте приложению LineCode root-доступ в KernelSU/Magisk и повторите.</string>
+    <string name="tool_root_exec_failed">Root-команда завершилась ошибкой (код %1$d): %2$s</string>
+    <string name="tool_root_timeout">Root-команда превысила время ожидания: %1$d мс</string>
+    <string name="tool_skill_store_unavailable">Хранилище навыков недоступно в текущей сессии. Откройте один раз экран «Расширения» и повторите.</string>
+    <string name="tool_skill_name_empty">Название навыка не может быть пустым</string>
+    <string name="tool_skill_created">Создан навык «%1$s» (%2$s): %3$s</string>
+    <string name="tool_skill_installed">Установлен навык «%1$s» (%2$s): %3$s</string>
+    <string name="tool_skill_source_empty">Укажите один из параметров: source_path, uri или github_url</string>
+    <string name="tool_skill_none">Навыки не найдены. Установите навык через skill_install или создайте через skill_create.</string>
+    <string name="tool_skill_list_header">Найдено навыков: %1$d</string>
+    <string name="tool_skill_not_found">Навык «%1$s» не найден. Список доступных id — в skill_list.</string>
+    <string name="tool_skill_enabled">Навык «%1$s» включён</string>
+    <string name="tool_skill_disabled">Навык «%1$s» выключен</string>
+    <string name="tool_skill_deleted">Навык «%1$s» удалён</string>
+    <string name="tool_skill_failed">Операция с навыком не выполнена: %1$s</string>
 </resources>

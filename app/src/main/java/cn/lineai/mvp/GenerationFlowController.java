@@ -815,6 +815,7 @@ final class GenerationFlowController {
                         ? null
                         : agentExecutionController.getAgentResultRegistry())
                 .bypassPathProtection(isBypassPathProtection())
+                .extensionStore(extensionRepository)
                 .build();
     }
 

@@ -34,3 +34,4 @@ markdown/build/*
 ui-theme/build/*
 tool-ui/build/*
 .omo/
+ci-diag/

@@ -90,6 +90,65 @@ public final class ToolSettingsRepositoryTest {
     }
 
     @Test
+    public void rootExecutionTargetIsNormalizedAndScopedLikeRemoteTargets() {
+        Assert.assertEquals(ToolSettingsRepository.EXECUTION_ROOT,
+                ToolSettingsRepository.normalizeExecutionMode("root"));
+        Assert.assertEquals(ToolSettingsRepository.EXECUTION_ROOT,
+                ToolSettingsRepository.normalizeExecutionMode("su"));
+        Assert.assertEquals(ToolSettingsRepository.EXECUTION_LOCAL,
+                ToolSettingsRepository.normalizeExecutionMode("nonsense"));
+        // root 目标的开关必须与本地目标分开存储，否则切换目标会互相覆盖。
+        Assert.assertEquals("@linecode_mcp_enabled_root_file_ops",
+                ToolSettingsRepository.mcpEnabledKey(ToolSettingsRepository.EXECUTION_ROOT, "file_ops"));
+        Assert.assertEquals("@linecode_mcp_enabled_file_ops",
+                ToolSettingsRepository.mcpEnabledKey(ToolSettingsRepository.EXECUTION_LOCAL, "file_ops"));
+    }
+
+    @Test
+    public void fullAccessPermissionModeIsNormalized() {
+        Assert.assertEquals(ToolSettingsRepository.PERMISSION_FULL_ACCESS,
+                ToolSettingsRepository.normalizePermissionMode("full_access"));
+        Assert.assertEquals(ToolSettingsRepository.PERMISSION_FULL_ACCESS,
+                ToolSettingsRepository.normalizePermissionMode("full"));
+        Assert.assertEquals(ToolSettingsRepository.PERMISSION_AUTO,
+                ToolSettingsRepository.normalizePermissionMode("whatever"));
+    }
+
+    @Test
+    public void rootTargetPromptWarnsAboutWholeFilesystemAccess() {
+        ToolRegistry registry = new ToolRegistry();
+        Map<String, ToolInfo> toolByName = new LinkedHashMap<>();
+        for (BaseTool tool : registry.getAll()) {
+            toolByName.put(tool.getName(), tool);
+        }
+        Set<String> enabled = new LinkedHashSet<>();
+        enabled.add("shell_execute");
+        enabled.add("skill_list");
+        McpToolConfig config = new McpToolConfig("root-group", "Root", "", true,
+                new String[] {"shell_execute", "skill_list"});
+
+        String prompt = ToolPromptRenderer.renderToolPrompt(
+                ToolSettingsRepository.EXECUTION_ROOT,
+                java.util.Collections.singletonList(config),
+                enabled,
+                toolByName,
+                false);
+
+        Assert.assertTrue(prompt, prompt.contains("Root (su)"));
+        Assert.assertTrue(prompt, prompt.contains("workspace boundary checks are lifted"));
+        Assert.assertTrue(prompt, prompt.contains("shell_execute [system, needs confirmation]"));
+        Assert.assertTrue(prompt, prompt.contains("skill_list [read]"));
+    }
+
+    @Test
+    public void skillMutatingToolsResolveToWriteCategory() {
+        Assert.assertEquals(ToolCategory.READ, ToolSettingsRepository.getToolCategory("skill_list"));
+        Assert.assertEquals(ToolCategory.WRITE, ToolSettingsRepository.getToolCategory("skill_install"));
+        Assert.assertEquals(ToolCategory.WRITE, ToolSettingsRepository.getToolCategory("skill_create"));
+        Assert.assertEquals(ToolCategory.WRITE, ToolSettingsRepository.getToolCategory("skill_delete"));
+    }
+
+    @Test
     public void imageGenerationHasGenerateCategory() {
         Assert.assertEquals(ToolCategory.GENERATE, ToolSettingsRepository.getToolCategory("image_generation"));
     }

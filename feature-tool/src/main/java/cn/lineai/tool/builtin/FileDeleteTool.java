@@ -63,10 +63,22 @@ public final class FileDeleteTool extends BaseTool {
             return error(context.getString(R.string.tool_file_delete_paths_empty));
         }
 
+        boolean rootMode = RootSupport.isRootMode(context);
         ArrayList<String> deleted = new ArrayList<>();
         ArrayList<String> errors = new ArrayList<>();
         for (String path : paths) {
             try {
+                if (rootMode) {
+                    RootFileExecutor executor = RootSupport.fileExecutor();
+                    String absolute = RootSupport.resolve(context, path);
+                    if (!executor.stat(absolute).exists()) {
+                        errors.add(context.getString(R.string.tool_file_delete_path_not_found, path));
+                        continue;
+                    }
+                    executor.delete(absolute);
+                    deleted.add(RootSupport.displayPath(context, absolute));
+                    continue;
+                }
                 File target = FileToolPathPolicy.resolve(context, path);
                 if (!target.exists()) {
                     errors.add(context.getString(R.string.tool_file_delete_path_not_found, path));

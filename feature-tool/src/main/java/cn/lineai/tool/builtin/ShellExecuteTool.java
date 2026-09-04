@@ -65,6 +65,11 @@ public final class ShellExecuteTool extends BaseTool {
 
     @Override
     public String promptSupplement(String executionMode, boolean isSsh) {
+        if (ToolSettingsStore.EXECUTION_ROOT.equals(executionMode)) {
+            return "shell_execute runs on this device as root via su; it can manage packages, settings and any path. "
+                    + "It runs in the current workspace directory by default; set cwd explicitly to switch temporarily. "
+                    + "Never leave a command waiting for interactive input.";
+        }
         if (isSsh) {
             return "shell_execute runs in the current workspace directory by default; set cwd explicitly to switch temporarily.";
         }
@@ -99,11 +104,49 @@ public final class ShellExecuteTool extends BaseTool {
         String cwd = inputCwd.trim().length() > 0
                 ? inputCwd.trim()
                 : context == null ? "" : context.getHomePath().trim();
+        if (RootSupport.isRootMode(context)) {
+            return executeViaRoot(inputCommand, cwd, timeoutMs, context);
+        }
         ToolSettingsStore settings = resolveSettings(context);
         if (isTerminalProviderMode(settings)) {
             return executeViaTerminalProvider(inputCommand, cwd, timeoutMs, context);
         }
         return executeViaSsh(inputCommand, cwd, timeoutMs, context);
+    }
+
+    /**
+     * Root 执行目标：{@code su -c} 直接在本机以 root 身份执行。
+     * stdin 由 {@link RootShellExecutor} 关闭/写入，避免 su 等待输入而挂起。
+     */
+    private ToolResult executeViaRoot(String command, String cwd, long timeoutMs, ToolContext context) {
+        RootSupport.Availability availability = RootSupport.availability();
+        if (!availability.isRootAvailable(timeoutMs)) {
+            return error(context.getString(R.string.tool_root_unavailable));
+        }
+        String script = cwd.length() > 0
+                ? "cd " + shellQuote(cwd) + " && " + command
+                : command;
+        if (context != null) {
+            context.reportToolProgress(getName(), "", false);
+        }
+        try {
+            RootCommandRunner.Result result = RootSupport.commandRunner().run(script, null, timeoutMs);
+            String output = result.getOutput() == null ? "" : result.getOutput().trim();
+            if (!result.isSuccess()) {
+                String message = context.getString(R.string.tool_root_exec_failed, result.getExitCode(),
+                        output.length() == 0 ? "(no output)" : output);
+                return error(truncateOutput(message, context));
+            }
+            if (output.length() == 0) {
+                return ok(context.getString(R.string.tool_shell_exec_no_output));
+            }
+            return ok(truncateOutput(output, context));
+        } catch (RootShellExecutor.RootTimeoutException e) {
+            return error(context.getString(R.string.tool_root_timeout, (int) timeoutMs));
+        } catch (Exception e) {
+            restoreInterrupt(e);
+            return error(context.getString(R.string.tool_shell_exec_failed, describeException(e)));
+        }
     }
 
     private ToolSettingsStore resolveSettings(ToolContext context) {

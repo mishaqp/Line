@@ -247,4 +247,19 @@
     <string name="tool_agent_output_still_running">Agent is still running. Poll again later or wait for completion.</string>
     <string name="tool_agent_output_failed">Agent finished with error.</string>
     <string name="tool_agent_output_empty">Agent finished with empty output.</string>
+    <string name="tool_root_unavailable">Root is unavailable: su did not return uid 0. Grant root permission to LineCode in KernelSU/Magisk, then retry.</string>
+    <string name="tool_root_exec_failed">Root command failed (exit %1$d): %2$s</string>
+    <string name="tool_root_timeout">Root command timed out after %1$d ms</string>
+    <string name="tool_skill_store_unavailable">Skill storage is not available in the current session. Open the Extensions screen once, then retry.</string>
+    <string name="tool_skill_name_empty">Skill name cannot be empty</string>
+    <string name="tool_skill_created">Created skill "%1$s" (%2$s): %3$s</string>
+    <string name="tool_skill_installed">Installed skill "%1$s" (%2$s): %3$s</string>
+    <string name="tool_skill_source_empty">Provide one of source_path, uri or github_url</string>
+    <string name="tool_skill_none">No skills found. Install one with skill_install or create one with skill_create.</string>
+    <string name="tool_skill_list_header">Found %1$d skill(s):</string>
+    <string name="tool_skill_not_found">No skill matches "%1$s". Use skill_list to see valid ids.</string>
+    <string name="tool_skill_enabled">Enabled skill "%1$s"</string>
+    <string name="tool_skill_disabled">Disabled skill "%1$s"</string>
+    <string name="tool_skill_deleted">Deleted skill "%1$s"</string>
+    <string name="tool_skill_failed">Skill operation failed: %1$s</string>
 </resources>

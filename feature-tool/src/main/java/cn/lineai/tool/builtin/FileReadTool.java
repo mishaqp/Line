@@ -72,6 +72,9 @@ public final class FileReadTool extends BaseTool {
 
     @Override
     public ToolResult execute(JSONObject input, ToolContext context) {
+        if (RootSupport.isRootMode(context)) {
+            return executeViaRoot(input, context);
+        }
         try {
             File file = FileToolPathPolicy.resolve(context, input.optString("file_path"));
             if (!file.exists()) {
@@ -165,6 +168,94 @@ public final class FileReadTool extends BaseTool {
         } catch (Exception e) {
             return error(context.getString(R.string.tool_file_read_failed, e.getMessage()));
         }
+    }
+
+    /**
+     * Root 执行目标：应用进程本身读不到系统路径，所有读取通过 {@code su} 完成。
+     * KB 区间语义与非 root 模式保持一致，行号通过整文件换行计数得到。
+     */
+    private ToolResult executeViaRoot(JSONObject input, ToolContext context) {
+        try {
+            RootFileExecutor executor = RootSupport.fileExecutor();
+            String path = RootSupport.resolve(context, input.optString("file_path"));
+            RootFileExecutor.Meta meta = executor.stat(path);
+            if (!meta.exists()) {
+                return error(context.getString(R.string.tool_file_read_not_found, RootSupport.displayPath(context, path)));
+            }
+            if (meta.isDirectory()) {
+                java.util.List<String> tree = executor.collectTree(path, MAX_DIRECTORY_ITEMS);
+                String list = tree.isEmpty() ? context.getString(R.string.tool_file_read_empty_dir) : join(tree);
+                return ok(context.getString(R.string.tool_file_read_dir_content, RootSupport.displayPath(context, path), list)
+                        + context.getString(R.string.tool_file_read_dir_specify_file));
+            }
+            int startKb = Math.max(0, input.optInt("start_kb", 0));
+            int endKb = Math.max(startKb + 1, input.optInt("end_kb", 50));
+            if (endKb - startKb > MAX_KB_RANGE) {
+                endKb = startKb + MAX_KB_RANGE;
+            }
+            boolean hasKbRange = input.has("start_kb") || input.has("end_kb");
+            long fileLen = meta.size();
+            if (!hasKbRange) {
+                if (fileLen > LARGE_FILE_THRESHOLD_BYTES) {
+                    return error(context.getString(R.string.tool_file_read_exceed_50kb,
+                            RootSupport.displayPath(context, path), fileLen / 1024, input.optString("file_path")));
+                }
+                return ok(ToolResult.truncateContent(addLineNumbers(executor.readAll(path), 1)));
+            }
+            long startByte = Math.min((long) startKb * 1024L, fileLen);
+            long endByte = Math.min((long) endKb * 1024L, fileLen);
+            if (startByte >= fileLen) {
+                return error(context.getString(R.string.tool_file_read_start_out_of_range, startKb, fileLen / 1024));
+            }
+            String content = executor.readRange(path, startByte, endByte - startByte);
+            // root 模式下无法用 RandomAccessFile 回看前一个字节，统一按块内首个换行对齐。
+            int startChar = 0;
+            int endChar = content.length();
+            if (startByte > 0) {
+                int lineStart = content.indexOf('\n');
+                if (lineStart >= 0) {
+                    startChar = lineStart + 1;
+                }
+            }
+            if (endByte < fileLen) {
+                int lineEnd = content.lastIndexOf('\n');
+                if (lineEnd >= 0) {
+                    endChar = lineEnd + 1;
+                }
+            }
+            String full = executor.readAll(path);
+            long startLineNumber = 1 + countNewlines(full, startByte + startChar);
+            long totalLines = 1 + countNewlines(full, full.length());
+            if (full.endsWith("\n")) {
+                totalLines--;
+            }
+            StringBuilder result = new StringBuilder();
+            result.append(addLineNumbers(content.substring(startChar, endChar), (int) startLineNumber));
+            result.append(context.getString(R.string.tool_file_read_range_info, totalLines, startKb, endKb, fileLen / 1024));
+            return ok(ToolResult.truncateContent(result.toString()));
+        } catch (Exception e) {
+            return error(context.getString(R.string.tool_file_read_failed, e.getMessage()));
+        }
+    }
+
+    private static String join(java.util.List<String> lines) {
+        StringBuilder builder = new StringBuilder();
+        for (String line : lines) {
+            builder.append(line).append('\n');
+        }
+        return builder.toString().trim();
+    }
+
+    /** 统计字符串中字节位置 < upToByte 的换行个数（root 模式下内容来自 su，不是本地文件）。 */
+    private static long countNewlines(String content, long upToByte) {
+        long count = 0;
+        int limit = (int) Math.min(Math.max(0L, upToByte), content.length());
+        for (int i = 0; i < limit; i++) {
+            if (content.charAt(i) == '\n') {
+                count++;
+            }
+        }
+        return count;
     }
 
     /** 分块读取文件，统计字节位置 < upToByte 的 '\n' 个数，避免逐字节 seek/read 的 O(n) 系统调用。 */

@@ -38,6 +38,11 @@ jobs:
       - name: Run unit tests
         run: ./gradlew :app:testDebugUnitTest
 
+      # :app:testDebugUnitTest 不会编译 :feature-tool 的测试源码，
+      # 因此这里显式跑整个 :feature-tool 测试任务（含 root/skill 测试类）。
+      - name: Run feature-tool unit tests
+        run: ./gradlew :feature-tool:testDebugUnitTest
+
       - name: Run lint
         run: ./gradlew :app:lintDebug
 
@@ -45,7 +50,9 @@ jobs:
         run: ./gradlew :app:assembleDebug
 
       - name: Build user-cert debug APK
-        run: ./gradlew :app:assembleDebugUserCert
+        # assembleDebugUserCert 只产出 APK，export 目录由 exportDebugUserCertApk 填充，
+        # 少了这一步下面的上传会静默跳过（if-no-files-found: warn）。
+        run: ./gradlew :app:assembleDebugUserCert :app:exportDebugUserCertApk
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
@@ -60,7 +67,7 @@ jobs:
         with:
           name: app-debug-user-cert
           path: app/build/outputs/apk/debugUserCert/export/*.apk
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 14
 
       - name: Upload lint report

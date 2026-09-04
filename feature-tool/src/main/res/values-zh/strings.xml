@@ -247,4 +247,19 @@
     <string name="tool_agent_output_still_running">Agent 仍在运行。请稍后再次查询，或等待其完成。</string>
     <string name="tool_agent_output_failed">Agent 以错误结束。</string>
     <string name="tool_agent_output_empty">Agent 结束但输出为空。</string>
+    <string name="tool_root_unavailable">Root 不可用：su 未返回 uid 0。请在 KernelSU/Magisk 中授予 LineCode root 权限后重试。</string>
+    <string name="tool_root_exec_failed">Root 命令执行失败（退出码 %1$d）：%2$s</string>
+    <string name="tool_root_timeout">Root 命令超时：%1$d 毫秒</string>
+    <string name="tool_skill_store_unavailable">当前会话中技能存储不可用。请先打开一次「扩展」页面后重试。</string>
+    <string name="tool_skill_name_empty">技能名称不能为空</string>
+    <string name="tool_skill_created">已创建技能“%1$s”（%2$s）：%3$s</string>
+    <string name="tool_skill_installed">已安装技能“%1$s”（%2$s）：%3$s</string>
+    <string name="tool_skill_source_empty">请提供 source_path、uri 或 github_url 中的一个</string>
+    <string name="tool_skill_none">未找到技能。可使用 skill_install 安装或 skill_create 创建。</string>
+    <string name="tool_skill_list_header">共找到 %1$d 个技能：</string>
+    <string name="tool_skill_not_found">未找到技能“%1$s”。可用 id 请通过 skill_list 查看。</string>
+    <string name="tool_skill_enabled">已启用技能“%1$s”</string>
+    <string name="tool_skill_disabled">已停用技能“%1$s”</string>
+    <string name="tool_skill_deleted">已删除技能“%1$s”</string>
+    <string name="tool_skill_failed">技能操作失败：%1$s</string>
 </resources>

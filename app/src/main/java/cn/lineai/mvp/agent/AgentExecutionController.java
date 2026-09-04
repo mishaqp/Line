@@ -920,6 +920,7 @@ public final class AgentExecutionController {
                 .homePath(homePath)
                 .extraWriteRoots(skillWriteRoots(homePath))
                 .toolCallId("")
+                .extensionStore(extensionRepository)
                 .bypassPathProtection(isBypassPathProtection())
                 .build();
         ToolResult scopeError = validateAgentWriteScope(call, type, writeScope, context);

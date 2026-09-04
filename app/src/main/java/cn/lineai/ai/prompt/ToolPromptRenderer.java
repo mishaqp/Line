@@ -42,6 +42,9 @@ public class ToolPromptRenderer {
         }
         StringBuilder builder = new StringBuilder();
         builder.append("## Available Tools\nThe following tool list is dynamically generated from current MCP settings, permission mode, execution target, and registered tools. Unlisted tools are unavailable; tool execution must comply with the current permission mode.\n\n");
+        if (ToolSettingsStore.EXECUTION_ROOT.equals(mode)) {
+            builder.append("The current execution target is Root (su) on this device. shell_execute and the file tools run as root on the phone itself, so they reach every path on the filesystem; workspace boundary checks are lifted. Never leave a command waiting for interactive input.\n\n");
+        }
         List<McpToolConfig> promptConfigs = configs == null ? new ArrayList<>() : configs;
         HashSet<String> renderedTools = new HashSet<>();
         for (McpToolConfig config : promptConfigs) {

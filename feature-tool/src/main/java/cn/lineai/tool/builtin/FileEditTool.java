@@ -56,6 +56,9 @@ public final class FileEditTool extends BaseTool {
 
     @Override
     public ToolResult execute(JSONObject input, ToolContext context) {
+        if (RootSupport.isRootMode(context)) {
+            return executeViaRoot(input, context);
+        }
         try {
             String path = input.optString("file_path");
             String oldString = input.optString("old_string");
@@ -95,6 +98,47 @@ public final class FileEditTool extends BaseTool {
                     FileToolPathPolicy.displayPath(context.getHomePath(), file),
                     replaced
             ));
+        } catch (Exception e) {
+            return error(context.getString(R.string.tool_file_edit_failed, e.getMessage()));
+        }
+    }
+
+    /**
+     * Root 执行目标：读改写都走 {@code su}，替换逻辑与本地模式完全一致。
+     */
+    private ToolResult executeViaRoot(JSONObject input, ToolContext context) {
+        String path = input.optString("file_path");
+        try {
+            String oldString = input.optString("old_string");
+            String newString = input.optString("new_string");
+            boolean replaceAll = input.optBoolean("replace_all", false);
+            ToolArgs.requireNonEmpty(path, "file_path");
+            if (oldString.length() == 0) {
+                return error(context.getString(R.string.tool_file_edit_old_string_empty));
+            }
+            RootFileExecutor executor = RootSupport.fileExecutor();
+            String absolute = RootSupport.resolve(context, path);
+            RootFileExecutor.Meta meta = executor.stat(absolute);
+            if (!meta.exists()) {
+                return error(context.getString(R.string.tool_file_edit_not_found, RootSupport.displayPath(context, absolute)));
+            }
+            if (meta.isDirectory()) {
+                return error(context.getString(R.string.tool_file_edit_is_directory, path));
+            }
+            String content = executor.readAll(absolute);
+            if (!content.contains(oldString)) {
+                return error(context.getString(R.string.tool_file_edit_no_match));
+            }
+            int count = countOccurrences(content, oldString);
+            if (count > 1 && !replaceAll) {
+                return error(context.getString(R.string.tool_file_edit_multiple_matches, count));
+            }
+            String next = replaceAll
+                    ? content.replace(oldString, newString)
+                    : replaceFirst(content, oldString, newString);
+            executor.write(absolute, next.getBytes(StandardCharsets.UTF_8));
+            return ok(context.getString(R.string.tool_file_edit_success,
+                    RootSupport.displayPath(context, absolute), replaceAll ? count : 1));
         } catch (Exception e) {
             return error(context.getString(R.string.tool_file_edit_failed, e.getMessage()));
         }

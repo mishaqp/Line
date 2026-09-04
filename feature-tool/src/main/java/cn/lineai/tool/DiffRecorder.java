@@ -5,6 +5,7 @@ import cn.lineai.data.repository.DiffRecord;
 import cn.lineai.data.repository.DiffStore;
 import cn.lineai.tool.builtin.FileIo;
 import cn.lineai.tool.builtin.FileToolPathPolicy;
+import cn.lineai.tool.builtin.RootSupport;
 import java.io.File;
 import org.json.JSONObject;
 
@@ -20,6 +21,11 @@ public final class DiffRecorder {
     }
 
     ToolResult executeWithDiff(BaseTool tool, JSONObject input, ToolContext context) {
+        if (RootSupport.isRootMode(context)) {
+            // root 目标写入的是系统路径，Java 进程读不到原文件/新文件，
+            // 记录 diff 只会让写入直接失败，因此这里直接执行工具本体。
+            return tool.execute(input, context);
+        }
         String path = input.optString("file_path");
         File file;
         boolean existed;

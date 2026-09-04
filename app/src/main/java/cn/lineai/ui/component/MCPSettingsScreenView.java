@@ -20,6 +20,7 @@ public final class MCPSettingsScreenView extends ScreenScaffoldView {
     private static final String EXECUTION_LOCAL = "local";
     private static final String EXECUTION_SSH = "ssh";
     private static final String EXECUTION_TERMINAL_PROVIDER = "terminal_provider";
+    private static final String EXECUTION_ROOT = "root";
 
     public interface Listener {
         void onBack();
@@ -61,6 +62,7 @@ public final class MCPSettingsScreenView extends ScreenScaffoldView {
         addModeButton(segment, context.getString(R.string.screen_mcp_execution_local), EXECUTION_LOCAL);
         addModeButton(segment, context.getString(R.string.screen_mcp_execution_ssh), EXECUTION_SSH);
         addModeButton(segment, context.getString(R.string.screen_mcp_execution_terminal_provider), EXECUTION_TERMINAL_PROVIDER);
+        addModeButton(segment, context.getString(R.string.screen_mcp_execution_root), EXECUTION_ROOT);
         LinearLayout.LayoutParams segmentParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LineTheme.dp(context, 42));
         segmentParams.topMargin = LineTheme.dp(context, LineTheme.SM);
         card.addView(segment, segmentParams);
@@ -69,6 +71,8 @@ public final class MCPSettingsScreenView extends ScreenScaffoldView {
             executionDesc = context.getString(R.string.screen_mcp_execution_local_desc);
         } else if (EXECUTION_TERMINAL_PROVIDER.equals(state.getExecutionMode())) {
             executionDesc = context.getString(R.string.screen_mcp_execution_terminal_provider_desc);
+        } else if (EXECUTION_ROOT.equals(state.getExecutionMode())) {
+            executionDesc = context.getString(R.string.screen_mcp_execution_root_desc);
         } else {
             executionDesc = context.getString(R.string.screen_mcp_execution_ssh_desc);
         }

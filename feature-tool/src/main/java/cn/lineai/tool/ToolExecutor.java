@@ -2,6 +2,7 @@ package cn.lineai.tool;
 import cn.lineai.model.tool.ToolCall;
 import cn.lineai.model.tool.ToolResult;
 
+import cn.lineai.data.repository.ExtensionStore;
 import cn.lineai.data.repository.LearningContextStore;
 import cn.lineai.data.repository.PromptTemplateRepository;
 import cn.lineai.data.repository.SshFileTreeStore;
@@ -17,6 +18,7 @@ public final class ToolExecutor {
     private final ModelServiceProvider modelServiceProvider;
     private final PromptTemplateRepository promptTemplateRepository;
     private final LearningContextStore learningContextStore;
+    private final ExtensionStore extensionStore;
     private final DiffRecorder diffRecorder;
 
     public ToolExecutor(
@@ -42,6 +44,21 @@ public final class ToolExecutor {
             PromptTemplateRepository promptTemplateRepository,
             LearningContextStore learningContextStore
     ) {
+        this(registry, settingsRepository, diffRecorder, modelRepository, sshFileTreeRepository,
+                modelServiceProvider, promptTemplateRepository, learningContextStore, null);
+    }
+
+    public ToolExecutor(
+            ToolRegistry registry,
+            ToolSettingsStore settingsRepository,
+            DiffRecorder diffRecorder,
+            ModelStore modelRepository,
+            SshFileTreeStore sshFileTreeRepository,
+            ModelServiceProvider modelServiceProvider,
+            PromptTemplateRepository promptTemplateRepository,
+            LearningContextStore learningContextStore,
+            ExtensionStore extensionStore
+    ) {
         this.registry = registry;
         this.settingsRepository = settingsRepository;
         this.diffRecorder = diffRecorder;
@@ -50,6 +67,7 @@ public final class ToolExecutor {
         this.modelServiceProvider = modelServiceProvider;
         this.promptTemplateRepository = promptTemplateRepository;
         this.learningContextStore = learningContextStore;
+        this.extensionStore = extensionStore;
     }
 
     public ToolResult execute(ToolCall toolCall, ToolContext context) {
@@ -103,7 +121,8 @@ public final class ToolExecutor {
         return context.getToolSettingsStore() == null
                 || context.getModelRepository() == null
                 || context.getModelServiceProvider() == null
-                || context.getLearningContextStore() == null;
+                || context.getLearningContextStore() == null
+                || (extensionStore != null && context.getExtensionStore() == null);
     }
 
     private ToolContext injectDependencies(ToolContext context) {
@@ -121,6 +140,7 @@ public final class ToolExecutor {
                 .promptTemplateRepository(context.getPromptTemplateRepository() != null ? context.getPromptTemplateRepository() : promptTemplateRepository)
                 .bypassPathProtection(context.isBypassPathProtection())
                 .agentResultStore(context.getAgentResultStore())
+                .extensionStore(context.getExtensionStore() != null ? context.getExtensionStore() : extensionStore)
                 .progressListener(context.getProgressListener())
                 .build();
     }

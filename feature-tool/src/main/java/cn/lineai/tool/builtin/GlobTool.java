@@ -65,6 +65,9 @@ public final class GlobTool extends BaseTool {
 
     @Override
     public ToolResult execute(JSONObject input, ToolContext context) {
+        if (RootSupport.isRootMode(context)) {
+            return executeViaRoot(input, context);
+        }
         try {
             String pattern = input.optString("pattern");
             ToolArgs.requireNonEmpty(pattern, "pattern");
@@ -76,6 +79,56 @@ public final class GlobTool extends BaseTool {
             Pattern compiled = Pattern.compile(globToRegex(pattern));
             search(root, "", pattern, compiled, results);
             String displayRoot = FileToolPathPolicy.displayPath(context.getHomePath(), root);
+            if (results.isEmpty()) {
+                return ok(context.getString(R.string.tool_glob_no_match, pattern, displayRoot));
+            }
+            StringBuilder builder = new StringBuilder();
+            builder.append(context.getString(R.string.tool_glob_found, results.size(), displayRoot));
+            for (String result : results) {
+                builder.append(result).append('\n');
+            }
+            if (results.size() >= MAX_RESULTS) {
+                builder.append(context.getString(R.string.tool_glob_truncated));
+            }
+            return ok(builder.toString().trim());
+        } catch (Exception e) {
+            return error(context.getString(R.string.tool_glob_failed, e.getMessage()));
+        }
+    }
+
+    /**
+     * Root 执行目标：候选集由 {@code su} 的 find 收集，通配符匹配仍在 Java 侧完成，
+     * 保证与本地模式的匹配语义一致。
+     */
+    private ToolResult executeViaRoot(JSONObject input, ToolContext context) {
+        String pattern = input.optString("pattern");
+        String requestedRoot = input.optString("path");
+        try {
+            ToolArgs.requireNonEmpty(pattern, "pattern");
+            RootFileExecutor executor = RootSupport.fileExecutor();
+            String root = RootSupport.resolve(context, requestedRoot);
+            RootFileExecutor.Meta meta = executor.stat(root);
+            if (!meta.exists() || !meta.isDirectory()) {
+                return error(context.getString(R.string.tool_glob_root_not_found, requestedRoot.length() == 0 ? "." : requestedRoot));
+            }
+            String prefix = root.endsWith("/") ? root : root + "/";
+            Pattern compiled = Pattern.compile(globToRegex(pattern));
+            ArrayList<String> results = new ArrayList<>();
+            for (String path : executor.collectFiles(root, MAX_RESULTS * 4)) {
+                String relative = path.startsWith(prefix) ? path.substring(prefix.length()) : path;
+                if (relative.length() == 0) {
+                    continue;
+                }
+                String name = RootFileExecutor.nameOf(relative);
+                if (compiled.matcher(relative).matches()
+                        || (pattern.indexOf('/') < 0 && compiled.matcher(name).matches())) {
+                    results.add(relative);
+                }
+                if (results.size() >= MAX_RESULTS) {
+                    break;
+                }
+            }
+            String displayRoot = RootSupport.displayPath(context, root);
             if (results.isEmpty()) {
                 return ok(context.getString(R.string.tool_glob_no_match, pattern, displayRoot));
             }

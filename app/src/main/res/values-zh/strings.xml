@@ -1212,4 +1212,10 @@
     <string name="toolcall_preview_section_note">以下为模拟数据，状态不代表真实工具运行结果。</string>
     <string name="settings_row_tutorial_title">查看教程</string>
     <string name="settings_row_tutorial_desc">从零到进阶：模型配置、工作区、Termux、SSH 与 MCP</string>
+    <string name="screen_mcp_execution_root">Root (su)</string>
+    <string name="screen_mcp_execution_root_desc">通过 su 以 root 身份在本机执行 shell 与文件工具。需要已 root 的设备（KernelSU/Magisk）并授予 LineCode root 权限；届时整个文件系统都可访问。</string>
+    <string name="tool_group_skills_name">技能</string>
+    <string name="tool_group_skills_desc">允许智能体查看、创建、安装、启用/停用和删除技能</string>
+    <string name="permission_mode_full_access">完全访问</string>
+    <string name="permission_mode_full_access_desc">直接执行所有已启用工具，不再弹出任何确认对话框（包含删除、Shell 与 Root）</string>
 </resources>

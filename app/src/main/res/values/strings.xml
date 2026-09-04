@@ -1211,4 +1211,10 @@
     <string name="toolcall_preview_section_note">Sample data — states shown below may not reflect real tool runs.</string>
     <string name="settings_row_tutorial_title">Tutorial</string>
     <string name="settings_row_tutorial_desc">Beginner to advanced: models, workspace, Termux, SSH and MCP</string>
+    <string name="screen_mcp_execution_root">Root (su)</string>
+    <string name="screen_mcp_execution_root_desc">Run shell and file tools on this device as root via su. Requires a rooted device (KernelSU/Magisk) with root permission granted to LineCode; the whole filesystem becomes accessible.</string>
+    <string name="tool_group_skills_name">Skills</string>
+    <string name="tool_group_skills_desc">Let the agent list, create, install, enable/disable and delete skills</string>
+    <string name="permission_mode_full_access">Full access</string>
+    <string name="permission_mode_full_access_desc">Run every enabled tool immediately, without any confirmation dialog (including delete, shell and root)</string>
 </resources>

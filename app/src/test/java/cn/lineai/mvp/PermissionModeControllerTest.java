@@ -17,12 +17,35 @@ public final class PermissionModeControllerTest {
 
         fixture.controller.showPermissionSheet();
 
-        Assert.assertEquals(4, fixture.host.options.size());
+        Assert.assertEquals(5, fixture.host.options.size());
         Assert.assertEquals(ToolSettingsRepository.PERMISSION_CONFIRM, fixture.host.options.get(1).getId());
         Assert.assertTrue(fixture.host.options.get(1).isSelected());
-        Assert.assertEquals("storage:manage_all_files", fixture.host.options.get(3).getId());
-        Assert.assertEquals("需要授权", fixture.host.options.get(3).getDescription());
-        Assert.assertFalse(fixture.host.options.get(3).isSelected());
+        Assert.assertEquals(ToolSettingsRepository.PERMISSION_FULL_ACCESS, fixture.host.options.get(2).getId());
+        Assert.assertEquals(ToolSettingsRepository.PERMISSION_READONLY, fixture.host.options.get(3).getId());
+        Assert.assertEquals("storage:manage_all_files", fixture.host.options.get(4).getId());
+        Assert.assertEquals("需要授权", fixture.host.options.get(4).getDescription());
+        Assert.assertFalse(fixture.host.options.get(4).isSelected());
+    }
+
+    @Test
+    public void fullAccessIsSelectableAndKeepsAgentMode() {
+        Fixture fixture = new Fixture();
+        fixture.chatModeStore.mode = ChatMode.CHAT;
+
+        Assert.assertTrue(fixture.controller.applyPermissionModeOption(ToolSettingsRepository.PERMISSION_FULL_ACCESS));
+
+        Assert.assertEquals(ToolSettingsRepository.PERMISSION_FULL_ACCESS, fixture.permissionStore.permissionMode);
+        // 完全访问不属于只读，应该把会话切回 Agent 并记住该权限。
+        Assert.assertEquals(ChatMode.AGENT, fixture.chatModeStore.mode);
+        Assert.assertEquals(ToolSettingsRepository.PERMISSION_FULL_ACCESS, fixture.chatModeStore.rememberedPermission);
+    }
+
+    @Test
+    public void fullAccessAliasesAreAccepted() {
+        Fixture fixture = new Fixture();
+
+        Assert.assertTrue(fixture.controller.applyPermissionModeOption("full"));
+        Assert.assertEquals(ToolSettingsRepository.PERMISSION_FULL_ACCESS, fixture.permissionStore.permissionMode);
     }
 
     @Test
