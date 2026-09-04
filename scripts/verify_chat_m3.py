@@ -117,7 +117,9 @@ check("LineCards buttons attach state layers", cards.count("attachStateLayer") >
 
 # ------------------------------------------------------------------- Chat: bubbles
 user_view = read("app/src/main/java/cn/lineai/ui/component/UserMessageView.java")
-check("UserMessageView keeps the M3 user bubble", "LineTheme.userBubble(context)" in user_view)
+check("outgoing bubble is a uniform SHAPE_LG rounded rect",
+      "LineTheme.rounded(context, LineTheme.USER_BUBBLE, LineTheme.SHAPE_LG)" in user_view,
+      "RikkaHub uses RoundedCornerShape(16.dp) with no tail")
 check("UserMessageView text uses a type token",
       "LineTheme.TYPE_TITLE, LineTheme.TEXT_ON_COLOR" in user_view)
 check("UserMessageView attachment chips use TYPE_BODY_SMALL",
@@ -125,13 +127,30 @@ check("UserMessageView attachment chips use TYPE_BODY_SMALL",
 check("UserMessageView chips are SHAPE_FULL pills", "LineCards.pillBackground" in user_view)
 
 assistant_view = read("app/src/main/java/cn/lineai/ui/component/AssistantMessageView.java")
-check("AssistantMessageView renders the mirrored AI bubble",
-      "LineTheme.assistantBubble(context)" in assistant_view)
-check("AI bubble hugs its content instead of banding the column",
-      "addView(contentView, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))"
-      in read("app/src/main/java/cn/lineai/ui/component/AssistantMessageView.java"))
-check("AI bubble caps how wide it may grow",
-      "contentView.setMaxContentWidth(" in read("app/src/main/java/cn/lineai/ui/component/AssistantMessageView.java"))
+# RikkaHub renders assistant answers with showAssistantBubble = false: the reply is the
+# page, not a card on it. The header row is what separates one turn from the next.
+check("assistant answers carry no bubble",
+      "LineTheme.assistantBubble(context)" not in assistant_view
+      and "LineTheme.chatPadding(contentView, 0, 0, 0, 0)" in assistant_view)
+check("assistant content spans the column again",
+      "addView(contentView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))"
+      in assistant_view)
+
+# --------------------------------------------------------- Message header (who spoke)
+header_view = read("app/src/main/java/cn/lineai/ui/component/MessageHeaderView.java")
+check("MessageHeaderView uses RikkaHub's 28dp avatar", "AVATAR_DP = 28" in header_view)
+check("MessageHeaderView mirrors for outgoing rows", "if (outgoing) {" in header_view)
+check("MessageHeaderView falls back to a monogram", "static String monogram(" in header_view)
+for view in ("AssistantMessageView", "UserMessageView"):
+    src = read("app/src/main/java/cn/lineai/ui/component/%s.java" % view)
+    check("%s shows a header row" % view, "new MessageHeaderView(context," in src)
+check("the assistant header names the model",
+      "public void setModelLabel(String modelLabel)" in assistant_view)
+check("the list feeds the model label through",
+      "view.setModelLabel(modelLabel)" in read("app/src/main/java/cn/lineai/ui/component/ChatMessageListView.java"))
+check("a model switch re-renders the rows",
+      "stringEquals(modelLabel, nextModelLabel)"
+      in read("app/src/main/java/cn/lineai/ui/component/ChatMessageListView.java"))
 markdown_view = read("markdown/src/main/java/cn/lineai/ui/markdown/MarkdownView.java")
 check("MarkdownView enforces the cap in onMeasure",
       "protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)" in markdown_view
@@ -178,8 +197,11 @@ check("action bar carries no container plate",
 check("action bar icons are readable (TEXT_SECONDARY, not TERTIARY)",
       "icon.setIconColor(LineTheme.TEXT_SECONDARY)" in action_bar
       and "TEXT_TERTIARY" not in action_bar)
-check("action row is compact but still touchable",
-      "ROW_HEIGHT_DP = 26" in action_bar and "ICON_WIDTH_DP = 27" in action_bar)
+check("action glyphs match RikkaHub's 16dp-in-32dp",
+      "TOUCH_TARGET_DP = 32" in action_bar and "GLYPH_DP = 16" in action_bar
+      and "GAP_DP = 8" in action_bar)
+check("the row ends with an overflow dot-menu",
+      "IconButtonView.MORE" in action_bar and "public void setMoreListener(" in action_bar)
 check("action row has no extra horizontal padding",
       "LineTheme.padding(this, 0, 0, 0, 0)" in action_bar)
 
@@ -485,7 +507,7 @@ for view in ("UserMessageView", "AssistantMessageView"):
 check("UserMessageView scales its bubble text",
       "LineTheme.chatText(context, \"\", LineTheme.TYPE_TITLE" in read("app/src/main/java/cn/lineai/ui/component/UserMessageView.java"))
 check("MessageActionBarView scales its row",
-      "LineTheme.chatDp(context, ROW_HEIGHT_DP)" in read("app/src/main/java/cn/lineai/ui/component/MessageActionBarView.java"))
+      "LineTheme.chatDp(context, TOUCH_TARGET_DP)" in read("app/src/main/java/cn/lineai/ui/component/MessageActionBarView.java"))
 check("ComposerView scales its input text",
       "LineTheme.chatSp(LineTheme.TYPE_TITLE)" in read("app/src/main/java/cn/lineai/ui/component/ComposerView.java"))
 

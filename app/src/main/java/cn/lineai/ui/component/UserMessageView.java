@@ -18,6 +18,7 @@ public final class UserMessageView extends LinearLayout {
     private final TextView contentText;
     private final LinearLayout attachmentList;
     private final MessageActionBarView actionBar;
+    private final MessageHeaderView headerView;
     private final int defaultPaddingLeft;
     private final int defaultPaddingTop;
     private final int defaultPaddingRight;
@@ -37,10 +38,18 @@ public final class UserMessageView extends LinearLayout {
         defaultPaddingRight = getPaddingRight();
         defaultPaddingBottom = getPaddingBottom();
 
+        headerView = new MessageHeaderView(context, true);
+        headerView.bind(context.getString(R.string.message_header_user));
+        LinearLayout.LayoutParams headerParams = new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        headerParams.bottomMargin = LineTheme.chatDp(context, LineTheme.XS);
+        addView(headerView, headerParams);
+
         contentText = LineTheme.chatText(context, "", LineTheme.TYPE_TITLE, LineTheme.TEXT_ON_COLOR, Typeface.NORMAL);
         contentText.setLineSpacing(LineTheme.dp(context, 2), 1.0f);
-        contentText.setBackground(LineTheme.userBubble(context));
+        contentText.setBackground(LineTheme.rounded(context, LineTheme.USER_BUBBLE, LineTheme.SHAPE_LG));
         LineTheme.chatPadding(contentText, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
+        contentText.setLineSpacing(LineTheme.chatDp(context, 2), 1.0f);
         int horizontalPaddingPx = LineTheme.dp(context, LineTheme.LG) * 2;
         int availableWidth = context.getResources().getDisplayMetrics().widthPixels - horizontalPaddingPx;
         contentText.setMaxWidth((int) (availableWidth * 0.74f));
@@ -99,6 +108,7 @@ public final class UserMessageView extends LinearLayout {
                 }
             }
         });
+        actionBar.setMoreListener(this::toggleActionBar);
         LinearLayout.LayoutParams actionParams = new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         actionParams.topMargin = LineTheme.dp(context, LineTheme.XS);

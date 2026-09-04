@@ -564,6 +564,7 @@ public final class ChatMessageListView extends FrameLayout {
         private Set<String> selectedMessageIds = java.util.Collections.emptySet();
         private String conversationId = "";
         private String projectPath = "";
+        private String modelLabel = "";
         private ToolReviewListener toolReviewListener;
         private MarkdownLinkHandler markdownLinkHandler;
         private MessageActionListener messageActionListener;
@@ -621,6 +622,7 @@ public final class ChatMessageListView extends FrameLayout {
             boolean nextCodeWrapEnabled = state != null && state.isCodeWrapEnabled();
             String nextConversationId = state == null ? "" : state.getConversationId();
             String nextProjectPath = state == null ? "" : state.getProjectPath();
+            String nextModelLabel = state == null ? "" : state.getModelLabel();
             boolean conversationChanged = !stringEquals(conversationId, nextConversationId);
 
             if (showConfigureState == nextShowConfigureState
@@ -629,6 +631,7 @@ public final class ChatMessageListView extends FrameLayout {
                     && codeWrapEnabled == nextCodeWrapEnabled
                     && stringEquals(conversationId, nextConversationId)
                     && stringEquals(projectPath, nextProjectPath)
+                    && stringEquals(modelLabel, nextModelLabel)
                     && sameMessages(nextMessages)) {
                 return false;
             }
@@ -657,6 +660,7 @@ public final class ChatMessageListView extends FrameLayout {
             codeWrapEnabled = nextCodeWrapEnabled;
             conversationId = nextConversationId;
             projectPath = nextProjectPath;
+            modelLabel = nextModelLabel;
             if (rowSetChanged) {
                 pruneCache();
             }
@@ -751,6 +755,7 @@ public final class ChatMessageListView extends FrameLayout {
                     view.setMarkdownLinkHandler(markdownLinkHandler);
                     view.setMessageActionListener(messageActionListener);
                     view.setProjectPath(projectPath);
+                    view.setModelLabel(modelLabel);
                     view.bind(message, thinkingAutoExpand, thinkingScroll, codeWrapEnabled);
                     applyMultiSelectStyle(view, message);
                     return view;
@@ -769,6 +774,7 @@ public final class ChatMessageListView extends FrameLayout {
             view.setMarkdownLinkHandler(markdownLinkHandler);
             view.setMessageActionListener(messageActionListener);
             view.setProjectPath(projectPath);
+            view.setModelLabel(modelLabel);
             view.bind(message, thinkingAutoExpand, thinkingScroll, codeWrapEnabled);
             applyMultiSelectStyle(view, message);
             return view;

@@ -23,6 +23,7 @@ public final class AssistantMessageView extends LinearLayout {
     private final WorkingStatusView workingStatusView;
     private final LinearLayout toolCallsContainer;
     private final MessageActionBarView actionBar;
+    private final MessageHeaderView headerView;
     private final int defaultPaddingLeft;
     private final int defaultPaddingTop;
     private final int defaultPaddingRight;
@@ -53,6 +54,12 @@ public final class AssistantMessageView extends LinearLayout {
         defaultPaddingRight = getPaddingRight();
         defaultPaddingBottom = getPaddingBottom();
 
+        headerView = new MessageHeaderView(context, false);
+        LinearLayout.LayoutParams headerParams = new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        headerParams.bottomMargin = LineTheme.chatDp(context, LineTheme.XS);
+        addView(headerView, headerParams);
+
         compactBlockView = new ContextCompactBlockView(context);
         LinearLayout.LayoutParams compactParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         compactParams.topMargin = LineTheme.dp(context, 2);
@@ -64,18 +71,13 @@ public final class AssistantMessageView extends LinearLayout {
         thinkingParams.bottomMargin = LineTheme.dp(context, LineTheme.SM);
         addView(thinkingBlockView, thinkingParams);
 
-        // The AI bubble mirrors LineTheme.userBubble (tail on the opposite bottom corner).
-        // WRAP_CONTENT so a one-line reply is a bubble rather than a full-width band; the
-        // width cap inside MarkdownView keeps the wide blocks (scrollable code, GFM tables)
-        // bounded, and LinearLayout's uniform-width pass still stretches them to whatever
-        // the bubble ends up measuring.
+        // No bubble on the assistant side, the way RikkaHub renders it by default
+        // (showAssistantBubble = false): the answer is the page, not a card on the page.
+        // That also removes the whole "short reply paints a full-width band" problem, and
+        // lets code blocks and tables measure against the real column again.
         contentView = new MarkdownView(context);
-        contentView.setBackground(LineTheme.assistantBubble(context));
-        LineTheme.chatPadding(contentView, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
-        int sideInsetPx = LineTheme.chatDp(context, LineTheme.LG) * 2;
-        int columnWidthPx = context.getResources().getDisplayMetrics().widthPixels - sideInsetPx;
-        contentView.setMaxContentWidth((int) (columnWidthPx * 0.88f));
-        addView(contentView, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        LineTheme.chatPadding(contentView, 0, 0, 0, 0);
+        addView(contentView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         workingStatusView = new WorkingStatusView(context);
         LinearLayout.LayoutParams workingParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -126,6 +128,7 @@ public final class AssistantMessageView extends LinearLayout {
                 }
             }
         });
+        actionBar.setMoreListener(this::toggleActionBar);
         LinearLayout.LayoutParams actionParams = new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         actionParams.topMargin = LineTheme.dp(context, LineTheme.XS);
@@ -177,6 +180,7 @@ public final class AssistantMessageView extends LinearLayout {
             toolCallsContainer.setVisibility(GONE);
             toolCallsContainer.removeAllViews();
             actionBar.setVisibility(GONE);
+            headerView.setVisibility(GONE);
             lastMessageId = messageId;
             lastReasoning = safeReasoning;
             lastContent = "";
@@ -217,6 +221,7 @@ public final class AssistantMessageView extends LinearLayout {
         }
         bindToolCalls(message);
         actionBar.setVisibility(message.isStreaming() || message.getContent().trim().isEmpty() ? GONE : VISIBLE);
+        headerView.setVisibility(VISIBLE);
         setWorkingStatusVisible(message.isStreaming(), WorkingStatusView.isThinking(safeReasoning, content));
         if (!lastAnimatedMessageId.equals(messageId)) {
             // A recycled row must not inherit the previous message's expanded actions.
@@ -268,6 +273,13 @@ public final class AssistantMessageView extends LinearLayout {
     public void setMarkdownLinkHandler(MarkdownLinkHandler handler) {
         markdownLinkHandler = handler;
         contentView.setLinkHandler(handler);
+    }
+
+    /** Display name of the model that produced the answer; shown in the header row. */
+    public void setModelLabel(String modelLabel) {
+        headerView.bind(modelLabel == null || modelLabel.trim().isEmpty()
+                ? getContext().getString(R.string.message_header_assistant)
+                : modelLabel);
     }
 
     public void setProjectPath(String projectPath) {

@@ -13,16 +13,22 @@ public final class MessageActionBarView extends LinearLayout {
     public static final int ALIGN_LEFT = 0;
     public static final int ALIGN_RIGHT = 1;
 
-    /** Height of the action row; also the icon touch-target height. */
-    private static final int ROW_HEIGHT_DP = 26;
-    /** Width of a single action button. */
-    private static final int ICON_WIDTH_DP = 27;
+    /**
+     * Touch target per action. RikkaHub draws a 16dp glyph with 8dp of padding inside a
+     * circular ripple, i.e. 32dp square, and spaces the row by 8dp.
+     */
+    private static final int TOUCH_TARGET_DP = 32;
+    /** The glyph itself, well inside the target. */
+    private static final int GLYPH_DP = 16;
+    /** Gap between actions. */
+    private static final int GAP_DP = 8;
     private final IconButtonView copyButton;
     private final IconButtonView quoteButton;
     private final IconButtonView shareButton;
     private final IconButtonView selectButton;
     private final IconButtonView multiSelectButton;
     private final IconButtonView recallButton;
+    private final IconButtonView moreButton;
     /** Whether the secondary actions are revealed; copy alone is the resting state. */
     private boolean expanded;
     /** False while a message streams, when no action applies yet. */
@@ -36,9 +42,9 @@ public final class MessageActionBarView extends LinearLayout {
         super(context);
         setOrientation(HORIZONTAL);
         setGravity(align == ALIGN_RIGHT ? Gravity.END : Gravity.START);
-        setMinimumHeight(LineTheme.chatDp(context, ROW_HEIGHT_DP));
-        // No container plate: the row repeats under every message, and a filled pill that
-        // wide competes with the bubble above it. The icons carry themselves.
+        setMinimumHeight(LineTheme.chatDp(context, TOUCH_TARGET_DP));
+        // Bare glyphs on the page, no container plate - the row repeats under every
+        // message and a filled pill that wide competes with the message itself.
         LineTheme.padding(this, 0, 0, 0, 0);
 
         copyButton = icon(context, IconButtonView.COPY);
@@ -69,6 +75,10 @@ public final class MessageActionBarView extends LinearLayout {
         }
         recallButton = recall;
 
+        moreButton = icon(context, IconButtonView.MORE);
+        moreButton.setContentDescription(context.getString(R.string.message_action_more_desc));
+        addView(moreButton, iconParams(context));
+
         actionsAllowed = !streaming;
         applyVisibility();
     }
@@ -93,6 +103,7 @@ public final class MessageActionBarView extends LinearLayout {
 
     private void applyVisibility() {
         int secondary = actionsAllowed && expanded ? VISIBLE : GONE;
+        moreButton.setVisibility(actionsAllowed ? VISIBLE : GONE);
         quoteButton.setVisibility(secondary);
         shareButton.setVisibility(secondary);
         selectButton.setVisibility(secondary);
@@ -180,7 +191,7 @@ public final class MessageActionBarView extends LinearLayout {
     private IconButtonView icon(Context context, int type) {
         IconButtonView icon = new IconButtonView(context, type);
         icon.setIconColor(LineTheme.TEXT_SECONDARY);
-        icon.setIconPaddingDp(7, 7, 7, 7);
+        icon.setIconSizeDp(TOUCH_TARGET_DP, GLYPH_DP);
         icon.setClickable(true);
         icon.setFocusable(true);
         icon.setBackground(LineCards.pillBackground(context, Color.TRANSPARENT));
@@ -189,7 +200,20 @@ public final class MessageActionBarView extends LinearLayout {
     }
 
     private LinearLayout.LayoutParams iconParams(Context context) {
-        return new LinearLayout.LayoutParams(
-                LineTheme.chatDp(context, ICON_WIDTH_DP), LineTheme.chatDp(context, ROW_HEIGHT_DP));
+        int size = LineTheme.chatDp(context, TOUCH_TARGET_DP);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
+        if (getChildCount() > 0) {
+            params.leftMargin = LineTheme.chatDp(context, GAP_DP);
+        }
+        return params;
+    }
+
+    /** The overflow dot-menu toggles the secondary actions, as does a long press. */
+    public void setMoreListener(Runnable onMore) {
+        moreButton.setOnClickListener(v -> {
+            if (onMore != null) {
+                onMore.run();
+            }
+        });
     }
 }
