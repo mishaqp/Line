@@ -28,6 +28,7 @@ public final class HeaderView extends LinearLayout {
 
     private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final TextView projectText;
+    private final TextView targetText;
     private Listener listener;
 
     public HeaderView(Context context) {
@@ -68,11 +69,19 @@ public final class HeaderView extends LinearLayout {
         LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(LineTheme.dp(context, 7), LineTheme.dp(context, 7));
         projectButton.addView(dot, dotParams);
 
+        LinearLayout titles = new LinearLayout(context);
+        titles.setOrientation(VERTICAL);
+        LinearLayout.LayoutParams titlesParams = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f);
+        titlesParams.leftMargin = LineTheme.dp(context, 6);
+        projectButton.addView(titles, titlesParams);
+
         projectText = LineTheme.textMedium(context, context.getString(R.string.header_project_default), LineTheme.FONT_MD, LineTheme.TEXT);
         projectText.setSingleLine(true);
-        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        labelParams.leftMargin = LineTheme.dp(context, 6);
-        projectButton.addView(projectText, labelParams);
+        titles.addView(projectText);
+
+        targetText = LineTheme.textMedium(context, "", LineTheme.FONT_XS, LineTheme.TEXT_SECONDARY);
+        targetText.setSingleLine(true);
+        titles.addView(targetText);
 
         IconButtonView chevron = icon(context, IconButtonView.CHEVRON_DOWN, LineTheme.TEXT_SECONDARY, 14);
         chevron.setIconSizeDp(20, 14);
@@ -112,6 +121,9 @@ public final class HeaderView extends LinearLayout {
 
     public void render(ChatUiState state) {
         projectText.setText(state.getProjectLabel());
+        String target = state.getExecutionTargetLabel();
+        targetText.setText(target);
+        targetText.setVisibility(target == null || target.length() == 0 ? GONE : VISIBLE);
     }
 
     @Override
