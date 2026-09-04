@@ -824,6 +824,8 @@
     <string name="screen_theme_gruvbox_desc">复古暖色终端风格</string>
     <string name="screen_theme_high_contrast">高对比</string>
     <string name="screen_theme_high_contrast_desc">黑底高亮，提升辨识度</string>
+    <string name="screen_theme_dynamic_color">Material You</string>
+    <string name="screen_theme_dynamic_color_desc">跟随系统壁纸取色（Android 12+）</string>
     <string name="screen_theme_custom">自定义</string>
     <string name="screen_theme_custom_desc">编辑并保存自己的颜色主题</string>
     <string name="screen_theme_custom_colors">自定义颜色</string>

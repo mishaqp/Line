@@ -38,6 +38,14 @@ jobs:
       - name: Run unit tests
         run: ./gradlew :app:testDebugUnitTest
 
+      # core-model — обычная java-library, её тесты не попадают в :app:testDebugUnitTest.
+      - name: Run core-model unit tests
+        run: ./gradlew :core-model:test
+
+      # ui-theme — тесты M3-токенов отдельным шагом.
+      - name: Run ui-theme unit tests
+        run: ./gradlew :ui-theme:testDebugUnitTest
+
       # :app:testDebugUnitTest 不会编译 :feature-tool 的测试源码，
       # 因此这里显式跑整个 :feature-tool 测试任务（含 root/skill 测试类）。
       - name: Run feature-tool unit tests

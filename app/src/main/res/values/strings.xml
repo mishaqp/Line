@@ -823,6 +823,8 @@
     <string name="screen_theme_gruvbox_desc">Retro warm terminal style</string>
     <string name="screen_theme_high_contrast">High contrast</string>
     <string name="screen_theme_high_contrast_desc">Black background with vivid highlights</string>
+    <string name="screen_theme_dynamic_color">Material You</string>
+    <string name="screen_theme_dynamic_color_desc">Follow the system wallpaper accent color (Android 12+)</string>
     <string name="screen_theme_custom">Custom</string>
     <string name="screen_theme_custom_desc">Edit and save your own color theme</string>
     <string name="screen_theme_custom_colors">Custom colors</string>

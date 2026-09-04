@@ -225,7 +225,7 @@ public final class ToolSettingsScreenView extends ScreenScaffoldView {
 
     private void applyProviderButtonStyle(Context context, TextView button, boolean active) {
         button.setTextColor(active ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT_SECONDARY);
-        button.setBackground(LineTheme.roundedStroke(context, active ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, 8, active ? LineTheme.ACCENT : LineTheme.BORDER_LIGHT));
+        button.setBackground(LineTheme.roundedStroke(context, active ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_SM, active ? LineTheme.ACCENT : LineTheme.BORDER_LIGHT));
     }
 
     private void refreshProviderButtons(Context context, List<TextView> buttons, List<String> keys, String currentProvider) {
@@ -316,7 +316,7 @@ public final class ToolSettingsScreenView extends ScreenScaffoldView {
     private LinearLayout card(Context context) {
         LinearLayout card = new LinearLayout(context);
         card.setOrientation(LinearLayout.VERTICAL);
-        card.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 12));
+        card.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         LineTheme.padding(card, LineTheme.LG, LineTheme.LG, LineTheme.LG, LineTheme.LG);
         return card;
     }
@@ -326,7 +326,8 @@ public final class ToolSettingsScreenView extends ScreenScaffoldView {
         button.setOrientation(HORIZONTAL);
         button.setGravity(Gravity.CENTER);
         button.setClickable(true);
-        button.setBackground(LineTheme.roundedStroke(context, primary ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, 8, primary ? LineTheme.ACCENT : LineTheme.BORDER_LIGHT));
+        button.setBackground(LineTheme.roundedStroke(context, primary ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_FULL, primary ? LineTheme.ACCENT : LineTheme.BORDER_LIGHT));
+        LineTheme.attachStateLayer(button);
         button.setOnClickListener(listener);
         LineTheme.padding(button, LineTheme.SM, 0, LineTheme.SM, 0);
         IconButtonView icon = new IconButtonView(context, iconType);

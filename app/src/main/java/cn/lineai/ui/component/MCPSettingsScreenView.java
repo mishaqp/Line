@@ -57,7 +57,7 @@ public final class MCPSettingsScreenView extends ScreenScaffoldView {
         card.addView(title(context, context.getString(R.string.screen_mcp_section_execution)));
         LinearLayout segment = new LinearLayout(context);
         segment.setOrientation(HORIZONTAL);
-        segment.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, 8));
+        segment.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_SM));
         LineTheme.padding(segment, 3, 3, 3, 3);
         addModeButton(segment, context.getString(R.string.screen_mcp_execution_local), EXECUTION_LOCAL);
         addModeButton(segment, context.getString(R.string.screen_mcp_execution_ssh), EXECUTION_SSH);
@@ -183,7 +183,7 @@ public final class MCPSettingsScreenView extends ScreenScaffoldView {
         boolean active = mode.equals(state.getExecutionMode());
         TextView button = LineTheme.text(context, label, LineTheme.FONT_SM, active ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT_SECONDARY, Typeface.BOLD);
         button.setGravity(Gravity.CENTER);
-        button.setBackground(LineTheme.rounded(context, active ? LineTheme.ACCENT : android.graphics.Color.TRANSPARENT, 8));
+        button.setBackground(LineTheme.rounded(context, active ? LineTheme.ACCENT : android.graphics.Color.TRANSPARENT, LineTheme.SHAPE_SM));
         button.setClickable(true);
         button.setOnClickListener(v -> listener.onExecutionModeChanged(mode));
         segment.addView(button, new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
@@ -202,7 +202,7 @@ public final class MCPSettingsScreenView extends ScreenScaffoldView {
     private LinearLayout card(Context context) {
         LinearLayout card = new LinearLayout(context);
         card.setOrientation(LinearLayout.VERTICAL);
-        card.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 12));
+        card.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         LineTheme.padding(card, LineTheme.LG, LineTheme.LG, LineTheme.LG, LineTheme.LG);
         return card;
     }
@@ -212,7 +212,8 @@ public final class MCPSettingsScreenView extends ScreenScaffoldView {
         button.setOrientation(HORIZONTAL);
         button.setGravity(Gravity.CENTER);
         button.setClickable(true);
-        button.setBackground(LineTheme.roundedStroke(context, primary ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, 8, primary ? LineTheme.ACCENT : LineTheme.BORDER_LIGHT));
+        button.setBackground(LineTheme.roundedStroke(context, primary ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_FULL, primary ? LineTheme.ACCENT : LineTheme.BORDER_LIGHT));
+        LineTheme.attachStateLayer(button);
         button.setOnClickListener(listener);
         LineTheme.padding(button, LineTheme.SM, 0, LineTheme.SM, 0);
         IconButtonView icon = new IconButtonView(context, iconType);

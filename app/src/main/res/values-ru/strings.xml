@@ -823,6 +823,8 @@
     <string name="screen_theme_gruvbox_desc">Ретро-тёплый терминальный стиль</string>
     <string name="screen_theme_high_contrast">Высокий контраст</string>
     <string name="screen_theme_high_contrast_desc">Чёрный фон с яркими акцентами</string>
+    <string name="screen_theme_dynamic_color">Material You</string>
+    <string name="screen_theme_dynamic_color_desc">Цвет акцента из живых обоев системы (Android 12+)</string>
     <string name="screen_theme_custom">Пользовательская</string>
     <string name="screen_theme_custom_desc">Редактировать и сохранить собственную цветовую тему</string>
     <string name="screen_theme_custom_colors">Пользовательские цвета</string>

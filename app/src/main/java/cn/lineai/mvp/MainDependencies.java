@@ -317,6 +317,11 @@ public final class MainDependencies {
         }
 
         @Override
+        public int getDynamicAccentColor() {
+            return cn.lineai.resource.DynamicColors.getSystemAccentColor(context);
+        }
+
+        @Override
         public String getFilesDirPath() {
             return context.getFilesDir().getAbsolutePath();
         }

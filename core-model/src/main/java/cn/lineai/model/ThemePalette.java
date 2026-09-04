@@ -12,6 +12,7 @@ public final class ThemePalette {
     public static final String MODE_GITHUB_DARK = "githubDark";
     public static final String MODE_GRUVBOX = "gruvbox";
     public static final String MODE_HIGH_CONTRAST = "highContrast";
+    public static final String MODE_DYNAMIC_COLOR = "dynamicColor";
     public static final String MODE_CUSTOM = "custom";
 
     public static final String KEY_BG = "bg";
@@ -164,6 +165,7 @@ public final class ThemePalette {
         if (MODE_GITHUB_DARK.equals(normalized)) return githubDark();
         if (MODE_GRUVBOX.equals(normalized)) return gruvbox();
         if (MODE_HIGH_CONTRAST.equals(normalized)) return highContrast();
+        if (MODE_DYNAMIC_COLOR.equals(normalized)) return dynamic(0, false);
         if (MODE_CUSTOM.equals(normalized)) return customDefault();
         return dark();
     }
@@ -178,6 +180,7 @@ public final class ThemePalette {
                 || MODE_GITHUB_DARK.equals(value)
                 || MODE_GRUVBOX.equals(value)
                 || MODE_HIGH_CONTRAST.equals(value)
+                || MODE_DYNAMIC_COLOR.equals(value)
                 || MODE_CUSTOM.equals(value)) {
             return value;
         }
@@ -268,6 +271,123 @@ public final class ThemePalette {
 
     private static int argb(int alpha, int red, int green, int blue) {
         return (alpha << 24) | (red << 16) | (green << 8) | blue;
+    }
+
+    /**
+     * Material You style palette derived from the system accent color.
+     *
+     * <p>With a valid {@code seed} the hue is kept while tone and chroma are remapped to a
+     * light/dark tonal scheme (M3 style: dark surfaces + vivid accent for the dark scheme,
+     * tinted near-white surfaces + deeper accent for the light scheme). A {@code seed} of
+     * {@code 0} means the platform does not expose a dynamic color (API &lt; 31) and the
+     * static dark scheme is used instead.</p>
+     */
+    public static ThemePalette dynamic(int seed, boolean darkScheme) {
+        if (seed == 0) {
+            return dark();
+        }
+        float[] hsv = new float[3];
+        rgbToHsv(seed, hsv);
+        return darkScheme ? dynamicDark(hsv) : dynamicLight(hsv);
+    }
+
+    private static ThemePalette dynamicDark(float[] hsv) {
+        float hue = hsv[0];
+        float accentSaturation = clamp(hsv[1], 0.45f, 0.85f);
+        int accent = hsvToColor(hue, accentSaturation, 0.82f, 1f);
+        int accentDim = hsvToColor(hue, accentSaturation, 0.30f, 1f);
+        int surfaceLight = hsvToColor(hue, 0.14f, 0.17f, 1f);
+        int borderLight = hsvToColor(hue, 0.12f, 0.19f, 1f);
+        return new ThemePalette(
+                hsvToColor(hue, 0.18f, 0.05f, 1f), hsvToColor(hue, 0.16f, 0.08f, 1f),
+                hsvToColor(hue, 0.15f, 0.12f, 1f), surfaceLight,
+                accent, accentDim, withAlpha(accent, 0.10f), withAlpha(accent, 0.15f),
+                hex("#FFFFFF"), hex("#8E8E93"), hex("#636366"), hsvToColor(hue, 0.40f, 0.12f, 1f),
+                hsvToColor(hue, 0.12f, 0.13f, 1f), borderLight, surfaceLight,
+                accent, surfaceLight,
+                hex("#F85149"), hex("#FF9F0A"), hex("#3FB950"), hex("#FF9800"),
+                rgba(0, 0, 0, 0.60f), hsvToColor(hue, 0.15f, 0.09f, 1f), borderLight,
+                rgba(248, 81, 73, 0.15f), rgba(248, 81, 73, 0.20f), rgba(255, 152, 0, 0.10f),
+                rgba(46, 160, 67, 0.12f), rgba(248, 81, 73, 0.12f), hex("#3FB950"), hex("#F85149"));
+    }
+
+    private static ThemePalette dynamicLight(float[] hsv) {
+        float hue = hsv[0];
+        float accentSaturation = clamp(hsv[1], 0.55f, 0.95f);
+        int accent = hsvToColor(hue, accentSaturation, 0.52f, 1f);
+        int accentDim = hsvToColor(hue, accentSaturation, 0.88f, 1f);
+        int surfaceLight = hsvToColor(hue, 0.14f, 0.925f, 1f);
+        int borderLight = hsvToColor(hue, 0.10f, 0.91f, 1f);
+        return new ThemePalette(
+                hsvToColor(hue, 0.10f, 0.965f, 1f), hsvToColor(hue, 0.08f, 0.99f, 1f),
+                hex("#FFFFFF"), surfaceLight,
+                accent, accentDim, withAlpha(accent, 0.10f), withAlpha(accent, 0.15f),
+                hex("#1C1C1E"), hex("#636366"), hex("#AEAEB2"), hex("#FFFFFF"),
+                hsvToColor(hue, 0.12f, 0.87f, 1f), borderLight, hex("#FFFFFF"),
+                accent, surfaceLight,
+                hex("#FF3B30"), hex("#FF9500"), hex("#28A745"), hex("#FF9500"),
+                rgba(0, 0, 0, 0.40f), hsvToColor(hue, 0.10f, 0.95f, 1f), borderLight,
+                rgba(255, 59, 48, 0.10f), rgba(255, 59, 48, 0.15f), rgba(255, 149, 0, 0.10f),
+                rgba(40, 167, 69, 0.12f), rgba(255, 59, 48, 0.12f), hex("#28A745"), hex("#FF3B30"));
+    }
+
+    private static int withAlpha(int color, float alpha) {
+        return (color & 0x00FFFFFF) | (Math.round(alpha * 255f) << 24);
+    }
+
+    private static float clamp(float value, float min, float max) {
+        return value < min ? min : (value > max ? max : value);
+    }
+
+    private static void rgbToHsv(int color, float[] out) {
+        float red = ((color >> 16) & 0xFF) / 255f;
+        float green = ((color >> 8) & 0xFF) / 255f;
+        float blue = (color & 0xFF) / 255f;
+        float max = Math.max(red, Math.max(green, blue));
+        float min = Math.min(red, Math.min(green, blue));
+        float delta = max - min;
+        float hue;
+        if (delta == 0f) {
+            hue = 0f;
+        } else if (max == red) {
+            hue = ((green - blue) / delta) % 6f;
+        } else if (max == green) {
+            hue = (blue - red) / delta + 2f;
+        } else {
+            hue = (red - green) / delta + 4f;
+        }
+        if (hue < 0f) {
+            hue += 6f;
+        }
+        out[0] = hue * 60f;
+        out[1] = max == 0f ? 0f : delta / max;
+        out[2] = max;
+    }
+
+    private static int hsvToColor(float hue, float saturation, float value, float alpha) {
+        float sectorPosition = hue / 60f;
+        int sector = ((int) sectorPosition) % 6;
+        float fraction = sectorPosition - (int) sectorPosition;
+        float p = value * (1f - saturation);
+        float q = value * (1f - saturation * fraction);
+        float t = value * (1f - saturation * (1f - fraction));
+        float red;
+        float green;
+        float blue;
+        switch (sector) {
+            case 0: red = value; green = t; blue = p; break;
+            case 1: red = q; green = value; blue = p; break;
+            case 2: red = p; green = value; blue = t; break;
+            case 3: red = p; green = q; blue = value; break;
+            case 4: red = t; green = p; blue = value; break;
+            default: red = value; green = p; blue = q; break;
+        }
+        return argb(Math.round(alpha * 255f), channel(red), channel(green), channel(blue));
+    }
+
+    private static int channel(float value) {
+        int rounded = Math.round(value * 255f);
+        return rounded < 0 ? 0 : (rounded > 255 ? 255 : rounded);
     }
 
     private static ThemePalette dark() {

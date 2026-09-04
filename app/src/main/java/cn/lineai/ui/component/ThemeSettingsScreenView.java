@@ -41,6 +41,7 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
             new ThemeOption(ThemePalette.MODE_GITHUB_DARK, R.string.screen_theme_github_dark, R.string.screen_theme_github_dark_desc, IconButtonView.GIT_BRANCH),
             new ThemeOption(ThemePalette.MODE_GRUVBOX, R.string.screen_theme_gruvbox, R.string.screen_theme_gruvbox_desc, IconButtonView.CODE),
             new ThemeOption(ThemePalette.MODE_HIGH_CONTRAST, R.string.screen_theme_high_contrast, R.string.screen_theme_high_contrast_desc, IconButtonView.CONTRAST),
+            new ThemeOption(ThemePalette.MODE_DYNAMIC_COLOR, R.string.screen_theme_dynamic_color, R.string.screen_theme_dynamic_color_desc, IconButtonView.PALETTE),
             new ThemeOption(ThemePalette.MODE_CUSTOM, R.string.screen_theme_custom, R.string.screen_theme_custom_desc, IconButtonView.PAINTBRUSH)
     };
 
