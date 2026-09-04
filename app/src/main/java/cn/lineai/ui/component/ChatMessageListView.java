@@ -125,6 +125,22 @@ public final class ChatMessageListView extends FrameLayout {
             }
         });
 
+        // Long press reveals the secondary message actions. Handled by the list rather than
+        // by the row so the rows stay non-clickable and item clicks keep reaching
+        // multi-select.
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+            if (multiSelectMode) {
+                return false;
+            }
+            if (view instanceof UserMessageView) {
+                return ((UserMessageView) view).toggleActionBar();
+            }
+            if (view instanceof AssistantMessageView) {
+                return ((AssistantMessageView) view).toggleActionBar();
+            }
+            return false;
+        });
+
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {

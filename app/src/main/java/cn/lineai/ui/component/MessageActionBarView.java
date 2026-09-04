@@ -23,6 +23,10 @@ public final class MessageActionBarView extends LinearLayout {
     private final IconButtonView selectButton;
     private final IconButtonView multiSelectButton;
     private final IconButtonView recallButton;
+    /** Whether the secondary actions are revealed; copy alone is the resting state. */
+    private boolean expanded;
+    /** False while a message streams, when no action applies yet. */
+    private boolean actionsAllowed = true;
 
     public MessageActionBarView(Context context, int align, boolean recallEnabled) {
         this(context, align, recallEnabled, false);
@@ -65,9 +69,38 @@ public final class MessageActionBarView extends LinearLayout {
         }
         recallButton = recall;
 
-        if (streaming) {
-            setActionsVisible(false);
+        actionsAllowed = !streaming;
+        applyVisibility();
+    }
+
+    /**
+     * Reveals or hides everything except copy.
+     *
+     * <p>The row sits under every message in the thread, so only the one action worth a
+     * permanent slot stays visible; the rest are a long press away.</p>
+     */
+    public void setExpanded(boolean value) {
+        if (expanded == value) {
+            return;
         }
+        expanded = value;
+        applyVisibility();
+    }
+
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    private void applyVisibility() {
+        int secondary = actionsAllowed && expanded ? VISIBLE : GONE;
+        quoteButton.setVisibility(secondary);
+        shareButton.setVisibility(secondary);
+        selectButton.setVisibility(secondary);
+        multiSelectButton.setVisibility(secondary);
+        if (recallButton != null) {
+            recallButton.setVisibility(secondary);
+        }
+        copyButton.setVisibility(actionsAllowed ? VISIBLE : GONE);
     }
 
     public void setActionListener(ActionListener listener) {
@@ -112,11 +145,14 @@ public final class MessageActionBarView extends LinearLayout {
     }
 
     public void setActionsVisible(boolean visible) {
-        int visibility = visible ? VISIBLE : GONE;
-        quoteButton.setVisibility(visibility);
-        shareButton.setVisibility(visibility);
-        selectButton.setVisibility(visibility);
-        multiSelectButton.setVisibility(visibility);
+        if (actionsAllowed == visible) {
+            return;
+        }
+        actionsAllowed = visible;
+        if (!visible) {
+            expanded = false;
+        }
+        applyVisibility();
     }
 
     public interface ActionListener {

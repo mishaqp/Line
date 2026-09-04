@@ -65,12 +65,17 @@ public final class AssistantMessageView extends LinearLayout {
         addView(thinkingBlockView, thinkingParams);
 
         // The AI bubble mirrors LineTheme.userBubble (tail on the opposite bottom corner).
-        // It stays MATCH_PARENT: markdown content embeds horizontally scrollable code
-        // blocks and GFM tables that must measure against the full column width.
+        // WRAP_CONTENT so a one-line reply is a bubble rather than a full-width band; the
+        // width cap inside MarkdownView keeps the wide blocks (scrollable code, GFM tables)
+        // bounded, and LinearLayout's uniform-width pass still stretches them to whatever
+        // the bubble ends up measuring.
         contentView = new MarkdownView(context);
         contentView.setBackground(LineTheme.assistantBubble(context));
         LineTheme.chatPadding(contentView, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
-        addView(contentView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        int sideInsetPx = LineTheme.chatDp(context, LineTheme.LG) * 2;
+        int columnWidthPx = context.getResources().getDisplayMetrics().widthPixels - sideInsetPx;
+        contentView.setMaxContentWidth((int) (columnWidthPx * 0.88f));
+        addView(contentView, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         workingStatusView = new WorkingStatusView(context);
         LinearLayout.LayoutParams workingParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -126,6 +131,28 @@ public final class AssistantMessageView extends LinearLayout {
         actionParams.topMargin = LineTheme.dp(context, LineTheme.XS);
         addView(actionBar, actionParams);
     }
+
+    /**
+     * Toggles the secondary actions; driven by the list's item long-press.
+     *
+     * <p>Deliberately not an {@code OnLongClickListener} on this view: that would make the
+     * row consume touches and {@code ListView} would stop reporting item clicks, which is
+     * how multi-select picks messages.</p>
+     *
+     * @return {@code true} when the press was consumed.
+     */
+    public boolean toggleActionBar() {
+        if (actionBar.getVisibility() != VISIBLE) {
+            return false;
+        }
+        boolean next = !actionBar.isExpanded();
+        actionBar.setExpanded(next);
+        if (next) {
+            performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
+        }
+        return true;
+    }
+
 
     public void bind(ChatMessage message) {
         bind(message, false, true, false);
@@ -192,6 +219,8 @@ public final class AssistantMessageView extends LinearLayout {
         actionBar.setVisibility(message.isStreaming() || message.getContent().trim().isEmpty() ? GONE : VISIBLE);
         setWorkingStatusVisible(message.isStreaming(), WorkingStatusView.isThinking(safeReasoning, content));
         if (!lastAnimatedMessageId.equals(messageId)) {
+            // A recycled row must not inherit the previous message's expanded actions.
+            actionBar.setExpanded(false);
             lastAnimatedMessageId = messageId;
             setAlpha(0f);
             animate().alpha(1f).setDuration(ENTRANCE_FADE_MS).start();

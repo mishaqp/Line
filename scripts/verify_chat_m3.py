@@ -127,8 +127,39 @@ check("UserMessageView chips are SHAPE_FULL pills", "LineCards.pillBackground" i
 assistant_view = read("app/src/main/java/cn/lineai/ui/component/AssistantMessageView.java")
 check("AssistantMessageView renders the mirrored AI bubble",
       "LineTheme.assistantBubble(context)" in assistant_view)
-check("AI bubble stays MATCH_PARENT for code blocks / tables",
-      "addView(contentView, new LayoutParams(LayoutParams.MATCH_PARENT" in assistant_view)
+check("AI bubble hugs its content instead of banding the column",
+      "addView(contentView, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))"
+      in read("app/src/main/java/cn/lineai/ui/component/AssistantMessageView.java"))
+check("AI bubble caps how wide it may grow",
+      "contentView.setMaxContentWidth(" in read("app/src/main/java/cn/lineai/ui/component/AssistantMessageView.java"))
+markdown_view = read("markdown/src/main/java/cn/lineai/ui/markdown/MarkdownView.java")
+check("MarkdownView enforces the cap in onMeasure",
+      "protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)" in markdown_view
+      and "maxContentWidthPx" in markdown_view)
+check("the cap keeps EXACTLY specs exact",
+      "mode == MeasureSpec.EXACTLY ? MeasureSpec.EXACTLY : MeasureSpec.AT_MOST" in markdown_view)
+
+# ---------------------------------------------- Message actions: copy stays, rest hide
+action_bar_src = read("app/src/main/java/cn/lineai/ui/component/MessageActionBarView.java")
+chat_list_src = read("app/src/main/java/cn/lineai/ui/component/ChatMessageListView.java")
+check("only copy is visible at rest",
+      "int secondary = actionsAllowed && expanded ? VISIBLE : GONE;" in action_bar_src
+      and "copyButton.setVisibility(actionsAllowed ? VISIBLE : GONE);" in action_bar_src)
+check("recall is a secondary action too", "recallButton.setVisibility(secondary)" in action_bar_src)
+check("the action bar exposes an expand toggle",
+      "public void setExpanded(boolean value)" in action_bar_src and "public boolean isExpanded()" in action_bar_src)
+for view in ("UserMessageView", "AssistantMessageView"):
+    src = read("app/src/main/java/cn/lineai/ui/component/%s.java" % view)
+    check("%s exposes toggleActionBar()" % view, "public boolean toggleActionBar()" in src)
+    check("%s does not steal row touches" % view,
+          "setOnLongClickListener" not in src and "setLongClickable(true)" not in src,
+          "a clickable row would stop ListView reporting item clicks to multi-select")
+    check("%s collapses actions when rebound to another message" % view,
+          "actionBar.setExpanded(false)" in src)
+check("long press is handled by the list, not the row",
+      "listView.setOnItemLongClickListener(" in chat_list_src)
+check("long press stays out of the way in multi-select",
+      "if (multiSelectMode) {\n                return false;" in chat_list_src)
 for contract in ("ToolReviewListener", "MarkdownLinkHandler", "MessageActionListener",
                  "ThinkingBlockView", "ToolCallBlockView"):
     check("AssistantMessageView keeps %s wiring" % contract, contract in assistant_view)

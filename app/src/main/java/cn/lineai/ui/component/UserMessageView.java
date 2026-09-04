@@ -105,6 +105,28 @@ public final class UserMessageView extends LinearLayout {
         addView(actionBar, actionParams);
     }
 
+    /**
+     * Toggles the secondary actions; driven by the list's item long-press.
+     *
+     * <p>Deliberately not an {@code OnLongClickListener} on this view: that would make the
+     * row consume touches and {@code ListView} would stop reporting item clicks, which is
+     * how multi-select picks messages.</p>
+     *
+     * @return {@code true} when the press was consumed.
+     */
+    public boolean toggleActionBar() {
+        if (actionBar.getVisibility() != VISIBLE) {
+            return false;
+        }
+        boolean next = !actionBar.isExpanded();
+        actionBar.setExpanded(next);
+        if (next) {
+            performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
+        }
+        return true;
+    }
+
+
     public void setMessageActionListener(MessageActionListener listener) {
         actionListener = listener;
     }
@@ -117,6 +139,7 @@ public final class UserMessageView extends LinearLayout {
         currentMessage = message;
         String messageId = message.getId() == null ? "" : message.getId();
         if (!lastAnimatedMessageId.equals(messageId)) {
+            actionBar.setExpanded(false);
             lastAnimatedMessageId = messageId;
             setAlpha(0f);
             animate().alpha(1f).setDuration(ENTRANCE_FADE_MS).start();
