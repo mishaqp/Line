@@ -304,6 +304,9 @@
     <string name="screen_security_section_http">HTTP ограничения</string>
     <string name="screen_security_section_browser">Встроенный браузер</string>
     <string name="screen_security_section_path">Защита путей</string>
+    <string name="screen_security_section_agent">Доступ агентов</string>
+    <string name="settings_row_security_full_access_title">Полный доступ</string>
+    <string name="settings_row_security_full_access_desc">Разрешить агентам выполнять инструменты без подтверждения каждого действия. Используйте только для доверенных моделей и проектов.</string>
     <string name="settings_row_security_bypass_path_title">Обойти защиту путей</string>
     <string name="settings_row_security_bypass_path_desc">Разрешить инструментам и Agent доступ к любому пути, не ограничиваясь рабочей областью</string>
     <string name="settings_row_security_bypass_path_warning_title">Предупреждение</string>

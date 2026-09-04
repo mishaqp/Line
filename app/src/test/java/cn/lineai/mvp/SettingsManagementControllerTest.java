@@ -47,6 +47,24 @@ public final class SettingsManagementControllerTest {
     }
 
     @Test
+    public void fullAccessChangeStoresAndRenders() {
+        Fixture fixture = new Fixture();
+
+        fixture.controller.setFullAccessEnabled(true);
+
+        Assert.assertTrue(fixture.store.fullAccessEnabled);
+        Assert.assertTrue(fixture.host.rendered);
+        Assert.assertTrue(fixture.controller.isFullAccessEnabled());
+    }
+
+    @Test
+    public void fullAccessDefaultsToOff() {
+        Fixture fixture = new Fixture();
+
+        Assert.assertFalse(fixture.controller.isFullAccessEnabled());
+    }
+
+    @Test
     public void mcpExecutionModeChangeCallsHostWithStoredMode() {
         Fixture fixture = new Fixture();
 
@@ -122,6 +140,7 @@ public final class SettingsManagementControllerTest {
         private String memoryContent = "";
         private String imageUnderstandingModelId = "";
         private String imageGenerationModelId = "";
+        private boolean fullAccessEnabled;
 
         @Override
         public AiBehaviorSettings getAiBehaviorSettings() {
@@ -225,6 +244,16 @@ public final class SettingsManagementControllerTest {
 
         @Override
         public void setBypassPathProtection(boolean enabled) {
+        }
+
+        @Override
+        public boolean isFullAccessEnabled() {
+            return fullAccessEnabled;
+        }
+
+        @Override
+        public void setFullAccessEnabled(boolean enabled) {
+            fullAccessEnabled = enabled;
         }
 
         @Override

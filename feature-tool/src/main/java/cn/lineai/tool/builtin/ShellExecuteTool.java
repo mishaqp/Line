@@ -16,6 +16,12 @@ import cn.lineai.tool.R;
 import cn.lineai.tool.ToolCategory;
 import cn.lineai.tool.ToolContext;
 import cn.lineai.tool.ToolDisplayCategory;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -40,7 +46,7 @@ public final class ShellExecuteTool extends BaseTool {
 
     @Override
     public String getDescription() {
-        return "Execute a shell command via the current execution target: SSH mode uses SSH, terminal provider mode uses IPC. The command requires user confirmation before execution.";
+        return "Execute a shell command via the current execution target: local mode runs it on the device shell, SSH mode uses SSH, terminal provider mode uses IPC. The command requires user confirmation before execution.";
     }
 
     @Override
@@ -67,6 +73,9 @@ public final class ShellExecuteTool extends BaseTool {
     public String promptSupplement(String executionMode, boolean isSsh) {
         if (isSsh) {
             return "shell_execute runs in the current workspace directory by default; set cwd explicitly to switch temporarily.";
+        }
+        if (ToolSettingsStore.EXECUTION_LOCAL.equals(executionMode)) {
+            return "shell_execute runs locally on the device via the app shell (Termux/system PATH); it runs in the current workspace directory by default; set cwd explicitly to switch temporarily. Commands that need root may require a su-capable shell.";
         }
         return "shell_execute runs via the terminal provider IPC; it runs in the current workspace directory by default; set cwd explicitly to switch temporarily.";
     }
@@ -103,6 +112,9 @@ public final class ShellExecuteTool extends BaseTool {
         if (isTerminalProviderMode(settings)) {
             return executeViaTerminalProvider(inputCommand, cwd, timeoutMs, context);
         }
+        if (isLocalMode(settings)) {
+            return executeViaLocalShell(inputCommand, cwd, timeoutMs, context);
+        }
         return executeViaSsh(inputCommand, cwd, timeoutMs, context);
     }
 
@@ -116,6 +128,169 @@ public final class ShellExecuteTool extends BaseTool {
     private boolean isTerminalProviderMode(ToolSettingsStore settings) {
         return settings != null
                 && ToolSettingsStore.EXECUTION_TERMINAL_PROVIDER.equals(settings.getExecutionMode());
+    }
+
+    private boolean isLocalMode(ToolSettingsStore settings) {
+        return settings == null
+                || ToolSettingsStore.EXECUTION_LOCAL.equals(settings.getExecutionMode());
+    }
+
+    /**
+     * Local execution mode runs the command on the device shell. When the plain
+     * app-shell attempt cannot find the command (127/126) and a su binary is
+     * available, the command is retried under root so that rooted devices can
+     * run commands outside the app's sandbox (nothing here bypasses Android
+     * permission boundaries by itself - su must be granted by the device).
+     */
+    private ToolResult executeViaLocalShell(String command, String cwd, long timeoutMs, ToolContext context) {
+        ProcessOutcome plain = runLocalProcess(command, cwd, timeoutMs, context, false);
+        if (plain.exitCode != 127 && plain.exitCode != 126) {
+            return localOutcome(plain, timeoutMs, context);
+        }
+        ProcessOutcome su = runLocalProcess(command, cwd, timeoutMs, context, true);
+        if (su.exitCode == 127 || su.exitCode == 126) {
+            // su is not usable; report the original attempt's failure.
+            return localOutcome(plain, timeoutMs, context);
+        }
+        return localOutcome(su, timeoutMs, context);
+    }
+
+    private ProcessOutcome runLocalProcess(String command, String cwd, long timeoutMs, ToolContext context, boolean useSu) {
+        ProcessBuilder builder;
+        if (useSu) {
+            String wrapped = cwd.length() > 0
+                    ? "cd " + shellQuote(cwd) + " && " + command
+                    : command;
+            builder = new ProcessBuilder("su", "-c", wrapped);
+        } else {
+            builder = new ProcessBuilder("sh", "-c", command);
+            String dir = cwd == null ? "" : cwd.trim();
+            if (dir.length() > 0) {
+                File workingDir = new File(dir);
+                if (workingDir.isDirectory()) {
+                    builder.directory(workingDir);
+                }
+            }
+        }
+        Map<String, String> env = builder.environment();
+        if (env != null) {
+            String augPath = appendPath(env.get("PATH"),
+                    "/data/data/com.termux/files/usr/bin", "/system/xbin", "/vendor/bin");
+            env.put("PATH", augPath);
+            if (cwd.length() > 0) {
+                env.put("HOME", cwd);
+            }
+        }
+        if (context != null) {
+            context.reportToolProgress(getName(), "", false);
+        }
+        builder.redirectErrorStream(true);
+        // Never leave the child stdin pipe open: an interactive su without a
+        // terminal would otherwise wait forever for a password.
+        builder.redirectInput(ProcessBuilder.Redirect.from(new File("/dev/null")));
+        try {
+            Process process = builder.start();
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            InputStream in = process.getInputStream();
+            try {
+                byte[] buffer = new byte[8192];
+                int read;
+                while ((read = in.read(buffer)) != -1) {
+                    output.write(buffer, 0, read);
+                    if (context != null) {
+                        context.reportToolProgress(getName(), new String(buffer, 0, read, StandardCharsets.UTF_8), false);
+                    }
+                }
+            } finally {
+                in.close();
+            }
+            long started = System.currentTimeMillis();
+            boolean finished = process.waitFor(
+                    Math.max(1000, timeoutMs - (System.currentTimeMillis() - started)),
+                    TimeUnit.MILLISECONDS
+            );
+            if (!finished) {
+                process.destroy();
+                if (!process.waitFor(500, TimeUnit.MILLISECONDS)) {
+                    process.destroyForcibly();
+                }
+                return new ProcessOutcome(-1, new String(output.toByteArray(), StandardCharsets.UTF_8).trim(), true);
+            }
+            return new ProcessOutcome(
+                    process.exitValue(),
+                    new String(output.toByteArray(), StandardCharsets.UTF_8).trim(),
+                    false
+            );
+        } catch (InterruptedException e) {
+            restoreInterrupt(e);
+            return new ProcessOutcome(-1, describeException(e), false);
+        } catch (Exception e) {
+            restoreInterrupt(e);
+            return new ProcessOutcome(-1, describeException(e), false);
+        }
+    }
+
+    private ToolResult localOutcome(ProcessOutcome outcome, long timeoutMs, ToolContext context) {
+        if (outcome.timedOut) {
+            return error(text(context, R.string.tool_shell_exec_timed_out,
+                    "Shell command timed out after " + timeoutMs + " ms"));
+        }
+        if (outcome.exitCode != 0) {
+            String message = text(context, R.string.tool_shell_exec_failed_exit,
+                    "Shell exited with code " + outcome.exitCode, outcome.exitCode);
+            String output = truncateOutput(outcome.output, context);
+            return error(output.length() == 0 ? message : output + "\n" + message);
+        }
+        String output = truncateOutput(outcome.output, context);
+        if (output.length() == 0) {
+            return ok(text(context, R.string.tool_shell_exec_no_output, "Command completed with no output."));
+        }
+        return ok(output);
+    }
+
+    private static String appendPath(String existing, String... extraDirs) {
+        StringBuilder builder = new StringBuilder();
+        if (existing != null && existing.length() > 0) {
+            builder.append(existing);
+        }
+        for (String dir : extraDirs) {
+            if (dir == null || dir.length() == 0) {
+                continue;
+            }
+            if (builder.length() > 0) {
+                builder.append(':');
+            }
+            builder.append(dir);
+        }
+        return builder.toString();
+    }
+
+    private String text(ToolContext context, int resId, String fallback) {
+        if (context == null) {
+            return fallback;
+        }
+        String value = context.getString(resId);
+        return value.length() == 0 ? fallback : value;
+    }
+
+    private String text(ToolContext context, int resId, String fallback, Object... formatArgs) {
+        if (context == null) {
+            return fallback;
+        }
+        String value = context.getString(resId, formatArgs);
+        return value.length() == 0 ? fallback : value;
+    }
+
+    private static final class ProcessOutcome {
+        final int exitCode;
+        final String output;
+        final boolean timedOut;
+
+        ProcessOutcome(int exitCode, String output, boolean timedOut) {
+            this.exitCode = exitCode;
+            this.output = output == null ? "" : output;
+            this.timedOut = timedOut;
+        }
     }
 
     private ToolResult executeViaTerminalProvider(String command, String cwd, long timeoutMs, ToolContext context) {
@@ -219,7 +394,8 @@ public final class ShellExecuteTool extends BaseTool {
             if (output.charAt(i) == '\n') lines++;
         }
         String truncated = ToolResult.truncateContent(output);
-        return context.getString(R.string.tool_shell_output_line_count, lines) + truncated;
+        return text(context, R.string.tool_shell_output_line_count,
+                "[" + lines + " lines] ", lines) + truncated;
     }
 
     private String shellQuote(String value) {

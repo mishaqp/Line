@@ -69,6 +69,15 @@ public final class ToolExecutorTest {
         }
 
         @Override
+        public boolean isFullAccessEnabled() {
+            return false;
+        }
+
+        @Override
+        public void setFullAccessEnabled(boolean enabled) {
+        }
+
+        @Override
         public String getExecutionMode() {
             return EXECUTION_LOCAL;
         }

@@ -23,6 +23,7 @@ public interface ToolSettingsStore {
     String KEY_MCP_EXECUTION_MODE = "@lineai_mcp_execution_mode";
     String KEY_IMAGE_UNDERSTANDING_MODEL_ID = "@lineai_image_understanding_model_id";
     String KEY_IMAGE_GENERATION_MODEL_ID = "@lineai_image_generation_model_id";
+    String KEY_FULL_ACCESS = "@lineai_full_access";
 
     String PERMISSION_READONLY = "readonly";
     String PERMISSION_AUTO = "auto";
@@ -40,6 +41,17 @@ public interface ToolSettingsStore {
      * 设置当前权限模式。
      */
     void setPermissionMode(String mode);
+
+    /**
+     * 全局 Full Access 是否开启。开启后内部工具确认对话框不再弹出，
+     * 但 Android 权限边界、sandbox/路径限制和系统权限仍然生效。
+     */
+    boolean isFullAccessEnabled();
+
+    /**
+     * 设置全局 Full Access 开关（持久化到统一设置存储）。
+     */
+    void setFullAccessEnabled(boolean enabled);
 
     /**
      * 获取当前 MCP 执行目标。

@@ -17,13 +17,15 @@ public final class SecuritySettingsScreenView extends ScreenScaffoldView {
         void onBrowserJavaScriptChanged(boolean enabled);
 
         void onBypassPathProtectionChanged(boolean enabled);
+
+        void onFullAccessChanged(boolean enabled);
     }
 
     private final Listener listener;
     private Switch bypassPathProtectionSwitch;
     private boolean bypassDialogInProgress;
 
-    public SecuritySettingsScreenView(Context context, OutputSettings settings, Listener listener) {
+    public SecuritySettingsScreenView(Context context, OutputSettings settings, boolean fullAccessEnabled, Listener listener) {
         super(context, context.getString(R.string.screen_security_title), listener::onBack, null);
         this.listener = listener;
         OutputSettings safeSettings = settings == null
@@ -59,6 +61,14 @@ public final class SecuritySettingsScreenView extends ScreenScaffoldView {
         bypassPathProtectionSwitch = findSwitch(bypassRow);
         path.addRow(bypassRow, false);
         content.addView(path, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+
+        SettingsSectionView agent = new SettingsSectionView(context, context.getString(R.string.screen_security_section_agent));
+        agent.addRow(new SwitchRowView(context, IconButtonView.SHIELD_CHECK,
+                context.getString(R.string.settings_row_security_full_access_title),
+                context.getString(R.string.settings_row_security_full_access_desc),
+                fullAccessEnabled,
+                (buttonView, isChecked) -> listener.onFullAccessChanged(isChecked)), false);
+        content.addView(agent, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
     }
 
     private void onBypassPathProtectionToggled(Context context, boolean isChecked) {
