@@ -87,6 +87,9 @@ public final class ThemeSettingsRepository {
     }
 
     private ThemePalette paletteFor(String resolvedMode, Map<String, String> customColors) {
+        if (ThemePalette.MODE_DYNAMIC_COLOR.equals(resolvedMode)) {
+            return ThemePalette.dynamic(systemConfigProvider.getDynamicAccentColor(), systemConfigProvider.isDarkModeEnabled());
+        }
         ThemePalette base = ThemePalette.forMode(resolvedMode);
         if (ThemePalette.MODE_CUSTOM.equals(resolvedMode)) {
             return base.withCustomColors(customColors);

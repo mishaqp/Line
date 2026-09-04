@@ -1,10 +1,14 @@
 package cn.lineai.ui.theme;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.text.LineBreaker;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.view.View;
 import android.widget.TextView;
@@ -55,6 +59,28 @@ public final class LineTheme {
     public static final int FONT_XL = 20;
     public static final int FONT_TITLE = 24;
     public static final int FONT_XXL = 28;
+
+    /** Material Design 3 shape scale (corner radii in dp). */
+    public static final int SHAPE_XS = 4;
+    public static final int SHAPE_SM = 8;
+    public static final int SHAPE_MD = 12;
+    public static final int SHAPE_LG = 16;
+    public static final int SHAPE_XL = 28;
+    public static final int SHAPE_FULL = 999;
+
+    /** Material Design 3 type scale (sizes in sp). */
+    public static final int TYPE_DISPLAY = 36;
+    public static final int TYPE_HEADLINE = 24;
+    public static final int TYPE_TITLE = 16;
+    public static final int TYPE_BODY = 14;
+    public static final int TYPE_BODY_SMALL = 12;
+    public static final int TYPE_LABEL = 14;
+
+    /** Material Design 3 state layer opacities. */
+    public static final float STATE_LAYER_ALPHA_HOVER = 0.08f;
+    public static final float STATE_LAYER_ALPHA_FOCUS = 0.10f;
+    public static final float STATE_LAYER_ALPHA_PRESSED = 0.10f;
+    public static final float STATE_LAYER_ALPHA_DRAGGED = 0.16f;
 
     private LineTheme() {
     }
@@ -122,6 +148,63 @@ public final class LineTheme {
                 0, 0
         });
         return drawable;
+    }
+
+    /**
+     * Applies a Material Design 3 state layer alpha to {@code color}.
+     * Alpha bytes round half-up like {@code Math.round} (0.10f * 255 = 25.5 -&gt; 26).
+     */
+    public static int withAlpha(int color, float alpha) {
+        return (color & 0x00FFFFFF) | (Math.round(alpha * 255f) << 24);
+    }
+
+    /** Compositing color of an M3 state layer: {@code color} at the given layer alpha. */
+    public static int stateLayerColor(int color, float alpha) {
+        return withAlpha(color, alpha);
+    }
+
+    /** State layer color for the pressed state (0.10 alpha in M3). */
+    public static int pressedLayerColor(int color) {
+        return stateLayerColor(color, STATE_LAYER_ALPHA_PRESSED);
+    }
+
+    /**
+     * Wraps the view background in a framework ripple so hover (.08), focus (.10) and
+     * pressed (.10) render as M3 state layers on top of the existing background. The
+     * original background is reused as ripple content and mask, so pill/rounded shapes
+     * keep their outline. {@code STATE_LAYER_ALPHA_DRAGGED} is exposed for callers that
+     * drive drag-and-drop affordances manually.
+     */
+    public static void attachStateLayer(View view) {
+        attachStateLayer(view, ACCENT);
+    }
+
+    /** See {@link #attachStateLayer(View)}. */
+    public static void attachStateLayer(View view, int layerColor) {
+        if (view == null) {
+            return;
+        }
+        ColorStateList stateLayers = new ColorStateList(
+                new int[][] {
+                        new int[] {android.R.attr.state_pressed},
+                        new int[] {android.R.attr.state_focused},
+                        new int[] {android.R.attr.state_hovered},
+                        new int[0]
+                },
+                new int[] {
+                        stateLayerColor(layerColor, STATE_LAYER_ALPHA_PRESSED),
+                        stateLayerColor(layerColor, STATE_LAYER_ALPHA_FOCUS),
+                        stateLayerColor(layerColor, STATE_LAYER_ALPHA_HOVER),
+                        Color.TRANSPARENT
+                });
+        Drawable base = view.getBackground();
+        Drawable mask;
+        if (base != null && base.getConstantState() != null) {
+            mask = base.getConstantState().newDrawable();
+        } else {
+            mask = new ColorDrawable(Color.WHITE);
+        }
+        view.setBackground(new RippleDrawable(stateLayers, base, mask));
     }
 
     public static GradientDrawable userBubble(Context context) {

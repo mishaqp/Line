@@ -215,6 +215,8 @@ public final class MainActivity extends Activity implements MainChatView.Workspa
             @Override
             public int getSdkInt() { return android.os.Build.VERSION.SDK_INT; }
             @Override
+            public int getDynamicAccentColor() { return cn.lineai.resource.DynamicColors.getSystemAccentColor(MainActivity.this); }
+            @Override
             public String getFilesDirPath() { return getFilesDir().getAbsolutePath(); }
             @Override
             public String getDatabasePath(String name) { return MainActivity.this.getDatabasePath(name).getAbsolutePath(); }

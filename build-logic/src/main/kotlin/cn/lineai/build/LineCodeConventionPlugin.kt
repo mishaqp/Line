@@ -31,6 +31,14 @@ class LineCodeConventionPlugin : Plugin<Project> {
                     xmlReport = true
                     htmlReport = true
                 }
+
+                testOptions {
+                    unitTests {
+                        // Library unit tests touch LineTheme static init, which calls
+                        // Color.parseColor/argb; android.jar stubs must return defaults.
+                        isReturnDefaultValues = true
+                    }
+                }
             }
 
             configurations.matching {
