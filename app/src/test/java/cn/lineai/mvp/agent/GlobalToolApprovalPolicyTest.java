@@ -18,6 +18,7 @@ import cn.lineai.tool.ToolContext;
 import cn.lineai.tool.ToolExecutionCoordinator;
 import cn.lineai.tool.ToolExecutor;
 import cn.lineai.tool.ToolInfo;
+import cn.lineai.tool.ToolPermissionService;
 import cn.lineai.tool.ToolRegistry;
 import cn.lineai.tool.builtin.AgentTool;
 import java.util.Collection;
@@ -35,7 +36,7 @@ public final class GlobalToolApprovalPolicyTest {
         ToolRegistry registry = new ToolRegistry();
         RecordingTool tool = new RecordingTool("safe_read", ToolCategory.READ, true);
         registry.register(tool);
-        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, false, registry);
         ToolRunController controller = new ToolRunController(
                 new ToolExecutionCoordinator(registry), registry, settings);
 
@@ -52,7 +53,7 @@ public final class GlobalToolApprovalPolicyTest {
         ToolRegistry registry = new ToolRegistry();
         RecordingTool tool = new RecordingTool("safe_read", ToolCategory.READ, true);
         registry.register(tool);
-        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_AUTO, false);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_AUTO, false, registry);
         ToolRunController controller = new ToolRunController(
                 new ToolExecutionCoordinator(registry), registry, settings);
 
@@ -69,7 +70,7 @@ public final class GlobalToolApprovalPolicyTest {
         ToolRegistry registry = new ToolRegistry();
         RecordingTool tool = new RecordingTool("dangerous_write", ToolCategory.WRITE, false, true);
         registry.register(tool);
-        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, false, registry);
         ToolExecutor executor = new ToolExecutor(registry, settings, null, null, null, null, null);
         ToolCall call = new ToolCall("call_1", tool.getName(), "{}");
 
@@ -87,7 +88,7 @@ public final class GlobalToolApprovalPolicyTest {
         ToolRegistry registry = new ToolRegistry();
         RecordingTool tool = new RecordingTool("dangerous_write", ToolCategory.WRITE, false, true);
         registry.register(tool);
-        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_AUTO, true, false);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_AUTO, false, registry);
         ToolExecutor executor = new ToolExecutor(registry, settings, null, null, null, null, null);
 
         ToolResult rejected = executor.execute(
@@ -103,7 +104,7 @@ public final class GlobalToolApprovalPolicyTest {
         ToolRegistry registry = new ToolRegistry();
         RecordingTool tool = new RecordingTool("dangerous_write", ToolCategory.WRITE, false, true);
         registry.register(tool);
-        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true, true);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true, registry);
         ToolExecutor executor = new ToolExecutor(registry, settings, null, null, null, null, null);
 
         ToolResult result = executor.execute(
@@ -119,7 +120,7 @@ public final class GlobalToolApprovalPolicyTest {
         ToolRegistry registry = new ToolRegistry();
         RecordingTool tool = new RecordingTool("safe_read", ToolCategory.READ, true, false);
         registry.register(tool);
-        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true, true);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true, registry);
         ToolExecutor executor = new ToolExecutor(registry, settings, null, null, null, null, null);
 
         ToolResult result = executor.execute(
@@ -135,7 +136,7 @@ public final class GlobalToolApprovalPolicyTest {
         ToolRegistry registry = new ToolRegistry();
         RecordingTool tool = new RecordingTool("dangerous_write", ToolCategory.WRITE, false, true);
         registry.register(tool);
-        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_AUTO, true, false);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_AUTO, false, registry);
         ToolRunController controller = new ToolRunController(
                 new ToolExecutionCoordinator(registry), registry, settings);
 
@@ -156,7 +157,7 @@ public final class GlobalToolApprovalPolicyTest {
         ToolRegistry registry = new ToolRegistry();
         RecordingTool tool = new RecordingTool("dangerous_write", ToolCategory.WRITE, false, true);
         registry.register(tool);
-        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true, true);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true, registry);
         ToolExecutor executor = new ToolExecutor(registry, settings, null, null, null, null, null);
         AgentExecutionController controller = new AgentExecutionController(
                 null, null, settings, executor, registry, null, null);
@@ -185,7 +186,7 @@ public final class GlobalToolApprovalPolicyTest {
         ToolRegistry registry = new ToolRegistry();
         RecordingTool tool = new RecordingTool("safe_read", ToolCategory.READ, false);
         registry.register(tool);
-        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, false, registry);
         ToolExecutor executor = new ToolExecutor(registry, settings, null, null, null, null, null);
         ToolCall call = new ToolCall("call_1", tool.getName(), "{}");
 
@@ -203,7 +204,7 @@ public final class GlobalToolApprovalPolicyTest {
         ToolRegistry registry = new ToolRegistry();
         RecordingTool tool = new RecordingTool("safe_read", ToolCategory.READ, false);
         registry.register(tool);
-        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, false, registry);
         ToolExecutor executor = new ToolExecutor(registry, settings, null, null, null, null, null);
         AgentExecutionController controller = new AgentExecutionController(
                 null, null, settings, executor, registry, null, null);
@@ -236,7 +237,7 @@ public final class GlobalToolApprovalPolicyTest {
         ToolRegistry registry = new ToolRegistry();
         RecordingTool tool = new RecordingTool("safe_read", ToolCategory.READ, false);
         registry.register(tool);
-        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_AUTO, false);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_AUTO, false, registry);
         ToolExecutor executor = new ToolExecutor(registry, settings, null, null, null, null, null);
         AgentExecutionController controller = new AgentExecutionController(
                 null, null, settings, executor, registry, null, null);
@@ -317,17 +318,19 @@ public final class GlobalToolApprovalPolicyTest {
 
     private static final class TestSettings implements ToolSettingsStore {
         private final String permissionMode;
-        private final boolean confirmationRequired;
         private boolean fullAccessEnabled;
+        private final ToolPermissionService permissionService;
 
-        TestSettings(String permissionMode, boolean confirmationRequired) {
-            this(permissionMode, confirmationRequired, false);
+        TestSettings(String permissionMode) {
+            this(permissionMode, false, null);
         }
 
-        TestSettings(String permissionMode, boolean confirmationRequired, boolean fullAccessEnabled) {
+        TestSettings(String permissionMode, boolean fullAccessEnabled, ToolRegistry registry) {
             this.permissionMode = permissionMode;
-            this.confirmationRequired = confirmationRequired;
             this.fullAccessEnabled = fullAccessEnabled;
+            // Mirror production wiring: ToolSettingsRepository delegates
+            // needsConfirmation to ToolPermissionService.
+            this.permissionService = new ToolPermissionService(this, registry);
         }
 
         @Override
@@ -416,7 +419,7 @@ public final class GlobalToolApprovalPolicyTest {
 
         @Override
         public boolean needsConfirmation(String toolName) {
-            return confirmationRequired;
+            return permissionService.needsConfirmation(toolName);
         }
 
         @Override
