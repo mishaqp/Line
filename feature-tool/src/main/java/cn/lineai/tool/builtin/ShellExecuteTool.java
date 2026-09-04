@@ -262,12 +262,20 @@ public final class ShellExecuteTool extends BaseTool {
         return builder.toString();
     }
 
-    private String text(Context context, int resId, String fallback) {
-        return context == null ? fallback : context.getString(resId);
+    private String text(ToolContext context, int resId, String fallback) {
+        if (context == null) {
+            return fallback;
+        }
+        String value = context.getString(resId);
+        return value.length() == 0 ? fallback : value;
     }
 
-    private String text(Context context, int resId, String fallback, Object... formatArgs) {
-        return context == null ? fallback : context.getString(resId, formatArgs);
+    private String text(ToolContext context, int resId, String fallback, Object... formatArgs) {
+        if (context == null) {
+            return fallback;
+        }
+        String value = context.getString(resId, formatArgs);
+        return value.length() == 0 ? fallback : value;
     }
 
     private static final class ProcessOutcome {
