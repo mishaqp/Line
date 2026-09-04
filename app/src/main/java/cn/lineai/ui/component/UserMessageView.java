@@ -31,7 +31,7 @@ public final class UserMessageView extends LinearLayout {
         super(context);
         setOrientation(VERTICAL);
         setGravity(Gravity.END);
-        LineTheme.padding(this, LineTheme.LG, 0, LineTheme.LG, LineTheme.MD);
+        LineTheme.padding(this, LineTheme.LG, LineTheme.XS, LineTheme.LG, LineTheme.LG);
         defaultPaddingLeft = getPaddingLeft();
         defaultPaddingTop = getPaddingTop();
         defaultPaddingRight = getPaddingRight();
@@ -40,7 +40,7 @@ public final class UserMessageView extends LinearLayout {
         contentText = LineTheme.text(context, "", LineTheme.TYPE_TITLE, LineTheme.TEXT_ON_COLOR, Typeface.NORMAL);
         contentText.setLineSpacing(LineTheme.dp(context, 2), 1.0f);
         contentText.setBackground(LineTheme.userBubble(context));
-        LineTheme.padding(contentText, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
+        LineTheme.padding(contentText, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
         int horizontalPaddingPx = LineTheme.dp(context, LineTheme.LG) * 2;
         int availableWidth = context.getResources().getDisplayMetrics().widthPixels - horizontalPaddingPx;
         contentText.setMaxWidth((int) (availableWidth * 0.80f));
@@ -99,8 +99,9 @@ public final class UserMessageView extends LinearLayout {
                 }
             }
         });
-        LinearLayout.LayoutParams actionParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LineTheme.dp(context, 22));
-        actionParams.topMargin = LineTheme.dp(context, 3);
+        LinearLayout.LayoutParams actionParams = new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        actionParams.topMargin = LineTheme.dp(context, LineTheme.XS);
         addView(actionBar, actionParams);
     }
 

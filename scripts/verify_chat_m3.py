@@ -140,6 +140,23 @@ check("MessageActionBarView icons are SHAPE_FULL containers",
 check("MessageActionBarView icons are focusable", "icon.setFocusable(true)" in action_bar)
 for listener in ("ActionListener", "SelectListener", "RecallListener"):
     check("MessageActionBarView keeps %s" % listener, "interface %s" % listener in action_bar)
+check("action bar groups its icons in a tonal container",
+      "LineTheme.SHAPE_FULL))" in action_bar and "CONTAINER_ALPHA" in action_bar)
+check("action bar icons are readable (TEXT_SECONDARY, not TERTIARY)",
+      "icon.setIconColor(LineTheme.TEXT_SECONDARY)" in action_bar
+      and "TEXT_TERTIARY" not in action_bar)
+check("action bar touch targets are at least 30dp",
+      "ROW_HEIGHT_DP = 30" in action_bar and "ICON_WIDTH_DP = 32" in action_bar)
+
+# The message views must not pin the action row to the old 22dp height, which would
+# clip the taller touch targets.
+for relative in ("app/src/main/java/cn/lineai/ui/component/UserMessageView.java",
+                 "app/src/main/java/cn/lineai/ui/component/AssistantMessageView.java"):
+    source = read(relative)
+    check("%s lets the action row wrap its content" % Path(relative).name,
+          "LineTheme.dp(context, 22))" not in source)
+    check("%s gives the bubble roomy padding" % Path(relative).name,
+          "LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD" in source)
 
 # ----------------------------------------------------- Chat: list, FAB, empty state
 list_view = read("app/src/main/java/cn/lineai/ui/component/ChatMessageListView.java")

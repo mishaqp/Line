@@ -12,6 +12,13 @@ import cn.lineai.R;
 public final class MessageActionBarView extends LinearLayout {
     public static final int ALIGN_LEFT = 0;
     public static final int ALIGN_RIGHT = 1;
+
+    /** Height of the action row; also the icon touch-target height. */
+    private static final int ROW_HEIGHT_DP = 30;
+    /** Width of a single action button (comfortably above the 24dp visual size). */
+    private static final int ICON_WIDTH_DP = 32;
+    /** Opacity of the toolbar container — present, but well below the bubble. */
+    private static final float CONTAINER_ALPHA = 0.05f;
     private final IconButtonView copyButton;
     private final IconButtonView quoteButton;
     private final IconButtonView shareButton;
@@ -27,7 +34,12 @@ public final class MessageActionBarView extends LinearLayout {
         super(context);
         setOrientation(HORIZONTAL);
         setGravity(align == ALIGN_RIGHT ? Gravity.END : Gravity.START);
-        setMinimumHeight(LineTheme.dp(context, 22));
+        setMinimumHeight(LineTheme.dp(context, ROW_HEIGHT_DP));
+        // Subtle tonal container: groups the actions instead of leaving loose icons
+        // floating under the bubble, while staying quiet enough not to compete with it.
+        setBackground(LineTheme.rounded(context,
+                LineTheme.withAlpha(LineTheme.TEXT, CONTAINER_ALPHA), LineTheme.SHAPE_FULL));
+        LineTheme.padding(this, LineTheme.XS, 0, LineTheme.XS, 0);
 
         copyButton = icon(context, IconButtonView.COPY);
         copyButton.setContentDescription(context.getString(R.string.message_action_copy_desc));
@@ -135,8 +147,8 @@ public final class MessageActionBarView extends LinearLayout {
      */
     private IconButtonView icon(Context context, int type) {
         IconButtonView icon = new IconButtonView(context, type);
-        icon.setIconColor(LineTheme.TEXT_TERTIARY);
-        icon.setIconPaddingDp(4, 3, 5, 4);
+        icon.setIconColor(LineTheme.TEXT_SECONDARY);
+        icon.setIconPaddingDp(7, 7, 7, 7);
         icon.setClickable(true);
         icon.setFocusable(true);
         icon.setBackground(LineCards.pillBackground(context, Color.TRANSPARENT));
@@ -145,8 +157,7 @@ public final class MessageActionBarView extends LinearLayout {
     }
 
     private LinearLayout.LayoutParams iconParams(Context context) {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LineTheme.dp(context, 24), LineTheme.dp(context, 22));
-        params.rightMargin = LineTheme.dp(context, LineTheme.XS);
-        return params;
+        return new LinearLayout.LayoutParams(
+                LineTheme.dp(context, ICON_WIDTH_DP), LineTheme.dp(context, ROW_HEIGHT_DP));
     }
 }
