@@ -55,7 +55,7 @@ public final class SlashCommandPopup {
         this.context = context;
         content = new LinearLayout(context);
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setBackground(LineTheme.roundedStroke(context, LineTheme.INPUT_BG, 14, LineTheme.BORDER_LIGHT));
+        content.setBackground(LineTheme.roundedStroke(context, LineTheme.INPUT_BG, LineTheme.SHAPE_MD, LineTheme.BORDER_LIGHT));
         LineTheme.padding(content, 3, 3, 3, 3);
         popup = new PopupWindow(context);
         popup.setOutsideTouchable(true);
@@ -186,7 +186,7 @@ public final class SlashCommandPopup {
 
         if (index == selectedIndex) {
             View dot = new View(context);
-            dot.setBackground(LineTheme.rounded(context, LineTheme.ACCENT, 4));
+            dot.setBackground(LineTheme.rounded(context, LineTheme.ACCENT, LineTheme.SHAPE_XS));
             LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(
                     LineTheme.dp(context, 7),
                     LineTheme.dp(context, 7)

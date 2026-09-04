@@ -49,6 +49,9 @@
     <string name="composer_attachment_remove_desc">Remove attachment</string>
     <string name="composer_image_button_desc">Pick an image to send</string>
     <string name="composer_image_remove_desc">Remove selected image</string>
+    <string name="composer_image_default_name">image</string>
+    <string name="composer_queue_overflow">… %1$d more queued</string>
+    <string name="composer_queue_remove_desc">Remove queued message</string>
     <string name="composer_image_loading">Loading image…</string>
     <string name="composer_image_load_failed">Failed to load image</string>
     <string name="chat_mode_control_label">Control</string>

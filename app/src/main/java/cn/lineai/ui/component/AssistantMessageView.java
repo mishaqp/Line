@@ -64,7 +64,12 @@ public final class AssistantMessageView extends LinearLayout {
         thinkingParams.bottomMargin = LineTheme.dp(context, LineTheme.SM);
         addView(thinkingBlockView, thinkingParams);
 
+        // The AI bubble mirrors LineTheme.userBubble (tail on the opposite bottom corner).
+        // It stays MATCH_PARENT: markdown content embeds horizontally scrollable code
+        // blocks and GFM tables that must measure against the full column width.
         contentView = new MarkdownView(context);
+        contentView.setBackground(LineTheme.assistantBubble(context));
+        LineTheme.padding(contentView, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
         addView(contentView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         workingStatusView = new WorkingStatusView(context);

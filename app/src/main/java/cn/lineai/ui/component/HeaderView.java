@@ -64,7 +64,7 @@ public final class HeaderView extends LinearLayout {
         addView(projectButton, projectParams);
 
         View dot = new View(context);
-        dot.setBackground(LineTheme.rounded(context, LineTheme.ACCENT, 4));
+        dot.setBackground(LineTheme.rounded(context, LineTheme.ACCENT, LineTheme.SHAPE_XS));
         LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(LineTheme.dp(context, 7), LineTheme.dp(context, 7));
         projectButton.addView(dot, dotParams);
 

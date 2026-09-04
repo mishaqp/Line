@@ -34,7 +34,7 @@ public final class AboutScreenView extends ScreenScaffoldView {
         LineTheme.padding(header, 0, LineTheme.XL, 0, LineTheme.XL);
 
         FrameLayout iconContainer = new FrameLayout(context);
-        iconContainer.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 44));
+        iconContainer.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_FULL));
         IconButtonView logo = new IconButtonView(context, IconButtonView.CODE);
         logo.setIconColor(LineTheme.ACCENT);
         logo.setIconSizeDp(88, 48);
@@ -81,7 +81,7 @@ public final class AboutScreenView extends ScreenScaffoldView {
 
     private void addItem(LinearLayout content, int icon, String label, String value, Runnable onClick) {
         ActionRowView row = new ActionRowView(context(), icon, label, value, false, onClick != null, onClick);
-        row.setBackground(LineTheme.rounded(context(), LineTheme.SURFACE_ELEVATED, 12));
+        row.setBackground(LineTheme.rounded(context(), LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         params.bottomMargin = LineTheme.dp(context(), LineTheme.SM);
         content.addView(row, params);

@@ -160,7 +160,7 @@ public final class ModelListScreenView extends LinearLayout {
         });
         int background = checked ? LineTheme.ACCENT_MUTED : LineTheme.BG;
         int border = selected || checked ? LineTheme.ACCENT : Color.TRANSPARENT;
-        card.setBackground(LineTheme.roundedStroke(context, background, 12, border));
+        card.setBackground(LineTheme.roundedStroke(context, background, LineTheme.SHAPE_MD, border));
         LineTheme.padding(card, LineTheme.MD, LineTheme.MD, LineTheme.MD, LineTheme.MD);
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         cardParams.bottomMargin = LineTheme.dp(context, LineTheme.SM);
@@ -169,7 +169,7 @@ public final class ModelListScreenView extends LinearLayout {
         String provider = displayProvider(model);
         TextView badge = LineTheme.text(context, provider, LineTheme.FONT_XS, LineTheme.TEXT_ON_COLOR, Typeface.BOLD);
         badge.setGravity(Gravity.CENTER);
-        badge.setBackground(LineTheme.rounded(context, badgeColor(model), 8));
+        badge.setBackground(LineTheme.rounded(context, badgeColor(model), LineTheme.SHAPE_SM));
         LinearLayout.LayoutParams badgeParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         badgeParams.rightMargin = LineTheme.dp(context, LineTheme.MD);
         LineTheme.padding(badge, LineTheme.SM, 4, LineTheme.SM, 4);
@@ -190,7 +190,7 @@ public final class ModelListScreenView extends LinearLayout {
 
         if (!multiSelectedIds.isEmpty()) {
             FrameLayout check = new FrameLayout(context);
-            check.setBackground(LineTheme.roundedStroke(context, checked ? LineTheme.ACCENT : Color.TRANSPARENT, 11, checked ? LineTheme.ACCENT : LineTheme.TEXT_TERTIARY));
+            check.setBackground(LineTheme.roundedStroke(context, checked ? LineTheme.ACCENT : Color.TRANSPARENT, LineTheme.SHAPE_MD, checked ? LineTheme.ACCENT : LineTheme.TEXT_TERTIARY));
             if (checked) {
                 IconButtonView icon = new IconButtonView(context, IconButtonView.CHECK);
                 icon.setIconColor(LineTheme.TEXT_ON_COLOR);
@@ -203,7 +203,7 @@ public final class ModelListScreenView extends LinearLayout {
             card.addView(check, checkParams);
         } else if (selected) {
             View dot = new View(context);
-            dot.setBackground(LineTheme.rounded(context, LineTheme.ACCENT, 4));
+            dot.setBackground(LineTheme.rounded(context, LineTheme.ACCENT, LineTheme.SHAPE_XS));
             LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(LineTheme.dp(context, 8), LineTheme.dp(context, 8));
             dotParams.leftMargin = LineTheme.dp(context, LineTheme.MD);
             card.addView(dot, dotParams);
@@ -287,7 +287,7 @@ public final class ModelListScreenView extends LinearLayout {
     private LinearLayout createBottomPanel(Context context) {
         LinearLayout panel = new LinearLayout(context);
         panel.setOrientation(VERTICAL);
-        panel.setBackground(LineTheme.roundedTop(context, LineTheme.SURFACE_ELEVATED, 16));
+        panel.setBackground(LineTheme.roundedTop(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_LG));
         return panel;
     }
 
@@ -306,7 +306,7 @@ public final class ModelListScreenView extends LinearLayout {
     private void addHandle(LinearLayout panel) {
         Context context = panel.getContext();
         View handle = new View(context);
-        handle.setBackground(LineTheme.rounded(context, LineTheme.TEXT_TERTIARY, 2));
+        handle.setBackground(LineTheme.rounded(context, LineTheme.TEXT_TERTIARY, LineTheme.SHAPE_XS));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LineTheme.dp(context, 36), LineTheme.dp(context, 4));
         params.gravity = Gravity.CENTER_HORIZONTAL;
         params.topMargin = LineTheme.dp(context, LineTheme.SM);

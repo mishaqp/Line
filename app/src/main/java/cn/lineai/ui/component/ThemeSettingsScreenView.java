@@ -144,7 +144,7 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
 
         editorGroup = new LinearLayout(context);
         editorGroup.setOrientation(LinearLayout.VERTICAL);
-        editorGroup.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 12));
+        editorGroup.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         LinearLayout.LayoutParams editorParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         editorParams.leftMargin = LineTheme.dp(context, LineTheme.LG);
         editorParams.rightMargin = LineTheme.dp(context, LineTheme.LG);
@@ -183,7 +183,7 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
         IconButtonView reset = new IconButtonView(context, IconButtonView.ROTATE_CCW);
         reset.setIconColor(LineTheme.TEXT_SECONDARY);
         reset.setIconSizeDp(34, 15);
-        reset.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, 17));
+        reset.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_LG));
         reset.setOnClickListener(v -> {
             activeStarter = "default";
             draft.clear();
@@ -262,8 +262,7 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
         button.setOrientation(LinearLayout.VERTICAL);
         button.setClickable(true);
         button.setBackground(LineTheme.roundedStroke(context,
-                active ? LineTheme.ACCENT_MUTED : LineTheme.SURFACE,
-                8,
+                active ? LineTheme.ACCENT_MUTED : LineTheme.SURFACE, LineTheme.SHAPE_SM,
                 active ? LineTheme.ACCENT : LineTheme.BORDER_LIGHT));
         LineTheme.padding(button, LineTheme.SM, LineTheme.SM, LineTheme.SM, LineTheme.SM);
         button.setOnClickListener(v -> {
@@ -278,7 +277,7 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
         int[] colors = new int[] {palette.bg, palette.aiBubble, palette.accent};
         for (int i = 0; i < colors.length; i++) {
             View chip = new View(context);
-            chip.setBackground(LineTheme.roundedStroke(context, colors[i], 9, Color.argb(32, 0, 0, 0)));
+            chip.setBackground(LineTheme.roundedStroke(context, colors[i], LineTheme.SHAPE_SM, Color.argb(32, 0, 0, 0)));
             LinearLayout.LayoutParams chipParams = new LinearLayout.LayoutParams(LineTheme.dp(context, 18), LineTheme.dp(context, 18));
             if (i > 0) chipParams.leftMargin = LineTheme.dp(context, -4);
             chips.addView(chip, chipParams);
@@ -314,12 +313,12 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
         int accent = color(ThemePalette.KEY_ACCENT);
         int textOnColor = ThemePalette.forMode(ThemePalette.MODE_CUSTOM).textOnColor;
 
-        previewBox.setBackground(LineTheme.roundedStroke(getContext(), bg, 12, border));
-        previewBubble.setBackground(LineTheme.rounded(getContext(), aiBubble, 8));
+        previewBox.setBackground(LineTheme.roundedStroke(getContext(), bg, LineTheme.SHAPE_MD, border));
+        previewBubble.setBackground(LineTheme.rounded(getContext(), aiBubble, LineTheme.SHAPE_SM));
         previewTitle.setTextColor(text);
         previewText.setTextColor(textSecondary);
         previewPill.setTextColor(textOnColor);
-        previewPill.setBackground(LineTheme.rounded(getContext(), accent, 999));
+        previewPill.setBackground(LineTheme.rounded(getContext(), accent, LineTheme.SHAPE_FULL));
         updateSaveAction();
         refreshStarterPanel();
         refreshSwatches();
@@ -335,7 +334,7 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
             FrameLayout swatch = new FrameLayout(context);
             swatch.setClickable(true);
             boolean active = value.equalsIgnoreCase(activeValue);
-            swatch.setBackground(LineTheme.roundedStroke(context, Color.parseColor(value), 17, active ? LineTheme.ACCENT : LineTheme.BORDER_LIGHT));
+            swatch.setBackground(LineTheme.roundedStroke(context, Color.parseColor(value), LineTheme.SHAPE_LG, active ? LineTheme.ACCENT : LineTheme.BORDER_LIGHT));
             swatch.setOnClickListener(v -> {
                 draft.put(activeKey, value);
                 activeStarter = "custom-editing";
@@ -390,7 +389,7 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
         String value = draft.get(key);
         boolean valid = ThemePalette.isHexColor(value);
         View preview = new View(context);
-        preview.setBackground(LineTheme.roundedStroke(context, valid ? Color.parseColor(value) : LineTheme.SURFACE_LIGHT, 15, LineTheme.BORDER_LIGHT));
+        preview.setBackground(LineTheme.roundedStroke(context, valid ? Color.parseColor(value) : LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_LG, LineTheme.BORDER_LIGHT));
         row.addView(preview, new LinearLayout.LayoutParams(LineTheme.dp(context, 30), LineTheme.dp(context, 30)));
 
         LinearLayout meta = new LinearLayout(context);
@@ -416,7 +415,7 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
         input.setHint(getResources().getString(R.string.screen_theme_color_hex_placeholder));
         input.setHintTextColor(LineTheme.TEXT_TERTIARY);
         input.setSelectAllOnFocus(false);
-        input.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, 8, valid ? LineTheme.BORDER_LIGHT : LineTheme.DANGER));
+        input.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_SM, valid ? LineTheme.BORDER_LIGHT : LineTheme.DANGER));
         input.setPadding(LineTheme.dp(context, LineTheme.SM), 0, LineTheme.dp(context, LineTheme.SM), 0);
         input.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && !activeKey.equals(key)) {
@@ -440,8 +439,8 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
                 activeStarter = "custom-editing";
                 boolean nextValid = ThemePalette.isHexColor(next);
                 input.setTextColor(nextValid ? LineTheme.TEXT : LineTheme.DANGER);
-                input.setBackground(LineTheme.roundedStroke(getContext(), LineTheme.SURFACE_LIGHT, 8, nextValid ? LineTheme.BORDER_LIGHT : LineTheme.DANGER));
-                preview.setBackground(LineTheme.roundedStroke(getContext(), nextValid ? Color.parseColor(next) : LineTheme.SURFACE_LIGHT, 15, LineTheme.BORDER_LIGHT));
+                input.setBackground(LineTheme.roundedStroke(getContext(), LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_SM, nextValid ? LineTheme.BORDER_LIGHT : LineTheme.DANGER));
+                preview.setBackground(LineTheme.roundedStroke(getContext(), nextValid ? Color.parseColor(next) : LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_LG, LineTheme.BORDER_LIGHT));
                 descView.setText(nextValid ? desc : getResources().getString(R.string.screen_theme_color_hex_hint));
                 descView.setTextColor(nextValid ? LineTheme.TEXT_TERTIARY : LineTheme.DANGER);
                 updatePreviewOnly();
@@ -468,11 +467,11 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
         if (!ThemePalette.isHexColor(draft.get(activeKey))) {
             return;
         }
-        previewBox.setBackground(LineTheme.roundedStroke(getContext(), color(ThemePalette.KEY_BG), 12, color(ThemePalette.KEY_BORDER)));
-        previewBubble.setBackground(LineTheme.rounded(getContext(), color(ThemePalette.KEY_AI_BUBBLE), 8));
+        previewBox.setBackground(LineTheme.roundedStroke(getContext(), color(ThemePalette.KEY_BG), LineTheme.SHAPE_MD, color(ThemePalette.KEY_BORDER)));
+        previewBubble.setBackground(LineTheme.rounded(getContext(), color(ThemePalette.KEY_AI_BUBBLE), LineTheme.SHAPE_SM));
         previewTitle.setTextColor(color(ThemePalette.KEY_TEXT));
         previewText.setTextColor(color(ThemePalette.KEY_TEXT_SECONDARY));
-        previewPill.setBackground(LineTheme.rounded(getContext(), color(ThemePalette.KEY_ACCENT), 999));
+        previewPill.setBackground(LineTheme.rounded(getContext(), color(ThemePalette.KEY_ACCENT), LineTheme.SHAPE_FULL));
         refreshSwatches();
     }
 
@@ -482,7 +481,7 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
         }
         boolean valid = !hasInvalidColor();
         saveAction.setEnabled(valid);
-        saveAction.setBackground(LineTheme.rounded(getContext(), valid ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, 17));
+        saveAction.setBackground(LineTheme.rounded(getContext(), valid ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_LG));
         int color = valid ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT_TERTIARY;
         saveIcon.setIconColor(color);
         saveText.setTextColor(color);
@@ -570,7 +569,7 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
     private LinearLayout panel(Context context) {
         LinearLayout panel = new LinearLayout(context);
         panel.setOrientation(VERTICAL);
-        panel.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 12));
+        panel.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         LineTheme.padding(panel, LineTheme.MD, LineTheme.MD, LineTheme.MD, LineTheme.MD);
         return panel;
     }

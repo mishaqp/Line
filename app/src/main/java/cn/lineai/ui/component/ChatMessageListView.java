@@ -1,5 +1,6 @@
 package cn.lineai.ui.component;
 import cn.lineai.ui.theme.IconButtonView;
+import cn.lineai.ui.theme.LineCards;
 import cn.lineai.model.tool.ToolCall;
 import cn.lineai.model.tool.ToolResult;
 import cn.lineai.ui.theme.LineTheme;
@@ -84,7 +85,6 @@ public final class ChatMessageListView extends FrameLayout {
         refreshScrollToBottomButtonStyle();
         scrollToBottomButton.setVisibility(GONE);
         scrollToBottomButton.setOnClickListener(v -> scrollToBottom());
-        scrollToBottomButton.setElevation(LineTheme.dp(context, 8));
         FrameLayout.LayoutParams buttonParams = new FrameLayout.LayoutParams(
                 LineTheme.dp(context, 44),
                 LineTheme.dp(context, 44),
@@ -243,7 +243,7 @@ public final class ChatMessageListView extends FrameLayout {
 
         multiSelectCountText = LineTheme.text(context,
                 context.getString(R.string.screen_models_selected_count, 0),
-                LineTheme.FONT_MD, LineTheme.TEXT, Typeface.NORMAL);
+                LineTheme.TYPE_TITLE, LineTheme.TEXT, Typeface.NORMAL);
         multiSelectBar.addView(multiSelectCountText, new LinearLayout.LayoutParams(
                 0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
@@ -251,7 +251,8 @@ public final class ChatMessageListView extends FrameLayout {
         exportButton.setContentDescription(context.getString(R.string.export_button_label));
         exportButton.setIconColor(LineTheme.TEXT_ON_COLOR);
         exportButton.setIconSizeDp(44, 20);
-        exportButton.setBackground(LineTheme.roundedStroke(context, LineTheme.ACCENT, 22, LineTheme.ACCENT));
+        exportButton.setBackground(LineCards.pillBackground(context, LineTheme.ACCENT));
+        LineTheme.attachStateLayer(exportButton, LineTheme.TEXT_ON_COLOR);
         exportButton.setOnClickListener(v -> {
             if (multiSelectListener != null) {
                 multiSelectListener.onExportRequested(getSelectedMessages());
@@ -266,6 +267,8 @@ public final class ChatMessageListView extends FrameLayout {
         closeButton.setContentDescription(context.getString(R.string.common_close));
         closeButton.setIconColor(LineTheme.TEXT_SECONDARY);
         closeButton.setIconSizeDp(44, 20);
+        closeButton.setBackground(LineCards.pillBackground(context, android.graphics.Color.TRANSPARENT));
+        LineTheme.attachStateLayer(closeButton);
         closeButton.setOnClickListener(v -> {
             exitMultiSelectMode();
             if (multiSelectListener != null) {
@@ -329,10 +332,11 @@ public final class ChatMessageListView extends FrameLayout {
         }
     }
 
+    /** Styles the jump-to-latest control as an M3 FAB (SHAPE_LG container + state layer). */
     private void refreshScrollToBottomButtonStyle() {
         scrollToBottomButton.setIconColor(LineTheme.TEXT_ON_COLOR);
         scrollToBottomButton.setIconSizeDp(44, 20);
-        scrollToBottomButton.setBackground(LineTheme.roundedStroke(getContext(), LineTheme.ACCENT, 22, LineTheme.ACCENT));
+        LineCards.applyFab(scrollToBottomButton, LineTheme.ACCENT);
     }
 
     private boolean isAtBottom() {
@@ -358,14 +362,14 @@ public final class ChatMessageListView extends FrameLayout {
         box.setGravity(Gravity.CENTER);
         LineTheme.padding(box, LineTheme.XL, 80, LineTheme.XL, 80);
 
-        TextView prompt = LineTheme.text(context, "›_", LineTheme.FONT_XL, LineTheme.ACCENT, Typeface.NORMAL);
+        TextView prompt = LineTheme.text(context, "›_", LineTheme.TYPE_HEADLINE, LineTheme.ACCENT, Typeface.NORMAL);
         prompt.setTypeface(Typeface.MONOSPACE);
         box.addView(prompt, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         ));
 
-        TextView title = LineTheme.text(context, context.getString(R.string.message_list_configure_title), LineTheme.FONT_TITLE, LineTheme.TEXT, Typeface.BOLD);
+        TextView title = LineTheme.text(context, context.getString(R.string.message_list_configure_title), LineTheme.TYPE_HEADLINE, LineTheme.TEXT, Typeface.BOLD);
         LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -375,7 +379,7 @@ public final class ChatMessageListView extends FrameLayout {
 
         TextView desc = LineTheme.text(context,
                 context.getString(R.string.message_list_configure_desc),
-                LineTheme.FONT_MD,
+                LineTheme.TYPE_BODY,
                 LineTheme.TEXT_SECONDARY,
                 Typeface.NORMAL);
         desc.setGravity(Gravity.CENTER);
@@ -422,18 +426,9 @@ public final class ChatMessageListView extends FrameLayout {
         return row;
     }
 
+    /** Empty-state CTA: M3 filled / outlined pill with a state layer. */
     private static TextView actionButton(Context context, String label, boolean primary) {
-        TextView button = LineTheme.text(context, label, LineTheme.FONT_MD,
-                primary ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT, Typeface.NORMAL);
-        button.setGravity(Gravity.CENTER);
-        button.setClickable(true);
-        button.setFocusable(true);
-        button.setBackground(primary
-                ? LineTheme.rounded(context, LineTheme.ACCENT, 22)
-                : LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, 22, LineTheme.BORDER_LIGHT));
-        button.setPadding(LineTheme.dp(context, LineTheme.LG), LineTheme.dp(context, LineTheme.SM),
-                LineTheme.dp(context, LineTheme.LG), LineTheme.dp(context, LineTheme.SM));
-        return button;
+        return primary ? LineCards.primaryButton(context, label) : LineCards.secondaryButton(context, label);
     }
 
     private static View createNoticeView(Context context, String noticeText) {
@@ -441,7 +436,7 @@ public final class ChatMessageListView extends FrameLayout {
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setGravity(Gravity.CENTER);
         LineTheme.padding(row, LineTheme.LG, LineTheme.SM, LineTheme.LG, LineTheme.SM);
-        TextView label = LineTheme.text(context, noticeText, LineTheme.FONT_XS, LineTheme.TEXT_TERTIARY, Typeface.NORMAL);
+        TextView label = LineTheme.text(context, noticeText, LineTheme.TYPE_BODY_SMALL, LineTheme.TEXT_TERTIARY, Typeface.NORMAL);
         label.setGravity(Gravity.CENTER);
         label.setSingleLine(true);
         label.setEllipsize(TextUtils.TruncateAt.END);
@@ -658,7 +653,7 @@ public final class ChatMessageListView extends FrameLayout {
             }
             if (multiSelectMode && selectedMessageIds.contains(message.getId())) {
                 view.setBackground(LineTheme.roundedStroke(
-                        context, LineTheme.ACCENT, 12, LineTheme.ACCENT));
+                        context, LineTheme.ACCENT, LineTheme.SHAPE_MD, LineTheme.ACCENT));
                 view.setPadding(LineTheme.dp(context, 4), LineTheme.dp(context, 4),
                         LineTheme.dp(context, 4), LineTheme.dp(context, 4));
             } else {

@@ -1,8 +1,10 @@
 package cn.lineai.ui.component;
 import cn.lineai.ui.theme.IconButtonView;
+import cn.lineai.ui.theme.LineCards;
 import cn.lineai.ui.theme.LineTheme;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import cn.lineai.R;
@@ -127,11 +129,18 @@ public final class MessageActionBarView extends LinearLayout {
         void onRecall();
     }
 
+    /**
+     * Compact M3 icon button: transparent {@link LineTheme#SHAPE_FULL} container that only
+     * becomes visible through its state layer on hover / focus / press.
+     */
     private IconButtonView icon(Context context, int type) {
         IconButtonView icon = new IconButtonView(context, type);
         icon.setIconColor(LineTheme.TEXT_TERTIARY);
         icon.setIconPaddingDp(4, 3, 5, 4);
         icon.setClickable(true);
+        icon.setFocusable(true);
+        icon.setBackground(LineCards.pillBackground(context, Color.TRANSPARENT));
+        LineTheme.attachStateLayer(icon);
         return icon;
     }
 

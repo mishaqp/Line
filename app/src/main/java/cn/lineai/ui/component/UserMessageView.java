@@ -1,4 +1,5 @@
 package cn.lineai.ui.component;
+import cn.lineai.ui.theme.LineCards;
 import cn.lineai.ui.theme.LineTheme;
 
 import android.content.Context;
@@ -36,10 +37,10 @@ public final class UserMessageView extends LinearLayout {
         defaultPaddingRight = getPaddingRight();
         defaultPaddingBottom = getPaddingBottom();
 
-        contentText = LineTheme.text(context, "", 16, LineTheme.TEXT_ON_COLOR, Typeface.NORMAL);
+        contentText = LineTheme.text(context, "", LineTheme.TYPE_TITLE, LineTheme.TEXT_ON_COLOR, Typeface.NORMAL);
         contentText.setLineSpacing(LineTheme.dp(context, 2), 1.0f);
         contentText.setBackground(LineTheme.userBubble(context));
-        LineTheme.padding(contentText, LineTheme.MD, 5, LineTheme.MD, 5);
+        LineTheme.padding(contentText, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
         int horizontalPaddingPx = LineTheme.dp(context, LineTheme.LG) * 2;
         int availableWidth = context.getResources().getDisplayMetrics().widthPixels - horizontalPaddingPx;
         contentText.setMaxWidth((int) (availableWidth * 0.80f));
@@ -155,11 +156,11 @@ public final class UserMessageView extends LinearLayout {
     }
 
     private TextView attachmentChip(InputAttachment attachment) {
-        TextView chip = LineTheme.textMedium(getContext(), attachment.getName(), LineTheme.FONT_XS, LineTheme.TEXT_SECONDARY);
+        TextView chip = LineTheme.textMedium(getContext(), attachment.getName(), LineTheme.TYPE_BODY_SMALL, LineTheme.TEXT_SECONDARY);
         chip.setSingleLine(true);
         chip.setEllipsize(TextUtils.TruncateAt.MIDDLE);
         chip.setMaxWidth(LineTheme.dp(getContext(), 220));
-        chip.setBackground(LineTheme.roundedStroke(getContext(), LineTheme.SURFACE_LIGHT, 14, LineTheme.BORDER_LIGHT));
+        chip.setBackground(LineCards.pillBackground(getContext(), LineTheme.SURFACE_LIGHT, LineTheme.BORDER_LIGHT));
         LineTheme.padding(chip, LineTheme.SM, 4, LineTheme.SM, 4);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         params.bottomMargin = LineTheme.dp(getContext(), LineTheme.XS);

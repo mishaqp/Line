@@ -37,7 +37,7 @@ public final class SimpleSettingsScreenView extends LinearLayout {
 
         LinearLayout group = new LinearLayout(context);
         group.setOrientation(VERTICAL);
-        group.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 12));
+        group.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         content.addView(group, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         for (int i = 0; i < rows.length; i++) {
@@ -56,7 +56,7 @@ public final class SimpleSettingsScreenView extends LinearLayout {
         TextView label = LineTheme.textMedium(context, text, LineTheme.FONT_MD, LineTheme.TEXT);
         row.addView(label, new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f));
         View dot = new View(context);
-        dot.setBackground(LineTheme.rounded(context, LineTheme.ACCENT, 4));
+        dot.setBackground(LineTheme.rounded(context, LineTheme.ACCENT, LineTheme.SHAPE_XS));
         row.addView(dot, new LinearLayout.LayoutParams(LineTheme.dp(context, 8), LineTheme.dp(context, 8)));
         wrapper.addView(row, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 

@@ -57,7 +57,7 @@ public final class InputSettingsScreenView extends ScreenScaffoldView {
         selector.setGravity(Gravity.CENTER_VERTICAL);
         selector.setClickable(true);
         selector.setFocusable(true);
-        selector.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, 8, LineTheme.BORDER_LIGHT));
+        selector.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_SM, LineTheme.BORDER_LIGHT));
         LineTheme.padding(selector, LineTheme.MD, 0, LineTheme.SM, 0);
         selector.setOnClickListener(v -> showBehaviorPopup());
 
@@ -91,7 +91,7 @@ public final class InputSettingsScreenView extends ScreenScaffoldView {
         int rowHeight = LineTheme.dp(context, 38);
         LinearLayout content = new LinearLayout(context);
         content.setOrientation(VERTICAL);
-        content.setBackground(LineTheme.roundedStroke(context, LineTheme.INPUT_BG, 12, LineTheme.BORDER_LIGHT));
+        content.setBackground(LineTheme.roundedStroke(context, LineTheme.INPUT_BG, LineTheme.SHAPE_MD, LineTheme.BORDER_LIGHT));
         LineTheme.padding(content, 3, 3, 3, 3);
         content.addView(optionView(context, context.getString(R.string.screen_input_enter_send), InputSettings.ENTER_SEND), new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, rowHeight));
         content.addView(optionView(context, context.getString(R.string.screen_input_enter_newline), InputSettings.ENTER_NEWLINE), new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, rowHeight));
@@ -109,7 +109,7 @@ public final class InputSettingsScreenView extends ScreenScaffoldView {
         item.setGravity(Gravity.CENTER_VERTICAL);
         item.setSingleLine(true);
         item.setPadding(LineTheme.dp(context, LineTheme.MD), 0, LineTheme.dp(context, LineTheme.MD), 0);
-        item.setBackground(LineTheme.rounded(context, selected ? LineTheme.ACCENT : android.graphics.Color.TRANSPARENT, 9));
+        item.setBackground(LineTheme.rounded(context, selected ? LineTheme.ACCENT : android.graphics.Color.TRANSPARENT, LineTheme.SHAPE_SM));
         item.setClickable(true);
         item.setOnClickListener(v -> {
             setEnterKeyBehavior(behavior);

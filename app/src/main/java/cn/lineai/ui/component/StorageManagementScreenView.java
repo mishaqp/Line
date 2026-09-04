@@ -48,7 +48,7 @@ public final class StorageManagementScreenView extends ScreenScaffoldView {
 
         LinearLayout summary = new LinearLayout(context);
         summary.setOrientation(VERTICAL);
-        summary.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 12));
+        summary.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         LineTheme.padding(summary, LineTheme.LG, LineTheme.LG, LineTheme.LG, LineTheme.LG);
         TextView label = LineTheme.textMedium(context, context.getString(R.string.screen_storage_counted), LineTheme.FONT_XS, LineTheme.TEXT_TERTIARY);
         summary.addView(label, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
@@ -95,11 +95,11 @@ public final class StorageManagementScreenView extends ScreenScaffoldView {
         LinearLayout row = new LinearLayout(context);
         row.setOrientation(HORIZONTAL);
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 12));
+        row.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         LineTheme.padding(row, LineTheme.MD, LineTheme.MD, LineTheme.MD, LineTheme.MD);
 
         FrameLayout iconWrap = new FrameLayout(context);
-        iconWrap.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 19));
+        iconWrap.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_LG));
         IconButtonView icon = new IconButtonView(context, iconType);
         icon.setIconColor(LineTheme.ACCENT);
         icon.setIconSizeDp(38, 19);

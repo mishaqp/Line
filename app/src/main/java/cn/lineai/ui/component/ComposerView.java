@@ -1,5 +1,6 @@
 package cn.lineai.ui.component;
 import cn.lineai.ui.theme.IconButtonView;
+import cn.lineai.ui.theme.LineCards;
 import cn.lineai.ui.theme.LineTheme;
 
 import android.content.Context;
@@ -18,8 +19,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -67,6 +66,11 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         void onQuoteDismissed();
     }
 
+    /** Send button tint while a queued message would stop generation and flush the queue. */
+    private static final int QUEUE_STOP_COLOR = 0xFFFF8800;
+    /** Send button tint while pressing would append the draft to the queue. */
+    private static final int QUEUE_APPEND_COLOR = 0xFFFFAA33;
+
     private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private LinearLayout quotePreviewLayout;
     private TextView quotePreviewText;
@@ -79,20 +83,12 @@ public final class ComposerView extends LinearLayout implements QuoteController.
     private LinearLayout modeSelectorButton;
     private TextView modeSelectorText;
     private IconButtonView modeSelectorChevron;
-    private HorizontalScrollView attachmentScroll;
-    private LinearLayout attachmentList;
+    private ComposerAttachmentStrip attachmentStrip;
     private IconButtonView attachButton;
     private IconButtonView imageButton;
-    private LinearLayout imagePreviewLayout;
-    private ImageView imagePreviewView;
-    private IconButtonView imagePreviewClose;
+    private ComposerImagePreview imagePreview;
     private EditText input;
     private IconButtonView sendButton;
-    private final ArrayList<InputAttachment> attachments = new ArrayList<>();
-    private Uri pendingImageUri;
-    private String pendingImageBase64 = "";
-    private String pendingImageMimeType = "";
-    private String pendingImageName = "";
     private PopupWindow modePopup;
     private PopupWindow modelPopup;
     private SlashCommandPopup slashPopup;
@@ -105,18 +101,8 @@ public final class ComposerView extends LinearLayout implements QuoteController.
     private Listener listener;
     private String quoteText = null;
     private LinearLayout quoteBlock;
-    private LinearLayout pendingContainer; // 垂直堆叠容器
-    private final List<QueuedItem> pendingQueue = new ArrayList<>();
-    private boolean wasStreaming = false;
-
-    private static final class QueuedItem {
-        final String text;
-        final List<InputAttachment> attachments;
-        QueuedItem(String text, List<InputAttachment> attachments) {
-            this.text = text;
-            this.attachments = attachments;
-        }
-    }
+    private final ComposerQueue pendingQueue = new ComposerQueue();
+    private ComposerPendingQueueView pendingQueueView;
 
     public ComposerView(Context context) {
         super(context);
@@ -127,22 +113,22 @@ public final class ComposerView extends LinearLayout implements QuoteController.
 
         buildQuotePreview();
 
-        attachmentScroll = new HorizontalScrollView(context);
-        attachmentScroll.setHorizontalScrollBarEnabled(false);
-        attachmentScroll.setVisibility(GONE);
-        attachmentList = new LinearLayout(context);
-        attachmentList.setOrientation(HORIZONTAL);
-        attachmentScroll.addView(attachmentList, new HorizontalScrollView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        attachmentStrip = new ComposerAttachmentStrip(context);
+        attachmentStrip.setListener(this::updateSendButton);
         LinearLayout.LayoutParams attachmentParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         attachmentParams.bottomMargin = LineTheme.dp(context, LineTheme.SM);
-        addView(attachmentScroll, attachmentParams);
+        addView(attachmentStrip, attachmentParams);
 
-        buildImagePreview();
+        imagePreview = new ComposerImagePreview(context);
+        imagePreview.setListener(this::updateSendButton);
+        LinearLayout.LayoutParams imagePreviewParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        imagePreviewParams.bottomMargin = LineTheme.dp(context, LineTheme.SM);
+        addView(imagePreview, imagePreviewParams);
 
         LinearLayout panel = new LinearLayout(context);
         panel.setOrientation(VERTICAL);
         panel.setMinimumHeight(LineTheme.dp(context, 148));
-        panel.setBackground(LineTheme.roundedStroke(context, LineTheme.INPUT_BG, 22, LineTheme.BORDER));
+        panel.setBackground(LineTheme.roundedStroke(context, LineTheme.INPUT_BG, LineTheme.SHAPE_XL, LineTheme.BORDER));
         addView(panel, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         LinearLayout metaRow = new LinearLayout(context);
@@ -157,7 +143,8 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         modelSelectorButton.setClickable(true);
         modelSelectorButton.setFocusable(true);
         modelSelectorButton.setOnClickListener(v -> showModelPopup(modelSelectorButton));
-        modelSelectorButton.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, 14));
+        modelSelectorButton.setBackground(LineCards.pillBackground(context, LineTheme.SURFACE_LIGHT));
+        LineTheme.attachStateLayer(modelSelectorButton);
         LineTheme.padding(modelSelectorButton, LineTheme.SM, 0, LineTheme.SM, 0);
 
         modelText = LineTheme.textMedium(context, "", LineTheme.FONT_XS, LineTheme.TEXT_SECONDARY);
@@ -211,10 +198,9 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         panel.addView(quoteBlock, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         // Pending queue container (vertical stack, each queued message is a row)
-        pendingContainer = new LinearLayout(context);
-        pendingContainer.setOrientation(VERTICAL);
-        pendingContainer.setVisibility(GONE);
-        panel.addView(pendingContainer, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        pendingQueueView = new ComposerPendingQueueView(context, pendingQueue);
+        pendingQueueView.setListener(this::updateSendButton);
+        panel.addView(pendingQueueView, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         LinearLayout inputRow = new LinearLayout(context);
         inputRow.setOrientation(HORIZONTAL);
@@ -225,7 +211,8 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         attachButton = new IconButtonView(context, IconButtonView.PLUS);
         attachButton.setIconColor(LineTheme.TEXT_SECONDARY);
         attachButton.setIconSizeDp(40, 22);
-        attachButton.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, 20));
+        attachButton.setBackground(LineCards.pillBackground(context, LineTheme.SURFACE_LIGHT));
+        LineTheme.attachStateLayer(attachButton);
         attachButton.setOnClickListener(v -> {
             if (!streaming && listener != null) {
                 listener.onAttachClick();
@@ -235,7 +222,8 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         imageButton = new IconButtonView(context, IconButtonView.IMAGE);
         imageButton.setIconColor(LineTheme.TEXT_SECONDARY);
         imageButton.setIconSizeDp(40, 22);
-        imageButton.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, 20));
+        imageButton.setBackground(LineCards.pillBackground(context, LineTheme.SURFACE_LIGHT));
+        LineTheme.attachStateLayer(imageButton);
         imageButton.setContentDescription(context.getString(R.string.composer_image_button_desc));
         imageButton.setOnClickListener(v -> {
             if (!streaming && listener != null) {
@@ -247,7 +235,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         input.setTextColor(LineTheme.TEXT);
         input.setHintTextColor(LineTheme.TEXT_TERTIARY);
         input.setHint(context.getString(R.string.composer_hint_default));
-        input.setTextSize(LineTheme.FONT_MD);
+        input.setTextSize(LineTheme.TYPE_TITLE);
         input.setSingleLine(false);
         input.setMinLines(2);
         input.setMaxLines(6);
@@ -333,6 +321,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         modeSelectorButton.setClickable(true);
         modeSelectorButton.setFocusable(true);
         modeSelectorButton.setOnClickListener(v -> showModePopup(modeSelectorButton));
+        LineTheme.attachStateLayer(modeSelectorButton);
         LineTheme.padding(modeSelectorButton, LineTheme.SM, 0, LineTheme.XS, 0);
         modeSelectorText = LineTheme.textMedium(context, modeLabel(chatMode), LineTheme.FONT_XS, LineTheme.TEXT);
         modeSelectorText.setGravity(Gravity.CENTER_VERTICAL);
@@ -386,11 +375,11 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         quotePreviewLayout = new LinearLayout(context);
         quotePreviewLayout.setOrientation(HORIZONTAL);
         quotePreviewLayout.setGravity(Gravity.CENTER_VERTICAL);
-        quotePreviewLayout.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_ELEVATED, 14, LineTheme.BORDER_LIGHT));
+        quotePreviewLayout.setBackground(LineCards.cardBackground(context, LineTheme.SURFACE_ELEVATED, LineTheme.BORDER_LIGHT));
         LineTheme.padding(quotePreviewLayout, LineTheme.SM, LineTheme.SM, LineTheme.SM, LineTheme.SM);
 
         View quoteBar = new View(context);
-        quoteBar.setBackground(LineTheme.rounded(context, LineTheme.ACCENT, 2));
+        quoteBar.setBackground(LineTheme.rounded(context, LineTheme.ACCENT, LineTheme.SHAPE_XS));
         LinearLayout.LayoutParams barParams = new LinearLayout.LayoutParams(LineTheme.dp(context, 3), LayoutParams.MATCH_PARENT);
         barParams.rightMargin = LineTheme.dp(context, LineTheme.SM);
         quotePreviewLayout.addView(quoteBar, barParams);
@@ -419,85 +408,22 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         addView(quotePreviewLayout, params);
     }
 
-    private void buildImagePreview() {
-        Context context = getContext();
-        imagePreviewLayout = new LinearLayout(context);
-        imagePreviewLayout.setOrientation(HORIZONTAL);
-        imagePreviewLayout.setGravity(Gravity.CENTER_VERTICAL);
-        imagePreviewLayout.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_ELEVATED, 14, LineTheme.BORDER_LIGHT));
-        LineTheme.padding(imagePreviewLayout, LineTheme.SM, LineTheme.SM, LineTheme.SM, LineTheme.SM);
-
-        int thumbSize = LineTheme.dp(context, 56);
-        imagePreviewView = new ImageView(context);
-        imagePreviewView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imagePreviewView.setBackgroundColor(LineTheme.SURFACE_LIGHT);
-        LinearLayout.LayoutParams thumbParams = new LinearLayout.LayoutParams(thumbSize, thumbSize);
-        imagePreviewLayout.addView(imagePreviewView, thumbParams);
-
-        TextView imageLabel = LineTheme.text(context, "", LineTheme.FONT_SM, LineTheme.TEXT_SECONDARY, Typeface.NORMAL);
-        imageLabel.setSingleLine(true);
-        imageLabel.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-        imageLabel.setMaxWidth(LineTheme.dp(context, 220));
-        LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f);
-        labelParams.leftMargin = LineTheme.dp(context, LineTheme.SM);
-        imagePreviewLayout.addView(imageLabel, labelParams);
-        imagePreviewView.setTag(imageLabel);
-
-        imagePreviewClose = new IconButtonView(context, IconButtonView.CLOSE);
-        imagePreviewClose.setContentDescription(context.getString(R.string.composer_image_remove_desc));
-        imagePreviewClose.setIconColor(LineTheme.TEXT_TERTIARY);
-        imagePreviewClose.setIconSizeDp(28, 16);
-        imagePreviewClose.setOnClickListener(v -> clearImage());
-        LinearLayout.LayoutParams closeParams = new LinearLayout.LayoutParams(LineTheme.dp(context, 28), LineTheme.dp(context, 28));
-        closeParams.leftMargin = LineTheme.dp(context, LineTheme.SM);
-        imagePreviewLayout.addView(imagePreviewClose, closeParams);
-
-        imagePreviewLayout.setVisibility(GONE);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        params.bottomMargin = LineTheme.dp(context, LineTheme.SM);
-        addView(imagePreviewLayout, params);
-    }
-
     /**
      * 选择图片后调用，显示缩略图预览并暂存 base64 数据。
      */
     public void onImagePicked(Uri uri, String base64, String mimeType, String displayName) {
-        pendingImageUri = uri;
-        pendingImageBase64 = base64 == null ? "" : base64;
-        pendingImageMimeType = mimeType == null ? "" : mimeType;
-        pendingImageName = displayName == null ? "" : displayName;
-        if (uri != null) {
-            try {
-                imagePreviewView.setImageURI(uri);
-            } catch (Exception ignored) {
-                imagePreviewView.setImageDrawable(null);
-            }
-        } else {
-            imagePreviewView.setImageDrawable(null);
-        }
-        TextView label = (TextView) imagePreviewView.getTag();
-        if (label != null) {
-            label.setText(pendingImageName.length() > 0 ? pendingImageName : "image");
-        }
-        imagePreviewLayout.setVisibility(VISIBLE);
-        updateSendButton();
+        imagePreview.show(uri, base64, mimeType, displayName);
     }
 
     /**
      * 清除当前选中的图片。
      */
     public void clearImage() {
-        pendingImageUri = null;
-        pendingImageBase64 = "";
-        pendingImageMimeType = "";
-        pendingImageName = "";
-        imagePreviewView.setImageDrawable(null);
-        imagePreviewLayout.setVisibility(GONE);
-        updateSendButton();
+        imagePreview.clear();
     }
 
     public boolean hasPendingImage() {
-        return pendingImageBase64.length() > 0;
+        return imagePreview.hasImage();
     }
 
     @Override
@@ -524,49 +450,22 @@ public final class ComposerView extends LinearLayout implements QuoteController.
     public void setDraft(String text, List<InputAttachment> nextAttachments) {
         String value = text == null ? "" : text;
         input.setText(value);
-        attachments.clear();
-        if (nextAttachments != null) {
-            attachments.addAll(nextAttachments);
-        }
-        renderAttachments();
+        attachmentStrip.replaceAll(nextAttachments);
         input.setSelection(input.getText().length());
         input.requestFocus();
         updateSendButton();
     }
 
     public List<InputAttachment> getAttachments() {
-        return Collections.unmodifiableList(new ArrayList<>(attachments));
+        return attachmentStrip.attachments();
     }
 
     public List<String> selectedAttachmentPaths(String source) {
-        String normalizedSource = InputAttachment.SOURCE_SSH.equals(source)
-                ? InputAttachment.SOURCE_SSH
-                : InputAttachment.SOURCE_LOCAL;
-        ArrayList<String> paths = new ArrayList<>();
-        for (InputAttachment attachment : attachments) {
-            if (attachment.getSource().equals(normalizedSource)) {
-                paths.add(attachment.getPath());
-            }
-        }
-        return paths;
+        return attachmentStrip.pathsForSource(source);
     }
 
     public void toggleAttachment(InputAttachment attachment) {
-        if (attachment == null || attachment.getPath().length() == 0) {
-            return;
-        }
-        for (int i = 0; i < attachments.size(); i++) {
-            InputAttachment existing = attachments.get(i);
-            if (existing.matches(attachment.getPath(), attachment.getSource())) {
-                attachments.remove(i);
-                renderAttachments();
-                updateSendButton();
-                return;
-            }
-        }
-        attachments.add(attachment);
-        renderAttachments();
-        updateSendButton();
+        attachmentStrip.toggle(attachment);
     }
 
     public void render(ChatUiState state) {
@@ -623,33 +522,34 @@ public final class ComposerView extends LinearLayout implements QuoteController.
                 sendButton.setIconType(IconButtonView.STOP);
                 sendButton.setIconColor(LineTheme.TEXT_ON_COLOR);
                 sendButton.setIconSizeDp(40, 18);
-                sendButton.setBackground(LineTheme.rounded(getContext(), 0xFFFF8800, 20));
+                sendButton.setBackground(LineCards.pillBackground(getContext(), QUEUE_STOP_COLOR));
             } else if (hasContent) {
                 // 有内容：橙色箭头（按=追加排队）
                 sendButton.setIconType(IconButtonView.ARROW_UP);
                 sendButton.setIconColor(LineTheme.TEXT_ON_COLOR);
                 sendButton.setIconSizeDp(40, 22);
-                sendButton.setBackground(LineTheme.rounded(getContext(), 0xFFFFAA33, 20));
+                sendButton.setBackground(LineCards.pillBackground(getContext(), QUEUE_APPEND_COLOR));
             } else {
                 // 无内容无队列：红色停止
                 sendButton.setIconType(IconButtonView.STOP);
                 sendButton.setIconColor(LineTheme.TEXT_ON_COLOR);
                 sendButton.setIconSizeDp(40, 18);
-                sendButton.setBackground(LineTheme.rounded(getContext(), LineTheme.DANGER, 20));
+                sendButton.setBackground(LineCards.pillBackground(getContext(), LineTheme.DANGER));
             }
         } else {
             sendButton.setIconType(IconButtonView.ARROW_UP);
             sendButton.setIconColor(hasContent ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT_TERTIARY);
             sendButton.setIconSizeDp(40, 22);
-            sendButton.setBackground(LineTheme.rounded(getContext(), hasContent ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, 20));
+            sendButton.setBackground(LineCards.pillBackground(getContext(), hasContent ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT));
         }
+        LineTheme.attachStateLayer(sendButton, LineTheme.TEXT_ON_COLOR);
         sendButton.setEnabled(streaming || hasContent);
         sendButton.setAlpha(sendButton.isEnabled() ? 1f : 0.72f);
     }
 
     private boolean canSend() {
         return input.getText().toString().trim().length() > 0
-                || !attachments.isEmpty()
+                || !attachmentStrip.isEmpty()
                 || hasPendingImage();
     }
 
@@ -695,7 +595,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         if (listener != null) {
             if (hasPendingImage()) {
                 listener.onSendWithImage(text, getAttachments(),
-                        pendingImageBase64, pendingImageMimeType, pendingImageName);
+                        imagePreview.base64(), imagePreview.mimeType(), imagePreview.name());
             } else {
                 listener.onSend(text, getAttachments());
             }
@@ -737,79 +637,32 @@ public final class ComposerView extends LinearLayout implements QuoteController.
             text = quoted + text;
             clearQuote();
         }
-        pendingQueue.add(new QueuedItem(text, new ArrayList<>(attachments)));
+        pendingQueue.add(text, attachmentStrip.attachments());
         input.setText("");
         clearAttachments();
-        // Update pending block
         updatePendingBlock();
         updateSendButton();
     }
 
+    /** Re-renders the queued-message rows shown inside the composer panel. */
     private void updatePendingBlock() {
-        pendingContainer.removeAllViews();
-        if (pendingQueue.isEmpty()) {
-            pendingContainer.setVisibility(GONE);
-            return;
-        }
-        Context ctx = getContext();
-        // 显示最多4条，多了折叠
-        int showCount = Math.min(pendingQueue.size(), 4);
-        for (int i = 0; i < showCount; i++) {
-            final int index = i;
-            QueuedItem item = pendingQueue.get(i);
-            LinearLayout row = new LinearLayout(ctx);
-            row.setOrientation(HORIZONTAL);
-            row.setGravity(Gravity.CENTER_VERTICAL);
-            row.setBackgroundColor(0xFF252536);
-            LineTheme.padding(row, LineTheme.MD, 4, LineTheme.SM, 4);
-            // 左侧橙色竖条
-            android.view.View bar = new android.view.View(ctx);
-            bar.setBackgroundColor(0xFFFFAA33);
-            row.addView(bar, new LinearLayout.LayoutParams(LineTheme.dp(ctx, 3), LineTheme.dp(ctx, 20)));
-            // 序号 + 预览文字
-            String preview = (i + 1) + ". " + (item.text.length() > 30 ? item.text.substring(0, 30) + "..." : item.text);
-            TextView tv = LineTheme.text(ctx, preview, LineTheme.FONT_XS, 0xFFFFAA33, Typeface.NORMAL);
-            tv.setSingleLine(true);
-            tv.setEllipsize(TextUtils.TruncateAt.END);
-            LinearLayout.LayoutParams tvp = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f);
-            tvp.leftMargin = LineTheme.dp(ctx, LineTheme.SM);
-            row.addView(tv, tvp);
-            // 单条删除按钮
-            IconButtonView close = new IconButtonView(ctx, IconButtonView.CLOSE);
-            close.setIconColor(LineTheme.TEXT_TERTIARY);
-            close.setIconSizeDp(20, 12);
-            close.setOnClickListener(v -> {
-                if (index < pendingQueue.size()) {
-                    pendingQueue.remove(index);
-                    updatePendingBlock();
-                    updateSendButton();
-                }
-            });
-            row.addView(close, new LinearLayout.LayoutParams(LineTheme.dp(ctx, 20), LineTheme.dp(ctx, 20)));
-            pendingContainer.addView(row, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        }
-        // 超过4条时显示折叠提示
-        if (pendingQueue.size() > 4) {
-            TextView more = LineTheme.text(ctx, "   ... 还有 " + (pendingQueue.size() - 4) + " 条排队中", LineTheme.FONT_XS, 0xFFCC8800, Typeface.ITALIC);
-            LineTheme.padding(more, LineTheme.MD, 2, 0, 4);
-            pendingContainer.addView(more, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        }
-        pendingContainer.setVisibility(VISIBLE);
+        pendingQueueView.refresh();
     }
 
     private void sendPending() {
-        if (pendingQueue.isEmpty()) return;
-        QueuedItem item = pendingQueue.remove(0);
+        ComposerQueue.Item item = pendingQueue.poll();
+        if (item == null) {
+            return;
+        }
         updatePendingBlock();
         if (listener != null) {
-            listener.onSend(item.text, item.attachments != null ? item.attachments : Collections.emptyList());
+            listener.onSend(item.text(), item.attachments());
         }
     }
 
     private void clearPending() {
         pendingQueue.clear();
-        pendingContainer.removeAllViews();
-        pendingContainer.setVisibility(GONE);
+        updatePendingBlock();
         updateSendButton();
     }
 
@@ -821,54 +674,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
     }
 
     private void clearAttachments() {
-        attachments.clear();
-        renderAttachments();
-        updateSendButton();
-    }
-
-    private void renderAttachments() {
-        attachmentList.removeAllViews();
-        if (attachments.isEmpty()) {
-            attachmentScroll.setVisibility(GONE);
-            return;
-        }
-        attachmentScroll.setVisibility(VISIBLE);
-        for (InputAttachment attachment : attachments) {
-            attachmentList.addView(attachmentChip(attachment));
-        }
-    }
-
-    private View attachmentChip(InputAttachment attachment) {
-        Context context = getContext();
-        LinearLayout chip = new LinearLayout(context);
-        chip.setOrientation(HORIZONTAL);
-        chip.setGravity(Gravity.CENTER_VERTICAL);
-        chip.setBackground(LineTheme.roundedStroke(context, LineTheme.INPUT_BG, 17, LineTheme.BORDER));
-        LineTheme.padding(chip, LineTheme.MD, 0, LineTheme.SM, 0);
-
-        TextView name = LineTheme.textMedium(context, attachment.getName(), LineTheme.FONT_SM, LineTheme.TEXT_SECONDARY);
-        name.setSingleLine(true);
-        name.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-        name.setMaxWidth(LineTheme.dp(context, 170));
-        chip.addView(name, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-
-        IconButtonView remove = new IconButtonView(context, IconButtonView.CLOSE);
-        remove.setContentDescription(getContext().getString(R.string.composer_attachment_remove_desc));
-        remove.setIconColor(LineTheme.TEXT_TERTIARY);
-        remove.setIconSizeDp(18, 12);
-        remove.setOnClickListener(v -> {
-            attachments.remove(attachment);
-            renderAttachments();
-            updateSendButton();
-        });
-        LinearLayout.LayoutParams removeParams = new LinearLayout.LayoutParams(LineTheme.dp(context, 18), LineTheme.dp(context, 18));
-        removeParams.leftMargin = LineTheme.dp(context, LineTheme.SM);
-        chip.addView(remove, removeParams);
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LineTheme.dp(context, 34));
-        params.rightMargin = LineTheme.dp(context, LineTheme.SM);
-        chip.setLayoutParams(params);
-        return chip;
+        attachmentStrip.clear();
     }
 
     private void updateSlashPopup() {
@@ -1155,7 +961,9 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         modeSelectorText.setText(modeLabel(chatMode));
         modeSelectorText.setTextColor(streaming ? LineTheme.TEXT_TERTIARY : LineTheme.TEXT);
         modeSelectorChevron.setIconColor(streaming ? LineTheme.TEXT_TERTIARY : LineTheme.TEXT_SECONDARY);
-        modeSelectorButton.setBackground(LineTheme.rounded(getContext(), LineTheme.INPUT_BG, 17));
+        // setBackground replaces the ripple wrapper, so the state layer is re-attached here.
+        modeSelectorButton.setBackground(LineCards.pillBackground(getContext(), LineTheme.INPUT_BG));
+        LineTheme.attachStateLayer(modeSelectorButton);
         modeSelectorButton.setEnabled(!streaming);
         modeSelectorButton.setAlpha(streaming ? 0.62f : 1f);
     }
@@ -1198,7 +1006,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         // Build source list popup
         LinearLayout content = new LinearLayout(ctx);
         content.setOrientation(VERTICAL);
-        content.setBackground(LineTheme.roundedStroke(ctx, LineTheme.INPUT_BG, 12, LineTheme.BORDER_LIGHT));
+        content.setBackground(LineCards.cardBackground(ctx, LineTheme.INPUT_BG, LineTheme.BORDER_LIGHT));
         LineTheme.padding(content, 4, 4, 4, 4);
     
         java.util.List<String> sourceNames = new java.util.ArrayList<>(sources.keySet());
@@ -1217,7 +1025,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
             row.setOrientation(HORIZONTAL);
             row.setGravity(Gravity.CENTER_VERTICAL);
             boolean isActive = currentModelName.length() > 0;
-            row.setBackground(LineTheme.rounded(ctx, isActive ? 0xFF1A2A1A : android.graphics.Color.TRANSPARENT, 8));
+            row.setBackground(LineTheme.rounded(ctx, isActive ? LineTheme.ACCENT_DIM : android.graphics.Color.TRANSPARENT, LineTheme.SHAPE_SM));
             LineTheme.padding(row, LineTheme.SM, 0, LineTheme.SM, 0);
             row.setClickable(true);
     
@@ -1276,13 +1084,13 @@ public final class ComposerView extends LinearLayout implements QuoteController.
     
         LinearLayout sub = new LinearLayout(ctx);
         sub.setOrientation(VERTICAL);
-        sub.setBackground(LineTheme.roundedStroke(ctx, LineTheme.INPUT_BG, 10, LineTheme.BORDER_LIGHT));
+        sub.setBackground(LineCards.cardBackground(ctx, LineTheme.INPUT_BG, LineTheme.BORDER_LIGHT));
         LineTheme.padding(sub, 4, 4, 4, 4);
     
         // Query button
         TextView queryBtn = LineTheme.textMedium(ctx, ctx.getString(R.string.composer_model_submenu_query_button), LineTheme.FONT_XS, LineTheme.ACCENT);
         queryBtn.setGravity(Gravity.CENTER);
-        queryBtn.setBackground(LineTheme.roundedStroke(ctx, LineTheme.SURFACE_LIGHT, 6, LineTheme.ACCENT));
+        queryBtn.setBackground(LineTheme.roundedStroke(ctx, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_SM, LineTheme.ACCENT));
         LineTheme.padding(queryBtn, 0, 3, 0, 3);
         queryBtn.setClickable(true);
         queryBtn.setOnClickListener(v -> {
@@ -1298,7 +1106,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
             item.setSingleLine(true);
             item.setEllipsize(TextUtils.TruncateAt.END);
             item.setGravity(Gravity.CENTER_VERTICAL);
-            item.setBackground(LineTheme.rounded(ctx, sel ? LineTheme.ACCENT : android.graphics.Color.TRANSPARENT, 8));
+            item.setBackground(LineTheme.rounded(ctx, sel ? LineTheme.ACCENT : android.graphics.Color.TRANSPARENT, LineTheme.SHAPE_SM));
             LineTheme.padding(item, LineTheme.SM, 0, LineTheme.SM, 0);
             item.setClickable(true);
             final String mid = m.getId();
@@ -1348,7 +1156,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         row.setOrientation(HORIZONTAL);
         row.setGravity(Gravity.CENTER_VERTICAL);
         row.setPadding(LineTheme.dp(ctx, LineTheme.MD), 0, LineTheme.dp(ctx, LineTheme.MD), 0);
-        row.setBackground(LineTheme.rounded(ctx, selected ? LineTheme.ACCENT : android.graphics.Color.TRANSPARENT, 11));
+        row.setBackground(LineTheme.rounded(ctx, selected ? LineTheme.ACCENT : android.graphics.Color.TRANSPARENT, LineTheme.SHAPE_MD));
         row.setClickable(true);
         row.setOnClickListener(v -> {
             if (modelPopup != null) modelPopup.dismiss();
@@ -1360,7 +1168,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
             });
         });
         View dot = new View(ctx);
-        dot.setBackground(LineTheme.rounded(ctx, selected ? LineTheme.TEXT_ON_COLOR : LineTheme.BORDER, 4));
+        dot.setBackground(LineTheme.rounded(ctx, selected ? LineTheme.TEXT_ON_COLOR : LineTheme.BORDER, LineTheme.SHAPE_XS));
         LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(LineTheme.dp(ctx, 7), LineTheme.dp(ctx, 7));
         dotParams.rightMargin = LineTheme.dp(ctx, LineTheme.SM);
         row.addView(dot, dotParams);
@@ -1391,7 +1199,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         int popupHeight = rowHeight * 4 + LineTheme.dp(context, 6);
         LinearLayout content = new LinearLayout(context);
         content.setOrientation(VERTICAL);
-        content.setBackground(LineTheme.roundedStroke(context, LineTheme.INPUT_BG, 14, LineTheme.BORDER_LIGHT));
+        content.setBackground(LineCards.cardBackground(context, LineTheme.INPUT_BG, LineTheme.BORDER_LIGHT));
         LineTheme.padding(content, 3, 3, 3, 3);
         content.addView(modeOption(context, "Chat", ChatMode.CHAT), new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, rowHeight));
         content.addView(modeOption(context, "Plan", ChatMode.PLAN), new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, rowHeight));
@@ -1416,7 +1224,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         item.setGravity(Gravity.CENTER_VERTICAL);
         item.setSingleLine(true);
         item.setPadding(LineTheme.dp(context, LineTheme.MD), 0, LineTheme.dp(context, LineTheme.MD), 0);
-        item.setBackground(LineTheme.rounded(context, selected ? LineTheme.ACCENT : android.graphics.Color.TRANSPARENT, 11));
+        item.setBackground(LineTheme.rounded(context, selected ? LineTheme.ACCENT : android.graphics.Color.TRANSPARENT, LineTheme.SHAPE_MD));
         item.setClickable(true);
         item.setOnClickListener(v -> {
             if (modePopup != null) {

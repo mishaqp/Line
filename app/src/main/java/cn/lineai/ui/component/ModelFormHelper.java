@@ -39,7 +39,7 @@ public final class ModelFormHelper {
         input.setSingleLine(!multiline);
         input.setMinHeight(LineTheme.dp(context, multiline ? 120 : 48));
         input.setIncludeFontPadding(false);
-        input.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, 12, LineTheme.BORDER_LIGHT));
+        input.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_MD, LineTheme.BORDER_LIGHT));
         input.setPadding(LineTheme.dp(context, LineTheme.LG), LineTheme.dp(context, LineTheme.MD), LineTheme.dp(context, LineTheme.LG), LineTheme.dp(context, LineTheme.MD));
         input.setInputType(secure
                 ? InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD
@@ -52,7 +52,7 @@ public final class ModelFormHelper {
         Context context = row.getContext();
         TextView button = LineTheme.text(context, label, LineTheme.FONT_MD, active ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT_SECONDARY, Typeface.BOLD);
         button.setGravity(Gravity.CENTER);
-        button.setBackground(LineTheme.rounded(context, active ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, 12));
+        button.setBackground(LineTheme.rounded(context, active ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_MD));
         button.setAlpha(enabled || active ? 1f : 0.45f);
         if (enabled && onClick != null) {
             button.setOnClickListener(v -> onClick.run());

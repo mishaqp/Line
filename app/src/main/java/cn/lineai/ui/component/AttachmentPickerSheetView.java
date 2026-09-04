@@ -53,7 +53,7 @@ public final class AttachmentPickerSheetView extends FrameLayout {
 
         panel = new LinearLayout(context);
         panel.setOrientation(LinearLayout.VERTICAL);
-        panel.setBackground(LineTheme.roundedTop(context, LineTheme.SURFACE_ELEVATED, 16));
+        panel.setBackground(LineTheme.roundedTop(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_LG));
         FrameLayout.LayoutParams panelParams = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LineTheme.dp(context, 560));
         panelParams.gravity = Gravity.BOTTOM;
         addView(panel, panelParams);
@@ -81,7 +81,7 @@ public final class AttachmentPickerSheetView extends FrameLayout {
         IconButtonView close = new IconButtonView(context, IconButtonView.CLOSE);
         close.setIconColor(LineTheme.TEXT_SECONDARY);
         close.setIconSizeDp(36, 18);
-        close.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, 18));
+        close.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_LG));
         close.setOnClickListener(v -> close());
         LinearLayout.LayoutParams closeParams = new LinearLayout.LayoutParams(LineTheme.dp(context, 36), LineTheme.dp(context, 36));
         closeParams.leftMargin = LineTheme.dp(context, LineTheme.MD);
@@ -282,7 +282,7 @@ public final class AttachmentPickerSheetView extends FrameLayout {
             IconButtonView pick = new IconButtonView(context, selected ? IconButtonView.CHECK : IconButtonView.PLUS);
             pick.setIconColor(selected ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT_SECONDARY);
             pick.setIconSizeDp(26, 14);
-            pick.setBackground(LineTheme.rounded(context, selected ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, 13));
+            pick.setBackground(LineTheme.rounded(context, selected ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_MD));
             pick.setClickable(false);
             LinearLayout.LayoutParams pickParams = new LinearLayout.LayoutParams(LineTheme.dp(context, 26), LineTheme.dp(context, 26));
             pickParams.leftMargin = LineTheme.dp(context, LineTheme.SM);

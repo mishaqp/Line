@@ -110,7 +110,7 @@ public final class DrawerView extends FrameLayout {
 
         tabs = new LinearLayout(context);
         tabs.setOrientation(LinearLayout.HORIZONTAL);
-        tabs.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, 8));
+        tabs.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_SM));
         LineTheme.padding(tabs, 2, 2, 2, 2);
         LinearLayout.LayoutParams tabParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         tabParams.leftMargin = LineTheme.dp(context, LineTheme.LG);
@@ -307,7 +307,7 @@ public final class DrawerView extends FrameLayout {
         LinearLayout newButton = new LinearLayout(context);
         newButton.setOrientation(LinearLayout.HORIZONTAL);
         newButton.setGravity(Gravity.CENTER);
-        newButton.setBackground(LineTheme.rounded(context, LineTheme.ACCENT, 12));
+        newButton.setBackground(LineTheme.rounded(context, LineTheme.ACCENT, LineTheme.SHAPE_MD));
         newButton.setClickable(true);
         newButton.setOnClickListener(v -> {
             if (listener != null) {
@@ -357,7 +357,7 @@ public final class DrawerView extends FrameLayout {
         Context context = getContext();
         LinearLayout strip = new LinearLayout(context);
         strip.setOrientation(LinearLayout.VERTICAL);
-        strip.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, 8, LineTheme.BORDER_LIGHT));
+        strip.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_SM, LineTheme.BORDER_LIGHT));
         LineTheme.padding(strip, LineTheme.SM, LineTheme.SM, LineTheme.SM, LineTheme.SM);
         if (projectRemovable) {
             strip.setClickable(true);
@@ -447,7 +447,7 @@ public final class DrawerView extends FrameLayout {
         LinearLayout tab = new LinearLayout(context);
         tab.setOrientation(LinearLayout.HORIZONTAL);
         tab.setGravity(Gravity.CENTER);
-        tab.setBackground(active ? LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 6) : null);
+        tab.setBackground(active ? LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_SM) : null);
         tab.setClickable(true);
         tab.setOnClickListener(v -> onClick.run());
         LineTheme.padding(tab, 0, LineTheme.SM, 0, LineTheme.SM);
@@ -483,7 +483,7 @@ public final class DrawerView extends FrameLayout {
         LinearLayout item = new LinearLayout(context);
         item.setOrientation(LinearLayout.HORIZONTAL);
         item.setGravity(Gravity.CENTER_VERTICAL);
-        item.setBackground(active ? LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 8) : null);
+        item.setBackground(active ? LineTheme.rounded(context, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_SM) : null);
         item.setClickable(true);
         item.setOnClickListener(v -> {
             if (listener != null) {
@@ -495,7 +495,7 @@ public final class DrawerView extends FrameLayout {
         list.addView(item, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         FrameLayout iconBox = new FrameLayout(context);
-        iconBox.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, 14));
+        iconBox.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_MD));
         IconButtonView messageIcon = inlineIcon(context, IconButtonView.MESSAGE_SQUARE, active ? LineTheme.ACCENT : LineTheme.TEXT_TERTIARY, 16);
         FrameLayout.LayoutParams messageParams = new FrameLayout.LayoutParams(LineTheme.dp(context, 16), LineTheme.dp(context, 16), Gravity.CENTER);
         iconBox.addView(messageIcon, messageParams);

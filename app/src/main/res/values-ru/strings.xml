@@ -49,6 +49,9 @@
     <string name="composer_attachment_remove_desc">Удалить вложение</string>
     <string name="composer_image_button_desc">Выбрать изображение для отправки</string>
     <string name="composer_image_remove_desc">Удалить выбранное изображение</string>
+    <string name="composer_image_default_name">изображение</string>
+    <string name="composer_queue_overflow">… ещё %1$d в очереди</string>
+    <string name="composer_queue_remove_desc">Убрать сообщение из очереди</string>
     <string name="composer_image_loading">Загрузка изображения…</string>
     <string name="composer_image_load_failed">Не удалось загрузить изображение</string>
     <string name="chat_mode_control_label">Управление</string>

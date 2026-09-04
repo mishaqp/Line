@@ -34,7 +34,7 @@ public final class LegalDialog {
 
         LinearLayout panel = new LinearLayout(context);
         panel.setOrientation(LinearLayout.VERTICAL);
-        panel.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 18));
+        panel.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_LG));
         LineTheme.padding(panel, LineTheme.LG, LineTheme.LG, LineTheme.LG, LineTheme.LG);
 
         TextView titleView = LineTheme.text(context, title == null ? "" : title, LineTheme.FONT_LG, LineTheme.TEXT, Typeface.BOLD);

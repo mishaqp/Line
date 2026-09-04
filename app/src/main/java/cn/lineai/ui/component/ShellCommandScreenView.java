@@ -67,7 +67,7 @@ public final class ShellCommandScreenView extends LinearLayout {
         commandBox.setTypeface(Typeface.MONOSPACE);
         commandBox.setTextIsSelectable(true);
         commandBox.setLineSpacing(LineTheme.dp(context, 4), 1f);
-        commandBox.setBackground(LineTheme.roundedStroke(context, LineTheme.CODE_BG, 12, LineTheme.CODE_BORDER));
+        commandBox.setBackground(LineTheme.roundedStroke(context, LineTheme.CODE_BG, LineTheme.SHAPE_MD, LineTheme.CODE_BORDER));
         LineTheme.padding(commandBox, LineTheme.MD, LineTheme.MD, LineTheme.MD, LineTheme.MD);
         content.addView(commandBox, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         body.addView(content, new ScrollView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));

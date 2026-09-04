@@ -103,14 +103,14 @@ public final class TerminalProviderDetailScreenView extends ScreenScaffoldView {
         row.setGravity(Gravity.CENTER_VERTICAL);
         row.setClickable(true);
         row.setOnClickListener(v -> showAddConfirmDialog(provider));
-        row.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_ELEVATED, 8, LineTheme.BORDER_LIGHT));
+        row.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_SM, LineTheme.BORDER_LIGHT));
         LineTheme.padding(row, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
 
         IconButtonView icon = new IconButtonView(context, IconButtonView.TERMINAL);
         icon.setIconColor(LineTheme.ACCENT);
         icon.setIconSizeDp(32, 16);
         icon.setClickable(false);
-        icon.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 16));
+        icon.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_LG));
         row.addView(icon, new LayoutParams(LineTheme.dp(context, 32), LineTheme.dp(context, 32)));
 
         LinearLayout labels = new LinearLayout(context);
@@ -209,7 +209,7 @@ public final class TerminalProviderDetailScreenView extends ScreenScaffoldView {
     private LinearLayout createBottomPanel() {
         LinearLayout panel = new LinearLayout(getContext());
         panel.setOrientation(LinearLayout.VERTICAL);
-        panel.setBackground(LineTheme.roundedTop(getContext(), LineTheme.SURFACE_ELEVATED, 16));
+        panel.setBackground(LineTheme.roundedTop(getContext(), LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_LG));
         return panel;
     }
 
@@ -227,7 +227,7 @@ public final class TerminalProviderDetailScreenView extends ScreenScaffoldView {
 
     private void addHandle(LinearLayout panel) {
         View handle = new View(panel.getContext());
-        handle.setBackground(LineTheme.rounded(panel.getContext(), LineTheme.TEXT_TERTIARY, 2));
+        handle.setBackground(LineTheme.rounded(panel.getContext(), LineTheme.TEXT_TERTIARY, LineTheme.SHAPE_XS));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LineTheme.dp(panel.getContext(), 36), LineTheme.dp(panel.getContext(), 4));
         params.gravity = Gravity.CENTER_HORIZONTAL;
         params.topMargin = LineTheme.dp(panel.getContext(), LineTheme.SM);

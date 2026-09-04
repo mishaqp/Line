@@ -49,6 +49,9 @@
     <string name="composer_attachment_remove_desc">移除附件</string>
     <string name="composer_image_button_desc">选择图片发送</string>
     <string name="composer_image_remove_desc">移除已选图片</string>
+    <string name="composer_image_default_name">图片</string>
+    <string name="composer_queue_overflow">… 还有 %1$d 条排队中</string>
+    <string name="composer_queue_remove_desc">移除排队消息</string>
     <string name="composer_image_loading">正在加载图片…</string>
     <string name="composer_image_load_failed">加载图片失败</string>
     <string name="chat_mode_control_label">控制</string>

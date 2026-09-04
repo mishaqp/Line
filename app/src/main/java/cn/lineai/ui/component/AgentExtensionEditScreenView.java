@@ -193,7 +193,7 @@ public final class AgentExtensionEditScreenView extends ScreenScaffoldView {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         LinearLayout panel = new LinearLayout(getContext());
         panel.setOrientation(LinearLayout.VERTICAL);
-        panel.setBackground(LineTheme.rounded(getContext(), LineTheme.SURFACE_ELEVATED, 16));
+        panel.setBackground(LineTheme.rounded(getContext(), LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_LG));
         LineTheme.padding(panel, LineTheme.LG, LineTheme.LG, LineTheme.LG, LineTheme.LG);
         LinearLayout header = new LinearLayout(getContext());
         header.setOrientation(LinearLayout.HORIZONTAL);
@@ -209,7 +209,7 @@ public final class AgentExtensionEditScreenView extends ScreenScaffoldView {
         IconButtonView close = new IconButtonView(getContext(), IconButtonView.CLOSE);
         close.setIconColor(LineTheme.TEXT_SECONDARY);
         close.setIconSizeDp(34, 17);
-        close.setBackground(LineTheme.rounded(getContext(), LineTheme.SURFACE_LIGHT, 17));
+        close.setBackground(LineTheme.rounded(getContext(), LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_LG));
         close.setOnClickListener(v -> dialog.dismiss());
         LinearLayout.LayoutParams closeParams = new LinearLayout.LayoutParams(LineTheme.dp(getContext(), 34), LineTheme.dp(getContext(), 34));
         closeParams.leftMargin = LineTheme.dp(getContext(), LineTheme.MD);
@@ -334,7 +334,7 @@ public final class AgentExtensionEditScreenView extends ScreenScaffoldView {
         input.setSingleLine(false);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         input.setIncludeFontPadding(false);
-        input.setBackground(LineTheme.roundedStroke(context, LineTheme.INPUT_BG, 8, LineTheme.BORDER_LIGHT));
+        input.setBackground(LineTheme.roundedStroke(context, LineTheme.INPUT_BG, LineTheme.SHAPE_SM, LineTheme.BORDER_LIGHT));
         input.setPadding(LineTheme.dp(context, LineTheme.MD), LineTheme.dp(context, LineTheme.MD),
                 LineTheme.dp(context, LineTheme.MD), LineTheme.dp(context, LineTheme.MD));
         return input;
@@ -350,7 +350,7 @@ public final class AgentExtensionEditScreenView extends ScreenScaffoldView {
         Context context = content.getContext();
         LinearLayout group = new LinearLayout(context);
         group.setOrientation(LinearLayout.VERTICAL);
-        group.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 12));
+        group.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         LineTheme.padding(group, LineTheme.LG, LineTheme.LG, LineTheme.LG, LineTheme.LG);
         group.addView(first, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         LinearLayout.LayoutParams secondParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -435,7 +435,7 @@ public final class AgentExtensionEditScreenView extends ScreenScaffoldView {
             setGravity(Gravity.CENTER);
             setMinimumHeight(LineTheme.dp(context, 44));
             setClickable(true);
-            setBackground(LineTheme.rounded(context, LineTheme.ACCENT, 8));
+            setBackground(LineTheme.rounded(context, LineTheme.ACCENT, LineTheme.SHAPE_SM));
             LineTheme.padding(this, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
 
             progressBar = new ProgressBar(context);

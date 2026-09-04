@@ -332,10 +332,10 @@ public final class ModelAddScreenView extends LinearLayout {
         card.setOrientation(HORIZONTAL);
         card.setGravity(Gravity.CENTER_VERTICAL);
         card.setMinimumHeight(LineTheme.dp(context, 74));
-        card.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, 12, LineTheme.BORDER_LIGHT));
+        card.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_MD, LineTheme.BORDER_LIGHT));
         LineTheme.padding(card, LineTheme.MD, LineTheme.MD, LineTheme.MD, LineTheme.MD);
         FrameLayout iconWrap = new FrameLayout(context);
-        iconWrap.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 8));
+        iconWrap.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_SM));
         IconButtonView fileIcon = new IconButtonView(context, IconButtonView.FILE_UP);
         fileIcon.setIconColor(LineTheme.ACCENT);
         fileIcon.setIconSizeDp(38, 20);
@@ -402,7 +402,7 @@ public final class ModelAddScreenView extends LinearLayout {
         LinearLayout selector = new LinearLayout(context);
         selector.setOrientation(HORIZONTAL);
         selector.setGravity(Gravity.CENTER_VERTICAL);
-        selector.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, 12, LineTheme.BORDER_LIGHT));
+        selector.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_MD, LineTheme.BORDER_LIGHT));
         LineTheme.padding(selector, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
         boolean hasSelected = selectedModelId[0].length() > 0;
         queryLabel.setText(hasSelected ? selectedModelId[0] : context.getString(R.string.screen_model_add_pick_first));
@@ -595,7 +595,7 @@ public final class ModelAddScreenView extends LinearLayout {
             TextView button = (TextView) providerRow.getChildAt(i);
             boolean active = isActiveProviderIndex(i);
             button.setTextColor(active ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT_SECONDARY);
-            button.setBackground(LineTheme.rounded(getContext(), active ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, 12));
+            button.setBackground(LineTheme.rounded(getContext(), active ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_MD));
             button.setAlpha(lockedPreset && !active ? 0.45f : 1f);
         }
     }
@@ -629,7 +629,7 @@ public final class ModelAddScreenView extends LinearLayout {
         if (queryIcon != null) {
             queryIcon.setIconColor((canQuery || fetchingModels) ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT_TERTIARY);
         }
-        queryButton.setBackground(LineTheme.rounded(getContext(), (canQuery || fetchingModels) ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, 12));
+        queryButton.setBackground(LineTheme.rounded(getContext(), (canQuery || fetchingModels) ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_MD));
         queryButton.setEnabled(canQuery);
     }
 

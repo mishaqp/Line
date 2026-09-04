@@ -207,17 +207,45 @@ public final class LineTheme {
         view.setBackground(new RippleDrawable(stateLayers, base, mask));
     }
 
+    /**
+     * Corner radii for an asymmetric Material 3 chat bubble, in the order expected by
+     * {@link GradientDrawable#setCornerRadii(float[])} (top-left, top-right, bottom-right,
+     * bottom-left, each as an x/y pair).
+     *
+     * <p>The "tail" is the single tightened corner on the bottom edge: bottom-right for an
+     * outgoing (user) bubble, bottom-left for an incoming (assistant) bubble. Pure function
+     * of its arguments — it takes pixel values so it can be unit tested without a Context.</p>
+     *
+     * @param largePx radius applied to the three rounded corners (M3 {@code SHAPE_LG}).
+     * @param smallPx radius applied to the tail corner (M3 {@code SHAPE_XS}).
+     * @param tailOnEnd {@code true} for the outgoing/user side, {@code false} for incoming/AI.
+     */
+    public static float[] bubbleCornerRadii(float largePx, float smallPx, boolean tailOnEnd) {
+        float bottomRight = tailOnEnd ? smallPx : largePx;
+        float bottomLeft = tailOnEnd ? largePx : smallPx;
+        return new float[] {
+                largePx, largePx,
+                largePx, largePx,
+                bottomRight, bottomRight,
+                bottomLeft, bottomLeft
+        };
+    }
+
+    /** Outgoing (user) chat bubble: {@code SHAPE_LG} with a {@code SHAPE_XS} tail bottom-right. */
     public static GradientDrawable userBubble(Context context) {
+        return bubble(context, USER_BUBBLE, true);
+    }
+
+    /** Incoming (assistant) chat bubble: mirror of {@link #userBubble(Context)}. */
+    public static GradientDrawable assistantBubble(Context context) {
+        return bubble(context, AI_BUBBLE, false);
+    }
+
+    /** Chat bubble drawable in {@code color}; see {@link #bubbleCornerRadii(float, float, boolean)}. */
+    public static GradientDrawable bubble(Context context, int color, boolean tailOnEnd) {
         GradientDrawable drawable = new GradientDrawable();
-        drawable.setColor(USER_BUBBLE);
-        float large = dp(context, 16);
-        float small = dp(context, 4);
-        drawable.setCornerRadii(new float[] {
-                large, large,
-                large, large,
-                small, small,
-                large, large
-        });
+        drawable.setColor(color);
+        drawable.setCornerRadii(bubbleCornerRadii(dp(context, SHAPE_LG), dp(context, SHAPE_XS), tailOnEnd));
         return drawable;
     }
 

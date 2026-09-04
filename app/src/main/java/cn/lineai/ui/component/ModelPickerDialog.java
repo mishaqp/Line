@@ -35,10 +35,10 @@ public final class ModelPickerDialog {
 
         LinearLayout panel = new LinearLayout(context);
         panel.setOrientation(LinearLayout.VERTICAL);
-        panel.setBackground(LineTheme.roundedTop(context, LineTheme.SURFACE_ELEVATED, 16));
+        panel.setBackground(LineTheme.roundedTop(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_LG));
 
         View handle = new View(context);
-        handle.setBackground(LineTheme.rounded(context, LineTheme.TEXT_TERTIARY, 2));
+        handle.setBackground(LineTheme.rounded(context, LineTheme.TEXT_TERTIARY, LineTheme.SHAPE_XS));
         LinearLayout.LayoutParams handleParams = new LinearLayout.LayoutParams(LineTheme.dp(context, 36), LineTheme.dp(context, 4));
         handleParams.gravity = Gravity.CENTER_HORIZONTAL;
         handleParams.topMargin = LineTheme.dp(context, LineTheme.SM);
