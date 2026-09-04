@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -36,34 +36,12 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run unit tests
-        run: ./gradlew :app:testDebugUnitTest > build-output.log 2>&1
+        run: ./gradlew :app:testDebugUnitTest
 
-      # 显式跑 root/skill 相关测试类：Gradle 在过滤器匹配不到任何测试时会失败，
-      # 因此这一步同时保证这些测试真的存在并执行。
       # :app:testDebugUnitTest 不会编译 :feature-tool 的测试源码，
       # 因此这里显式跑整个 :feature-tool 测试任务（含 root/skill 测试类）。
       - name: Run feature-tool unit tests
-        run: ./gradlew :feature-tool:testDebugUnitTest > tool-tests-output.log 2>&1
-
-      # 日志与产物无法通过 Actions 界面下载时（受限网络），把报告提交回分支，
-      # 便于在沙箱里直接读取（含成功运行的测试计数）。[skip ci] 防止自我触发。
-      - name: Publish test reports
-        if: always()
-        run: |
-          rm -rf ci-diag
-          mkdir -p ci-diag
-          cp build-output.log ci-diag/build-output.log || true
-          cp tool-tests-output.log ci-diag/tool-tests-output.log || true
-          grep -E "error:|FAILED|Execution failed|> Task .* FAILED" build-output.log | head -300 > ci-diag/errors.txt || true
-          shopt -s nullglob
-          for f in */build/test-results/*/*.xml; do cp "$f" ci-diag/; done
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f ci-diag
-          if ! git diff --cached --quiet; then
-            git commit -m "ci: publish failure reports [skip ci]"
-            git push origin HEAD:${{ github.ref_name }}
-          fi
+        run: ./gradlew :feature-tool:testDebugUnitTest
 
       - name: Run lint
         run: ./gradlew :app:lintDebug
