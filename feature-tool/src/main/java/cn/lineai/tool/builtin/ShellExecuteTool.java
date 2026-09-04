@@ -185,6 +185,9 @@ public final class ShellExecuteTool extends BaseTool {
             context.reportToolProgress(getName(), "", false);
         }
         builder.redirectErrorStream(true);
+        // Never leave the child stdin pipe open: an interactive su without a
+        // terminal would otherwise wait forever for a password.
+        builder.redirectInput(ProcessBuilder.Redirect.from(new File("/dev/null")));
         try {
             Process process = builder.start();
             ByteArrayOutputStream output = new ByteArrayOutputStream();
