@@ -247,7 +247,7 @@
     <string name="tool_agent_output_still_running">Agent is still running. Poll again later or wait for completion.</string>
     <string name="tool_agent_output_failed">Agent finished with error.</string>
     <string name="tool_agent_output_empty">Agent finished with empty output.</string>
-    <string name="tool_root_unavailable">Root is unavailable: `su -c 'id -u'` did not return 0. Grant root permission to LineCode in KernelSU/Magisk, then retry.</string>
+    <string name="tool_root_unavailable">Root is unavailable: su did not return uid 0. Grant root permission to LineCode in KernelSU/Magisk, then retry.</string>
     <string name="tool_root_exec_failed">Root command failed (exit %1$d): %2$s</string>
     <string name="tool_root_timeout">Root command timed out after %1$d ms</string>
     <string name="tool_skill_store_unavailable">Skill storage is not available in the current session. Open the Extensions screen once, then retry.</string>

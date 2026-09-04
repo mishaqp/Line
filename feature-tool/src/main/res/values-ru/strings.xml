@@ -247,7 +247,7 @@
     <string name="tool_agent_output_still_running">Агент ещё выполняется. Опросите позже или дождитесь завершения.</string>
     <string name="tool_agent_output_failed">Агент завершился с ошибкой.</string>
     <string name="tool_agent_output_empty">Агент завершился с пустым выводом.</string>
-    <string name="tool_root_unavailable">Root недоступен: `su -c 'id -u'` не вернул 0. Выдайте приложению LineCode root-доступ в KernelSU/Magisk и повторите.</string>
+    <string name="tool_root_unavailable">Root недоступен: su не вернул uid 0. Выдайте приложению LineCode root-доступ в KernelSU/Magisk и повторите.</string>
     <string name="tool_root_exec_failed">Root-команда завершилась ошибкой (код %1$d): %2$s</string>
     <string name="tool_root_timeout">Root-команда превысила время ожидания: %1$d мс</string>
     <string name="tool_skill_store_unavailable">Хранилище навыков недоступно в текущей сессии. Откройте один раз экран «Расширения» и повторите.</string>
