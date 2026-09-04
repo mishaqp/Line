@@ -57,8 +57,8 @@ public final class RootFileExecutor {
     public static String absolutePath(String homePath, String inputPath) throws RootFsException {
         String value = inputPath == null ? "" : inputPath.trim();
         if (value.length() == 0) {
-            String home = homePath == null ? "" : homePath.trim();
-            if (home.length() == 0) {
+            String home = homePath == null ? "" : homePath;
+            if (home.trim().length() == 0) {
                 throw new RootFsException("path is empty and no workspace path is set");
             }
             return home;

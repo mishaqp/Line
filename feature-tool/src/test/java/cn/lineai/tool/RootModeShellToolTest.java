@@ -35,7 +35,8 @@ public final class RootModeShellToolTest {
         Assert.assertFalse(result.getContent(), result.isError());
         Assert.assertTrue(result.getContent(), result.getContent().contains("uid=0(root)"));
         Assert.assertEquals(1, runner.scripts.size());
-        Assert.assertEquals("id", runner.scripts.get(0));
+        // 未显式给 cwd 时，命令默认在工作区目录下执行。
+        Assert.assertEquals("cd '/data/project' && id", runner.scripts.get(0));
     }
 
     @Test
