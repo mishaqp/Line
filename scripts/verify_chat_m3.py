@@ -167,13 +167,26 @@ check("ComposerView shrank below 1300 lines (was 1444)", composer_lines < 1300,
       "%d lines" % composer_lines)
 check("composer panel uses SHAPE_XL", "LineTheme.SHAPE_XL, LineTheme.BORDER" in composer)
 check("attach button is a pill with a state layer",
-      "attachStateLayer(attachButton)" in composer)
-check("image button is a pill with a state layer", "attachStateLayer(imageButton)" in composer)
+      "applyTonalIconButton(attachButton)" in composer)
+check("image button is a pill with a state layer", "applyTonalIconButton(imageButton)" in composer)
 check("send button uses pill backgrounds", "LineCards.pillBackground(getContext()" in composer)
 check("send-button queue colors are named constants",
       "QUEUE_STOP_COLOR" in composer and "QUEUE_APPEND_COLOR" in composer)
 check("model selector has a state layer", "attachStateLayer(modelSelectorButton)" in composer)
 check("mode selector has a state layer", "attachStateLayer(modeSelectorButton)" in composer)
+
+# Several palettes define inputBg == surfaceLight, so a SURFACE_LIGHT pill drawn on the
+# composer panel is invisible. Containers sitting on the panel must not use it.
+check("attach button is a visible tonal icon button",
+      "LineCards.applyTonalIconButton(attachButton)" in composer)
+check("image button is a visible tonal icon button",
+      "LineCards.applyTonalIconButton(imageButton)" in composer)
+check("model selector is an outlined chip", "LineCards.chipBackground(context)" in composer)
+check("mode selector is an outlined chip", "LineCards.chipBackground(getContext())" in composer)
+check("idle send button does not use SURFACE_LIGHT",
+      "hasContent ? LineTheme.ACCENT : LineTheme.BORDER_LIGHT" in composer)
+check("no control on the composer panel uses SURFACE_LIGHT",
+      "LineTheme.SURFACE_LIGHT" not in composer)
 
 # Public API of the composer must be unchanged by the decomposition.
 PUBLIC_API = [
@@ -241,6 +254,16 @@ check("no hardcoded corner radii under app/.../ui/", not offenders,
       "; ".join("%s:%s" % (name, radii) for name, radii in list(offenders.items())[:5]))
 
 # ------------------------------------------------------------- Shared card helpers
+check("LineCards exposes applyIconButton/applyTonalIconButton/chipBackground",
+      "applyIconButton(" in cards and "applyTonalIconButton(" in cards and "chipBackground(" in cards)
+
+# Palette-independent colors: no raw ARGB literals left in the chat components.
+for relative in ("app/src/main/java/cn/lineai/ui/component/ComposerView.java",
+                 "app/src/main/java/cn/lineai/ui/component/TextSelectionDialog.java"):
+    source = read(relative)
+    raw = re.findall(r"setBackgroundColor\(0x[0-9A-Fa-f]{8}\)", source)
+    check("%s has no hardcoded background color" % Path(relative).name, not raw, str(raw))
+
 card_helper = read("app/src/main/java/cn/lineai/ui/component/CardViewHelper.java")
 check("CardViewHelper delegates to LineCards",
       "LineCards.cardBackground(context)" in card_helper

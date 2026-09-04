@@ -77,6 +77,39 @@ public final class LineCards {
     }
 
     /**
+     * Styles an icon button as an M3 icon button with a visible container.
+     *
+     * <p>Use this instead of hand-setting a background: several palettes define
+     * {@code inputBg} and {@code surfaceLight} as the <em>same</em> color, so a
+     * "surface" pill drawn on the composer panel is literally invisible. Passing an
+     * explicit container colour keeps the affordance readable on every palette.</p>
+     */
+    public static void applyIconButton(View button, int container, int iconColor) {
+        if (button == null) {
+            return;
+        }
+        button.setBackground(pillBackground(button.getContext(), container));
+        button.setFocusable(true);
+        LineTheme.attachStateLayer(button, iconColor);
+    }
+
+    /**
+     * M3 <em>filled tonal</em> icon button: accent-tinted container with an accent icon.
+     * The standard treatment for secondary actions such as attach / pick image.
+     */
+    public static void applyTonalIconButton(View button) {
+        applyIconButton(button, LineTheme.ACCENT_MUTED, LineTheme.ACCENT);
+    }
+
+    /**
+     * Outlined chip container ({@link LineTheme#SHAPE_FULL} + border), for tappable
+     * inline selectors such as the model and chat-mode pickers.
+     */
+    public static GradientDrawable chipBackground(Context context) {
+        return pillBackground(context, LineTheme.SURFACE_ELEVATED, LineTheme.BORDER_LIGHT);
+    }
+
+    /**
      * M3 filled button: accent pill, on-color label, pressed/focus/hover state layer.
      * The state layer is drawn in {@link LineTheme#TEXT_ON_COLOR} so it stays visible on
      * top of the accent fill.

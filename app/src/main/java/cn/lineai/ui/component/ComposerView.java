@@ -143,7 +143,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         modelSelectorButton.setClickable(true);
         modelSelectorButton.setFocusable(true);
         modelSelectorButton.setOnClickListener(v -> showModelPopup(modelSelectorButton));
-        modelSelectorButton.setBackground(LineCards.pillBackground(context, LineTheme.SURFACE_LIGHT));
+        modelSelectorButton.setBackground(LineCards.chipBackground(context));
         LineTheme.attachStateLayer(modelSelectorButton);
         LineTheme.padding(modelSelectorButton, LineTheme.SM, 0, LineTheme.SM, 0);
 
@@ -178,7 +178,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         quoteBlock = new LinearLayout(context);
         quoteBlock.setOrientation(HORIZONTAL);
         quoteBlock.setGravity(Gravity.CENTER_VERTICAL);
-        quoteBlock.setBackgroundColor(0xFF1E1E2E);
+        quoteBlock.setBackgroundColor(LineTheme.SURFACE_ELEVATED);
         LineTheme.padding(quoteBlock, LineTheme.MD, LineTheme.SM, LineTheme.SM, LineTheme.SM);
         quoteBlock.setVisibility(GONE);
         android.view.View quoteBar = new android.view.View(context);
@@ -209,10 +209,9 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         panel.addView(inputRow, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         attachButton = new IconButtonView(context, IconButtonView.PLUS);
-        attachButton.setIconColor(LineTheme.TEXT_SECONDARY);
+        attachButton.setIconColor(LineTheme.ACCENT);
         attachButton.setIconSizeDp(40, 22);
-        attachButton.setBackground(LineCards.pillBackground(context, LineTheme.SURFACE_LIGHT));
-        LineTheme.attachStateLayer(attachButton);
+        LineCards.applyTonalIconButton(attachButton);
         attachButton.setOnClickListener(v -> {
             if (!streaming && listener != null) {
                 listener.onAttachClick();
@@ -220,10 +219,9 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         });
 
         imageButton = new IconButtonView(context, IconButtonView.IMAGE);
-        imageButton.setIconColor(LineTheme.TEXT_SECONDARY);
+        imageButton.setIconColor(LineTheme.ACCENT);
         imageButton.setIconSizeDp(40, 22);
-        imageButton.setBackground(LineCards.pillBackground(context, LineTheme.SURFACE_LIGHT));
-        LineTheme.attachStateLayer(imageButton);
+        LineCards.applyTonalIconButton(imageButton);
         imageButton.setContentDescription(context.getString(R.string.composer_image_button_desc));
         imageButton.setOnClickListener(v -> {
             if (!streaming && listener != null) {
@@ -540,7 +538,10 @@ public final class ComposerView extends LinearLayout implements QuoteController.
             sendButton.setIconType(IconButtonView.ARROW_UP);
             sendButton.setIconColor(hasContent ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT_TERTIARY);
             sendButton.setIconSizeDp(40, 22);
-            sendButton.setBackground(LineCards.pillBackground(getContext(), hasContent ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT));
+            // BORDER_LIGHT (not SURFACE_LIGHT): several palettes make surfaceLight equal to
+            // inputBg, which would render the idle send button invisible on the panel.
+            sendButton.setBackground(LineCards.pillBackground(getContext(),
+                    hasContent ? LineTheme.ACCENT : LineTheme.BORDER_LIGHT));
         }
         LineTheme.attachStateLayer(sendButton, LineTheme.TEXT_ON_COLOR);
         sendButton.setEnabled(streaming || hasContent);
@@ -962,7 +963,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         modeSelectorText.setTextColor(streaming ? LineTheme.TEXT_TERTIARY : LineTheme.TEXT);
         modeSelectorChevron.setIconColor(streaming ? LineTheme.TEXT_TERTIARY : LineTheme.TEXT_SECONDARY);
         // setBackground replaces the ripple wrapper, so the state layer is re-attached here.
-        modeSelectorButton.setBackground(LineCards.pillBackground(getContext(), LineTheme.INPUT_BG));
+        modeSelectorButton.setBackground(LineCards.chipBackground(getContext()));
         LineTheme.attachStateLayer(modeSelectorButton);
         modeSelectorButton.setEnabled(!streaming);
         modeSelectorButton.setAlpha(streaming ? 0.62f : 1f);
@@ -1090,7 +1091,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         // Query button
         TextView queryBtn = LineTheme.textMedium(ctx, ctx.getString(R.string.composer_model_submenu_query_button), LineTheme.FONT_XS, LineTheme.ACCENT);
         queryBtn.setGravity(Gravity.CENTER);
-        queryBtn.setBackground(LineTheme.roundedStroke(ctx, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_SM, LineTheme.ACCENT));
+        queryBtn.setBackground(LineTheme.roundedStroke(ctx, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_SM, LineTheme.ACCENT));
         LineTheme.padding(queryBtn, 0, 3, 0, 3);
         queryBtn.setClickable(true);
         queryBtn.setOnClickListener(v -> {
