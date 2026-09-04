@@ -119,6 +119,7 @@ public final class ScreenNavigationController {
         if ("llm".equals(safeScreenId)
                 || "input".equals(safeScreenId)
                 || "models".equals(safeScreenId)
+                || "codexAccount".equals(safeScreenId)
                 || "extensions".equals(safeScreenId)
                 || "mcp".equals(safeScreenId)
                 || "toolSettings".equals(safeScreenId)

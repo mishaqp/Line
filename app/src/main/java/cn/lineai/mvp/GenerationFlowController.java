@@ -31,6 +31,7 @@ import cn.lineai.util.StringUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import org.json.JSONObject;
 
 final class GenerationFlowController {
@@ -67,6 +68,20 @@ final class GenerationFlowController {
         String formatModelFailed(String error);
 
         String toolLimitNotExecutedMessage();
+
+        default void onGenerationCheckpoint(int generationId, String phase, int toolCallCount, String payloadJson) {
+        }
+
+        default void onGenerationFinished(int generationId, boolean success, String error) {
+        }
+
+        default boolean isGenerationDeadlineExceeded(int generationId) {
+            return false;
+        }
+
+        default String generationBudgetExceededMessage() {
+            return "Agent Runtime достиг лимита времени.";
+        }
     }
 
     private static final int MAX_RETRIES = 3;
@@ -86,6 +101,7 @@ final class GenerationFlowController {
     private final MainThreadDispatcher mainThread;
     private final BackgroundTaskRunner backgroundTasks;
     private final Host host;
+    private final ConcurrentHashMap<Integer, Integer> initialToolCallCounts = new ConcurrentHashMap<>();
     private final ToolConfirmationController toolConfirmationController;
     private final ToolExecutionScheduler toolExecutionScheduler;
     private final StreamingRenderController streamingRenderController;
@@ -351,11 +367,32 @@ final class GenerationFlowController {
         }
     }
 
+    void seedInitialToolCallCount(int generationId, int toolCallCount) {
+        initialToolCallCounts.put(generationId, Math.max(0, toolCallCount));
+    }
+
     void startInitialModelRequest(
             int generationId,
             ModelConfig selectedModel,
             ModelCancellationToken cancellationToken,
             String userInput
+    ) {
+        Integer existingBaseline = initialToolCallCounts.get(generationId);
+        startInitialModelRequest(
+                generationId,
+                selectedModel,
+                cancellationToken,
+                userInput,
+                existingBaseline == null ? 0 : existingBaseline
+        );
+    }
+
+    void startInitialModelRequest(
+            int generationId,
+            ModelConfig selectedModel,
+            ModelCancellationToken cancellationToken,
+            String userInput,
+            int initialToolCallCount
     ) {
         // 每次用户发起的新一轮生成开始时，清零 Agent 内部工具调用累计计数，
         // 使全局工具上限只统计本轮实际执行的工具调用。
@@ -365,8 +402,16 @@ final class GenerationFlowController {
         if (cancellationToken != null && cancellationToken.isCancelled()) {
             return;
         }
+        int baseline = Math.max(0, initialToolCallCount);
+        initialToolCallCounts.put(generationId, baseline);
+        host.onGenerationCheckpoint(
+                generationId,
+                "request_queued",
+                baseline,
+                "{\"phase\":\"request_queued\"}"
+        );
         ArrayList<ModelMessage> requestMessages = modelPromptController.buildModelMessages(userInput);
-        retryableModelStream(generationId, selectedModel, cancellationToken, requestMessages, 0, 0, userInput);
+        retryableModelStream(generationId, selectedModel, cancellationToken, requestMessages, baseline, 0, userInput);
     }
 
     private void retryableModelStream(
@@ -378,6 +423,16 @@ final class GenerationFlowController {
             int attempt,
             String userInput
     ) {
+        if (host.isGenerationDeadlineExceeded(generationId)) {
+            failGeneration(generationId, "", host.generationBudgetExceededMessage());
+            return;
+        }
+        host.onGenerationCheckpoint(
+                generationId,
+                "model_request",
+                absoluteToolCallCount(generationId, usedToolCallCount),
+                "{\"attempt\":" + attempt + "}"
+        );
         String assistantId = host.nextId();
         streamingRenderController.initRawText(assistantId);
         messages.add(new ChatMessage(assistantId, ChatMessage.Role.ASSISTANT, "", true));
@@ -403,6 +458,13 @@ final class GenerationFlowController {
                 if (tokenUsageTracker != null) {
                     tokenUsageTracker.record(response);
                 }
+                host.onGenerationCheckpoint(
+                        generationId,
+                        "model_response",
+                        absoluteToolCallCount(generationId, usedToolCallCount),
+                        "{\"text_chars\":" + response.getText().length()
+                                + ",\"tool_calls\":" + response.getToolCalls().size() + "}"
+                );
                 finishGeneration(generationId, assistantId, selectedModel, response, cancellationToken, usedToolCallCount);
             } catch (ModelCompletionException e) {
                 handleModelError(generationId, assistantId, selectedModel, cancellationToken,
@@ -603,6 +665,10 @@ final class GenerationFlowController {
             if (!chatSessionStore.isActiveGeneration(generationId)) {
                 return;
             }
+            if (host.isGenerationDeadlineExceeded(generationId)) {
+                failGeneration(generationId, assistantId, host.generationBudgetExceededMessage());
+                return;
+            }
             int index = findMessageIndex(assistantId);
             if (index < 0) {
                 return;
@@ -638,7 +704,11 @@ final class GenerationFlowController {
                                 true
                         ));
                     }
-                    finishActiveGeneration();
+                    finishActiveGeneration(generationId, false, generationController.toolLimitMessage(
+                            selectedModel,
+                            effectiveUsedToolCalls(usedToolCallCount),
+                            toolCalls.size()
+                    ));
                     host.persistCurrentConversation();
                     host.render();
                     return;
@@ -654,7 +724,7 @@ final class GenerationFlowController {
                 );
                 return;
             }
-            finishActiveGeneration();
+            finishActiveGeneration(generationId, true, "");
             host.persistCurrentConversation();
             host.render();
         });
@@ -691,6 +761,18 @@ final class GenerationFlowController {
                     toolCalls, context, cancellationToken
             );
             if (cancellationToken != null && cancellationToken.isCancelled()) {
+                mainThread.post(() -> {
+                    if (chatSessionStore.isActiveGeneration(generationId)
+                            && host.isGenerationDeadlineExceeded(generationId)) {
+                        failGeneration(generationId, "", host.generationBudgetExceededMessage());
+                    }
+                });
+                return;
+            }
+            if (host.isGenerationDeadlineExceeded(generationId)) {
+                mainThread.post(() -> failGeneration(
+                        generationId, "", host.generationBudgetExceededMessage()
+                ));
                 return;
             }
             mainThread.post(() -> {
@@ -712,6 +794,13 @@ final class GenerationFlowController {
     ) {
         toolMessageController.addOrReplaceToolResults(batch.getCompletedResults());
         int executedCount = usedToolCallCount + batch.getCompletedResults().size();
+        host.onGenerationCheckpoint(
+                generationId,
+                "tools_completed",
+                absoluteToolCallCount(generationId, executedCount),
+                "{\"completed\":" + batch.getCompletedResults().size()
+                        + ",\"pending\":" + (batch.getPendingCall() == null ? 0 : 1) + "}"
+        );
         if (batch.getPendingCall() != null) {
             ToolResult pendingResult = ToolResult.withReview(
                     batch.getPendingCall().getId(),
@@ -895,16 +984,18 @@ final class GenerationFlowController {
                 messages.add(new ChatMessage(host.nextId(), ChatMessage.Role.ASSISTANT, displayText, false));
             }
             streamingRenderController.removeRawText(assistantId);
-            finishActiveGeneration();
+            finishActiveGeneration(generationId, false, displayText);
             host.persistCurrentConversation();
             host.render();
         });
     }
 
-    private void finishActiveGeneration() {
+    private void finishActiveGeneration(int generationId, boolean success, String error) {
         chatSessionStore.setStreaming(false);
         host.setCurrentCancellationToken(null);
         host.stopGenerationKeepAlive();
+        initialToolCallCounts.remove(generationId);
+        host.onGenerationFinished(generationId, success, error);
     }
 
     private void flushAgentProgress(AgentProgressSession session) {
@@ -1014,6 +1105,12 @@ final class GenerationFlowController {
         }
         String name = error.getClass().getSimpleName();
         return name.length() == 0 ? "未知错误" : name;
+    }
+
+    private int absoluteToolCallCount(int generationId, int usedToolCallCount) {
+        Integer baseline = initialToolCallCounts.get(generationId);
+        return Math.max(0, baseline == null ? 0 : baseline)
+                + Math.max(0, effectiveUsedToolCalls(usedToolCallCount));
     }
 
     private int findMessageIndex(String id) {

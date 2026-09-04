@@ -12,6 +12,7 @@ import cn.lineai.context.ContextManager;
 import cn.lineai.context.TokenUsageTracker;
 import cn.lineai.data.db.LineCodeDatabase;
 import cn.lineai.data.importer.LineCodeArchiveService;
+import cn.lineai.data.repository.AgentTaskRepository;
 import cn.lineai.data.repository.AiBehaviorSettingsRepository;
 import cn.lineai.data.repository.ChatModeRepository;
 import cn.lineai.data.repository.ConversationRepository;
@@ -88,6 +89,7 @@ public final class MainDependencies {
     final ThemeSettingsRepository themeSettingsRepository;
     final PromptTemplateRepository promptTemplateRepository;
     final ConversationStore conversationRepository;
+    final AgentTaskRepository agentTaskRepository;
     final ProjectStore projectRepository;
     final LearningContextStore learningContextRepository;
     final LearningContextService learningContextService;
@@ -147,6 +149,7 @@ public final class MainDependencies {
         LineTheme.apply(themeSettingsRepository.resolveCurrentPalette());
         LineTheme.applyChatScale(themeSettingsRepository.getChatScale());
         conversationRepository = new ConversationRepository(database);
+        agentTaskRepository = new AgentTaskRepository(database);
         WorkspacePaths workspacePaths = new WorkspacePaths(context);
         projectRepository = new ProjectRepository(database, settingsRepository, workspacePaths);
         learningContextRepository = new LearningContextRepository(database, workspacePaths, promptTemplateRepository);
@@ -187,12 +190,12 @@ public final class MainDependencies {
         sshFileTreeRepository = new SshFileTreeRepository(sshService);
         ipcFileTreeRepository = new IpcFileTreeRepository(ipcProviderManager);
         contextManager = new ContextManager();
-        modelClient = new ModelClient();
+        modelClient = new ModelClient(appContext);
         tokenUsageTracker = new TokenUsageTracker();
         contextCompactionService = new ContextCompactionService(
                 modelClient,
                 new OpenAiResponsesCompactionProtocol(),
-                new CodexResponsesProtocol(),
+                new CodexResponsesProtocol(appContext),
                 promptTemplateRepository,
                 tokenUsageTracker);
         toolRegistry = new ToolRegistry(context, ipcProviderManager);

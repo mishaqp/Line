@@ -1,5 +1,6 @@
 package cn.lineai.ai.protocol;
 
+import android.content.Context;
 import cn.lineai.model.ModelProtocolType;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,9 +8,15 @@ import java.util.function.Supplier;
 
 public final class ModelProtocolFactory {
     private final Map<ModelProtocolType, Supplier<ModelProtocol>> registry = new HashMap<>();
+    private final Context context;
 
     public ModelProtocolFactory() {
-        register(ModelProtocolType.CODEX_RESPONSES, CodexResponsesProtocol::new);
+        this(null);
+    }
+
+    public ModelProtocolFactory(Context context) {
+        this.context = context;
+        register(ModelProtocolType.CODEX_RESPONSES, () -> new CodexResponsesProtocol(this.context));
         register(ModelProtocolType.ANTHROPIC_MESSAGES, AnthropicMessagesProtocol::new);
         register(ModelProtocolType.LOCAL_GGUF, LocalGgufProtocol::new);
         register(ModelProtocolType.OPENAI_COMPATIBLE, OpenAiCompatibleProtocol::new);

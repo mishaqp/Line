@@ -11,6 +11,7 @@ public final class Migrations {
         register(new AddToolCallObservabilityColumns());
         register(new AddIpcProvidersTable());
         register(new AddMessageTextChunksTable());
+        register(new AddAgentRuntimeTables());
     }
 
     private Migrations() {

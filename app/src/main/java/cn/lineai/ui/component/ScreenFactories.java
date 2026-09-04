@@ -135,6 +135,11 @@ public final class ScreenFactories {
 
             @Override
             public List<String> onFetchModelCatalog(cn.lineai.model.ModelProtocolType type, String baseUrl, String apiKey) throws Exception {
+                if (type == cn.lineai.model.ModelProtocolType.CODEX_RESPONSES
+                        && (apiKey == null || apiKey.trim().length() == 0)
+                        && cn.lineai.data.codex.CodexAuthManager.isAuthenticated(context)) {
+                    return cn.lineai.data.codex.CodexModelsRepository.fetchModelIds(context);
+                }
                 return catalogClient.fetch(type, baseUrl, apiKey);
             }
         });
@@ -161,6 +166,22 @@ public final class ScreenFactories {
         @Override
         public String screenId() {
             return "settings";
+        }
+    }
+
+    public static final class CodexAccountScreenFactory implements ScreenFactory {
+        @Override
+        public View createScreen(MainChatView view, MainUiController controller, Context context) {
+            return new CodexAccountScreenView(
+                    context,
+                    view::handleScreenBack,
+                    () -> controller.onSettingsItemSelected("modelAdd:preset:codex")
+            );
+        }
+
+        @Override
+        public String screenId() {
+            return "codexAccount";
         }
     }
 
@@ -393,7 +414,7 @@ public final class ScreenFactories {
     public static final class SecuritySettingsScreenFactory implements ScreenFactory {
         @Override
         public View createScreen(MainChatView view, MainUiController controller, Context context) {
-            return new SecuritySettingsScreenView(context, controller.getOutputSettings(), new SecuritySettingsScreenView.Listener() {
+            return new SecuritySettingsScreenView(context, controller.getOutputSettings(), controller.isFullAccessEnabled(), new SecuritySettingsScreenView.Listener() {
                 @Override
                 public void onBack() {
                     view.handleScreenBack();
@@ -412,6 +433,11 @@ public final class ScreenFactories {
                 @Override
                 public void onBypassPathProtectionChanged(boolean enabled) {
                     controller.onBypassPathProtectionChanged(enabled);
+                }
+
+                @Override
+                public void onFullAccessChanged(boolean enabled) {
+                    controller.onFullAccessChanged(enabled);
                 }
             });
         }

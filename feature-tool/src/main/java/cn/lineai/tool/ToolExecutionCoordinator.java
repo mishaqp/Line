@@ -3,6 +3,7 @@ import cn.lineai.model.tool.ToolCall;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public final class ToolExecutionCoordinator {
     private final ToolRegistry toolRegistry;
@@ -16,13 +17,19 @@ public final class ToolExecutionCoordinator {
     }
 
     public ToolExecutionPlan createPlan(List<ToolCall> toolCalls) {
+        return createPlan(toolCalls, null);
+    }
+
+    public ToolExecutionPlan createPlan(List<ToolCall> toolCalls, Predicate<ToolCall> forceSequential) {
         ArrayList<ToolCall> concurrentTasks = new ArrayList<>();
         ArrayList<ToolCall> sequentialTasks = new ArrayList<>();
         if (toolCalls == null) {
             return new ToolExecutionPlan(concurrentTasks, sequentialTasks);
         }
         for (ToolCall toolCall : toolCalls) {
-            if (isConcurrencySafe(toolCall)) {
+            if (forceSequential != null && forceSequential.test(toolCall)) {
+                sequentialTasks.add(toolCall);
+            } else if (isConcurrencySafe(toolCall)) {
                 concurrentTasks.add(toolCall);
             } else {
                 sequentialTasks.add(toolCall);

@@ -63,6 +63,10 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
     }
 
     private List<McpToolConfig> buildDefaultConfigs() {
+        return buildDefaultConfigs(resourceProvider);
+    }
+
+    static List<McpToolConfig> buildDefaultConfigs(ResourceProvider resourceProvider) {
         List<McpToolConfig> configs = new ArrayList<>();
         configs.add(new McpToolConfig("file_ops",
                 resourceProvider.getString(R.string.tool_group_file_ops_name),
@@ -105,7 +109,7 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
                 resourceProvider.getString(R.string.tool_group_shell_desc),
                 true,
                 new String[] {ToolNames.SHELL_EXECUTE},
-                java.util.Collections.unmodifiableSet(new HashSet<>(java.util.Arrays.asList(EXECUTION_SSH, EXECUTION_TERMINAL_PROVIDER, EXECUTION_ROOT))), "shell"));
+                MODE_ALL, "shell"));
         configs.add(new McpToolConfig(ToolNames.WEB_SEARCH,
                 resourceProvider.getString(R.string.tool_group_web_search_name),
                 resourceProvider.getString(R.string.tool_group_web_search_desc),
@@ -151,6 +155,16 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
     @Override
     public synchronized void setPermissionMode(String mode) {
         settingsRepository.setString(KEY_PERMISSION_MODE, normalizePermissionMode(mode));
+    }
+
+    @Override
+    public synchronized boolean isFullAccessEnabled() {
+        return settingsRepository.getBoolean(KEY_FULL_ACCESS, false);
+    }
+
+    @Override
+    public synchronized void setFullAccessEnabled(boolean enabled) {
+        settingsRepository.setBoolean(KEY_FULL_ACCESS, enabled);
     }
 
     @Override

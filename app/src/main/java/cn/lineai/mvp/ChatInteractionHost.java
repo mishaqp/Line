@@ -27,6 +27,11 @@ class ChatInteractionHost implements ChatInteractionController.Host {
     }
 
     @Override
+    public String projectPath() {
+        return coordinator.projectState().path();
+    }
+
+    @Override
     public void ensureCurrentConversation() {
         coordinator.ensureCurrentConversation();
     }
