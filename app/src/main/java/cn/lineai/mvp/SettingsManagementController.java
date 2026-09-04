@@ -88,6 +88,10 @@ public final class SettingsManagementController {
 
         void saveCustomThemeColors(Map<String, String> colors);
 
+        String getChatScaleMode();
+
+        void applyChatScaleMode(String mode);
+
         McpSettingsState getMcpSettingsState();
 
         void setMcpExecutionMode(String mode);
@@ -265,6 +269,16 @@ public final class SettingsManagementController {
         @Override
         public void saveCustomThemeColors(Map<String, String> colors) {
             LineTheme.apply(themeSettingsRepository.resolveCustomPalette(colors));
+        }
+
+        @Override
+        public String getChatScaleMode() {
+            return themeSettingsRepository.getChatScaleMode();
+        }
+
+        @Override
+        public void applyChatScaleMode(String mode) {
+            LineTheme.applyChatScale(themeSettingsRepository.setChatScaleMode(mode));
         }
 
         @Override
@@ -459,6 +473,15 @@ public final class SettingsManagementController {
 
     public void saveCustomThemeColors(Map<String, String> colors) {
         settingsStore.saveCustomThemeColors(colors);
+        host.recreateForTheme("theme");
+    }
+
+    public String getChatScaleMode() {
+        return settingsStore.getChatScaleMode();
+    }
+
+    public void setChatScaleMode(String mode) {
+        settingsStore.applyChatScaleMode(mode);
         host.recreateForTheme("theme");
     }
 

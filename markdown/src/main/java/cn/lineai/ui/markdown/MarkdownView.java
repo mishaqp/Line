@@ -14,6 +14,7 @@ import org.commonmark.parser.Parser;
 public final class MarkdownView extends LinearLayout {
     private final Parser parser;
     private final MarkdownRenderer renderer;
+    private int maxContentWidthPx;
     private String lastMarkdown;
     private boolean plainMode;
     private boolean codeWrapEnabled;
@@ -26,6 +27,36 @@ public final class MarkdownView extends LinearLayout {
         Iterable<Extension> extensions = Collections.singletonList(TablesExtension.create());
         parser = Parser.builder().extensions(extensions).build();
         renderer = new MarkdownRenderer(context);
+    }
+
+    /**
+     * Caps how wide this view may measure, in pixels; {@code 0} removes the cap.
+     *
+     * <p>Lets a host use {@code WRAP_CONTENT} so the view hugs a short paragraph, while
+     * still bounding the wide blocks - fenced code and GFM tables measure their content
+     * unbounded and would otherwise force the whole column open.</p>
+     */
+    public void setMaxContentWidth(int px) {
+        int value = Math.max(0, px);
+        if (maxContentWidthPx == value) {
+            return;
+        }
+        maxContentWidthPx = value;
+        requestLayout();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (maxContentWidthPx > 0) {
+            int mode = MeasureSpec.getMode(widthMeasureSpec);
+            int size = MeasureSpec.getSize(widthMeasureSpec);
+            if (mode == MeasureSpec.UNSPECIFIED || size > maxContentWidthPx) {
+                widthMeasureSpec = MeasureSpec.makeMeasureSpec(
+                        maxContentWidthPx,
+                        mode == MeasureSpec.EXACTLY ? MeasureSpec.EXACTLY : MeasureSpec.AT_MOST);
+            }
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     public void setCodeWrapEnabled(boolean enabled) {

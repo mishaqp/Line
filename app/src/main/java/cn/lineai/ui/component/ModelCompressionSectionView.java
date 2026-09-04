@@ -238,7 +238,7 @@ public final class ModelCompressionSectionView extends LinearLayout {
         LinearLayout selector = new LinearLayout(context);
         selector.setOrientation(HORIZONTAL);
         selector.setGravity(Gravity.CENTER_VERTICAL);
-        selector.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, 12, LineTheme.BORDER_LIGHT));
+        selector.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_MD, LineTheme.BORDER_LIGHT));
         LineTheme.padding(selector, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
         boolean hasSelected = selectedCompressionModelId[0].length() > 0;
         compressionQueryLabel.setText(hasSelected ? selectedCompressionModelId[0] : context.getString(R.string.screen_model_add_pick_first));
@@ -287,7 +287,7 @@ public final class ModelCompressionSectionView extends LinearLayout {
         if (compressionQueryIcon != null) {
             compressionQueryIcon.setIconColor((canQuery || fetchingCompressionModels) ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT_TERTIARY);
         }
-        compressionQueryButton.setBackground(LineTheme.rounded(context, (canQuery || fetchingCompressionModels) ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, 12));
+        compressionQueryButton.setBackground(LineTheme.rounded(context, (canQuery || fetchingCompressionModels) ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_MD));
         compressionQueryButton.setEnabled(canQuery);
     }
 

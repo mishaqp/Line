@@ -18,7 +18,7 @@ public final class ActionRowView extends LinearLayout {
         LineTheme.padding(this, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
 
         FrameLayout iconWrap = new FrameLayout(context);
-        iconWrap.setBackground(LineTheme.rounded(context, destructive ? LineTheme.DANGER_MUTED : LineTheme.ACCENT_MUTED, 8));
+        iconWrap.setBackground(LineTheme.rounded(context, destructive ? LineTheme.DANGER_MUTED : LineTheme.ACCENT_MUTED, LineTheme.SHAPE_SM));
         IconButtonView icon = new IconButtonView(context, iconType);
         icon.setIconColor(destructive ? LineTheme.DANGER : LineTheme.ACCENT);
         icon.setIconSizeDp(36, 20);
@@ -33,11 +33,11 @@ public final class ActionRowView extends LinearLayout {
         textParams.rightMargin = LineTheme.dp(context, LineTheme.MD);
         addView(textWrap, textParams);
 
-        TextView title = LineTheme.textMedium(context, label, LineTheme.FONT_MD, destructive ? LineTheme.DANGER : LineTheme.TEXT);
+        TextView title = LineTheme.textMedium(context, label, LineTheme.TYPE_TITLE, destructive ? LineTheme.DANGER : LineTheme.TEXT);
         textWrap.addView(title, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         if (desc != null && desc.length() > 0) {
-            TextView description = LineTheme.text(context, desc, LineTheme.FONT_XS, LineTheme.TEXT_TERTIARY, Typeface.NORMAL);
+            TextView description = LineTheme.text(context, desc, LineTheme.TYPE_BODY_SMALL, LineTheme.TEXT_TERTIARY, Typeface.NORMAL);
             description.setLineSpacing(LineTheme.dp(context, 3), 1f);
             LinearLayout.LayoutParams descParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
             descParams.topMargin = LineTheme.dp(context, 2);
@@ -54,7 +54,10 @@ public final class ActionRowView extends LinearLayout {
 
         if (onClick != null) {
             setClickable(true);
+            setFocusable(true);
             setOnClickListener(v -> onClick.run());
+            // M3 state layer; tinted red for destructive rows so the feedback matches the label.
+            LineTheme.attachStateLayer(this, destructive ? LineTheme.DANGER : LineTheme.ACCENT);
         }
     }
 }

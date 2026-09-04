@@ -113,6 +113,7 @@ public final class SettingsManagementControllerTest {
         private String toneMode = AiBehaviorSettings.TONE_CODING;
         private boolean thinkingScrollEnabled = true;
         private String themeMode = ThemePalette.MODE_DARK;
+        private String chatScaleMode = cn.lineai.model.ChatScale.MODE_NORMAL;
         private String executionMode = "local";
         private String mcpGroupId = "";
         private boolean mcpGroupEnabled;
@@ -239,6 +240,16 @@ public final class SettingsManagementControllerTest {
 
         @Override
         public void saveCustomThemeColors(Map<String, String> colors) {
+        }
+
+        @Override
+        public String getChatScaleMode() {
+            return chatScaleMode;
+        }
+
+        @Override
+        public void applyChatScaleMode(String mode) {
+            chatScaleMode = cn.lineai.model.ChatScale.normalizeMode(mode);
         }
 
         @Override

@@ -660,6 +660,16 @@ public final class MainCoordinator implements MainUiController {
     }
 
     @Override
+    public String getChatScaleMode() {
+        return settingsManagementController.getChatScaleMode();
+    }
+
+    @Override
+    public void onChatScaleModeChanged(String mode) {
+        settingsManagementController.setChatScaleMode(mode);
+    }
+
+    @Override
     public McpSettingsState getMcpSettingsState() {
         return settingsManagementController.getMcpSettingsState();
     }

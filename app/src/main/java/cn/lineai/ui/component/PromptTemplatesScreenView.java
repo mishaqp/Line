@@ -108,7 +108,7 @@ public final class PromptTemplatesScreenView extends ScreenScaffoldView {
             input.setSingleLine(false);
             input.setMinHeight(LineTheme.dp(context, 220));
             input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-            input.setBackground(LineTheme.roundedStroke(context, LineTheme.CODE_BG, 8, LineTheme.CODE_BORDER));
+            input.setBackground(LineTheme.roundedStroke(context, LineTheme.CODE_BG, LineTheme.SHAPE_SM, LineTheme.CODE_BORDER));
             input.setPadding(
                     LineTheme.dp(context, LineTheme.MD),
                     LineTheme.dp(context, LineTheme.MD),
@@ -162,7 +162,7 @@ public final class PromptTemplatesScreenView extends ScreenScaffoldView {
             button.setOrientation(HORIZONTAL);
             button.setGravity(Gravity.CENTER);
             button.setMinimumWidth(LineTheme.dp(context, 72));
-            button.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, 8, LineTheme.BORDER_LIGHT));
+            button.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_SM, LineTheme.BORDER_LIGHT));
             LineTheme.padding(button, LineTheme.SM, 0, LineTheme.SM, 0);
 
             IconButtonView icon = new IconButtonView(context, iconType);

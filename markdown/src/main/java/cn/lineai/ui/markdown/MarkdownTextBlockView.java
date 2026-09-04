@@ -13,11 +13,11 @@ public final class MarkdownTextBlockView extends TextView {
     public MarkdownTextBlockView(Context context, CharSequence text, int sizeSp, boolean heading, MarkdownLinkHandler linkHandler) {
         super(context);
         setTextColor(LineTheme.TEXT);
-        setTextSize(sizeSp);
+        setTextSize(LineTheme.chatSp(sizeSp));
         setIncludeFontPadding(false);
         // Do NOT set textIsSelectable here - it steals touch events from sibling buttons
         // Text selection is triggered programmatically via the "Select" button
-        setLineSpacing(LineTheme.dp(context, heading ? 3 : 4), 1.0f);
+        setLineSpacing(LineTheme.chatDp(context, heading ? 3 : 4), 1.0f);
         MarkdownLinks.apply(this, text, linkHandler);
         if (heading) {
             setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));

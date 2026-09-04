@@ -120,6 +120,66 @@ public final class LineTheme {
         DIFF_DEL_TEXT = palette.diffDelText;
     }
 
+    /**
+     * Chat-only text multiplier, driven by {@link cn.lineai.model.ChatScale}. Applied by
+     * {@link #chatSp(float)} / {@link #chatText}; global {@link #text} is deliberately
+     * untouched so settings screens keep the system size.
+     */
+    public static float CHAT_TEXT_SCALE = 1f;
+
+    /** Chat-only spacing multiplier; applied by {@link #chatDp(Context, float)}. */
+    public static float CHAT_DENSITY_SCALE = 1f;
+
+    /** Installs the chat scale factors; values are clamped by {@code ChatScale}. */
+    public static void applyChatScale(cn.lineai.model.ChatScale scale) {
+        if (scale == null) {
+            CHAT_TEXT_SCALE = 1f;
+            CHAT_DENSITY_SCALE = 1f;
+            return;
+        }
+        CHAT_TEXT_SCALE = scale.getTextScale();
+        CHAT_DENSITY_SCALE = scale.getDensityScale();
+    }
+
+    /** Scales an sp text size for the chat. Never returns below 1sp. */
+    public static float chatSp(float sizeSp) {
+        float scaled = sizeSp * CHAT_TEXT_SCALE;
+        return scaled < 1f ? 1f : scaled;
+    }
+
+    /**
+     * Scales a dp spacing value for the chat and converts it to pixels. A positive input
+     * never collapses to zero, so hairline dividers and strokes survive the compact preset.
+     */
+    public static int chatDp(Context context, float value) {
+        int scaled = dp(context, value * CHAT_DENSITY_SCALE);
+        if (value > 0f && scaled < 1) {
+            return 1;
+        }
+        return scaled;
+    }
+
+    /** {@link #text} with the chat text scale applied. */
+    public static TextView chatText(Context context, String value, float sizeSp, int color, int style) {
+        TextView textView = text(context, value, 0, color, style);
+        textView.setTextSize(chatSp(sizeSp));
+        return textView;
+    }
+
+    /** {@link #textMedium} with the chat text scale applied. */
+    public static TextView chatTextMedium(Context context, String value, float sizeSp, int color) {
+        TextView textView = textMedium(context, value, 0, color);
+        textView.setTextSize(chatSp(sizeSp));
+        return textView;
+    }
+
+    /** Applies chat padding (in dp, scaled) to a view. */
+    public static void chatPadding(View view, int left, int top, int right, int bottom) {
+        Context context = view.getContext();
+        view.setPadding(chatDp(context, left), chatDp(context, top),
+                chatDp(context, right), chatDp(context, bottom));
+    }
+
     public static int dp(Context context, float value) {
         return Math.round(value * context.getResources().getDisplayMetrics().density);
     }
@@ -207,17 +267,56 @@ public final class LineTheme {
         view.setBackground(new RippleDrawable(stateLayers, base, mask));
     }
 
+    /**
+     * Corner radii for an asymmetric Material 3 chat bubble, in the order expected by
+     * {@link GradientDrawable#setCornerRadii(float[])} (top-left, top-right, bottom-right,
+     * bottom-left, each as an x/y pair).
+     *
+     * <p>The "tail" is the single tightened corner on the bottom edge: bottom-right for an
+     * outgoing (user) bubble, bottom-left for an incoming (assistant) bubble. Pure function
+     * of its arguments — it takes pixel values so it can be unit tested without a Context.</p>
+     *
+     * @param largePx radius applied to the three rounded corners (M3 {@code SHAPE_LG}).
+     * @param smallPx radius applied to the tail corner (M3 {@code SHAPE_XS}).
+     * @param tailOnEnd {@code true} for the outgoing/user side, {@code false} for incoming/AI.
+     */
+    public static float[] bubbleCornerRadii(float largePx, float smallPx, boolean tailOnEnd) {
+        float bottomRight = tailOnEnd ? smallPx : largePx;
+        float bottomLeft = tailOnEnd ? largePx : smallPx;
+        return new float[] {
+                largePx, largePx,
+                largePx, largePx,
+                bottomRight, bottomRight,
+                bottomLeft, bottomLeft
+        };
+    }
+
+    /**
+     * Outgoing (user) chat bubble: {@code SHAPE_MD} with a {@code SHAPE_XS} tail bottom-right.
+     *
+     * <p>Deliberately tighter than the incoming bubble. Outgoing messages are usually one
+     * short line, and at that height a {@code SHAPE_LG} radius consumes almost the whole
+     * edge, turning the bubble into a stretched capsule.</p>
+     */
     public static GradientDrawable userBubble(Context context) {
+        return bubble(context, USER_BUBBLE, true, SHAPE_MD);
+    }
+
+    /** Incoming (assistant) chat bubble: mirror of {@link #userBubble(Context)}. */
+    public static GradientDrawable assistantBubble(Context context) {
+        return bubble(context, AI_BUBBLE, false);
+    }
+
+    /** Chat bubble drawable in {@code color}; see {@link #bubbleCornerRadii(float, float, boolean)}. */
+    public static GradientDrawable bubble(Context context, int color, boolean tailOnEnd) {
+        return bubble(context, color, tailOnEnd, SHAPE_LG);
+    }
+
+    /** Chat bubble drawable with an explicit large-corner radius. */
+    public static GradientDrawable bubble(Context context, int color, boolean tailOnEnd, int largeDp) {
         GradientDrawable drawable = new GradientDrawable();
-        drawable.setColor(USER_BUBBLE);
-        float large = dp(context, 16);
-        float small = dp(context, 4);
-        drawable.setCornerRadii(new float[] {
-                large, large,
-                large, large,
-                small, small,
-                large, large
-        });
+        drawable.setColor(color);
+        drawable.setCornerRadii(bubbleCornerRadii(dp(context, largeDp), dp(context, SHAPE_XS), tailOnEnd));
         return drawable;
     }
 

@@ -1,9 +1,9 @@
 package cn.lineai.ui.component;
 import cn.lineai.ui.theme.IconButtonView;
+import cn.lineai.ui.theme.LineCards;
 import cn.lineai.ui.theme.LineTheme;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -24,15 +24,17 @@ public final class CardViewHelper {
         card.setOrientation(LinearLayout.HORIZONTAL);
         card.setGravity(Gravity.CENTER_VERTICAL);
         card.setClickable(true);
+        card.setFocusable(true);
         card.setOnClickListener(v -> clickListener.onCardClick(id));
-        card.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_ELEVATED, 12, LineTheme.BORDER));
+        card.setBackground(LineCards.cardBackground(context));
+        LineTheme.attachStateLayer(card);
         LineTheme.padding(card, LineTheme.LG, LineTheme.MD, LineTheme.MD, LineTheme.MD);
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         cardParams.bottomMargin = LineTheme.dp(context, LineTheme.SM);
         content.addView(card, cardParams);
 
         FrameLayout iconWrap = new FrameLayout(context);
-        iconWrap.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 12));
+        iconWrap.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_MD));
         IconButtonView icon = new IconButtonView(context, iconType);
         icon.setIconColor(LineTheme.ACCENT);
         icon.setIconSizeDp(44, 22);
@@ -52,17 +54,14 @@ public final class CardViewHelper {
         titleRow.setGravity(Gravity.CENTER_VERTICAL);
         text.addView(titleRow, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        TextView titleView = LineTheme.text(context, title, LineTheme.FONT_LG, LineTheme.TEXT, Typeface.BOLD);
+        TextView titleView = LineCards.title(context, title);
         titleRow.addView(titleView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        TextView badgeView = LineTheme.text(context, badge, LineTheme.FONT_XS, LineTheme.ACCENT, Typeface.BOLD);
-        badgeView.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 999));
-        LineTheme.padding(badgeView, LineTheme.SM, 3, LineTheme.SM, 3);
+        TextView badgeView = LineCards.badge(context, badge);
         LinearLayout.LayoutParams badgeParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         badgeParams.leftMargin = LineTheme.dp(context, LineTheme.SM);
         titleRow.addView(badgeView, badgeParams);
 
-        TextView descView = LineTheme.text(context, desc, LineTheme.FONT_SM, LineTheme.TEXT_TERTIARY, Typeface.NORMAL);
-        descView.setLineSpacing(LineTheme.dp(context, 3), 1f);
+        TextView descView = LineCards.desc(context, desc);
         LinearLayout.LayoutParams descParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         descParams.topMargin = LineTheme.dp(context, LineTheme.XS);
         text.addView(descView, descParams);

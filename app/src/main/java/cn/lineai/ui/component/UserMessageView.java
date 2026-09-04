@@ -1,4 +1,5 @@
 package cn.lineai.ui.component;
+import cn.lineai.ui.theme.LineCards;
 import cn.lineai.ui.theme.LineTheme;
 
 import android.content.Context;
@@ -17,6 +18,7 @@ public final class UserMessageView extends LinearLayout {
     private final TextView contentText;
     private final LinearLayout attachmentList;
     private final MessageActionBarView actionBar;
+    private final MessageHeaderView headerView;
     private final int defaultPaddingLeft;
     private final int defaultPaddingTop;
     private final int defaultPaddingRight;
@@ -30,19 +32,27 @@ public final class UserMessageView extends LinearLayout {
         super(context);
         setOrientation(VERTICAL);
         setGravity(Gravity.END);
-        LineTheme.padding(this, LineTheme.LG, 0, LineTheme.LG, LineTheme.MD);
+        LineTheme.chatPadding(this, LineTheme.LG, LineTheme.XS, LineTheme.LG, LineTheme.LG);
         defaultPaddingLeft = getPaddingLeft();
         defaultPaddingTop = getPaddingTop();
         defaultPaddingRight = getPaddingRight();
         defaultPaddingBottom = getPaddingBottom();
 
-        contentText = LineTheme.text(context, "", 16, LineTheme.TEXT_ON_COLOR, Typeface.NORMAL);
+        headerView = new MessageHeaderView(context, true);
+        headerView.bind(context.getString(R.string.message_header_user));
+        LinearLayout.LayoutParams headerParams = new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        headerParams.bottomMargin = LineTheme.chatDp(context, LineTheme.XS);
+        addView(headerView, headerParams);
+
+        contentText = LineTheme.chatText(context, "", LineTheme.TYPE_TITLE, LineTheme.TEXT_ON_COLOR, Typeface.NORMAL);
         contentText.setLineSpacing(LineTheme.dp(context, 2), 1.0f);
-        contentText.setBackground(LineTheme.userBubble(context));
-        LineTheme.padding(contentText, LineTheme.MD, 5, LineTheme.MD, 5);
+        contentText.setBackground(LineTheme.rounded(context, LineTheme.USER_BUBBLE, LineTheme.SHAPE_LG));
+        LineTheme.chatPadding(contentText, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
+        contentText.setLineSpacing(LineTheme.chatDp(context, 2), 1.0f);
         int horizontalPaddingPx = LineTheme.dp(context, LineTheme.LG) * 2;
         int availableWidth = context.getResources().getDisplayMetrics().widthPixels - horizontalPaddingPx;
-        contentText.setMaxWidth((int) (availableWidth * 0.80f));
+        contentText.setMaxWidth((int) (availableWidth * 0.74f));
         addView(contentText, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         attachmentList = new LinearLayout(context);
@@ -98,10 +108,34 @@ public final class UserMessageView extends LinearLayout {
                 }
             }
         });
-        LinearLayout.LayoutParams actionParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LineTheme.dp(context, 22));
-        actionParams.topMargin = LineTheme.dp(context, 3);
+        actionBar.setMoreListener(this::toggleActionBar);
+        LinearLayout.LayoutParams actionParams = new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        actionParams.topMargin = LineTheme.dp(context, LineTheme.XS);
         addView(actionBar, actionParams);
     }
+
+    /**
+     * Toggles the secondary actions; driven by the list's item long-press.
+     *
+     * <p>Deliberately not an {@code OnLongClickListener} on this view: that would make the
+     * row consume touches and {@code ListView} would stop reporting item clicks, which is
+     * how multi-select picks messages.</p>
+     *
+     * @return {@code true} when the press was consumed.
+     */
+    public boolean toggleActionBar() {
+        if (actionBar.getVisibility() != VISIBLE) {
+            return false;
+        }
+        boolean next = !actionBar.isExpanded();
+        actionBar.setExpanded(next);
+        if (next) {
+            performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
+        }
+        return true;
+    }
+
 
     public void setMessageActionListener(MessageActionListener listener) {
         actionListener = listener;
@@ -115,6 +149,7 @@ public final class UserMessageView extends LinearLayout {
         currentMessage = message;
         String messageId = message.getId() == null ? "" : message.getId();
         if (!lastAnimatedMessageId.equals(messageId)) {
+            actionBar.setExpanded(false);
             lastAnimatedMessageId = messageId;
             setAlpha(0f);
             animate().alpha(1f).setDuration(ENTRANCE_FADE_MS).start();
@@ -155,11 +190,11 @@ public final class UserMessageView extends LinearLayout {
     }
 
     private TextView attachmentChip(InputAttachment attachment) {
-        TextView chip = LineTheme.textMedium(getContext(), attachment.getName(), LineTheme.FONT_XS, LineTheme.TEXT_SECONDARY);
+        TextView chip = LineTheme.chatTextMedium(getContext(), attachment.getName(), LineTheme.TYPE_BODY_SMALL, LineTheme.TEXT_SECONDARY);
         chip.setSingleLine(true);
         chip.setEllipsize(TextUtils.TruncateAt.MIDDLE);
         chip.setMaxWidth(LineTheme.dp(getContext(), 220));
-        chip.setBackground(LineTheme.roundedStroke(getContext(), LineTheme.SURFACE_LIGHT, 14, LineTheme.BORDER_LIGHT));
+        chip.setBackground(LineCards.pillBackground(getContext(), LineTheme.SURFACE_LIGHT, LineTheme.BORDER_LIGHT));
         LineTheme.padding(chip, LineTheme.SM, 4, LineTheme.SM, 4);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         params.bottomMargin = LineTheme.dp(getContext(), LineTheme.XS);

@@ -62,13 +62,13 @@ public final class ModelAddOptionsScreenView extends ScreenScaffoldView {
         card.setOrientation(HORIZONTAL);
         card.setGravity(Gravity.CENTER_VERTICAL);
         card.setMinimumHeight(LineTheme.dp(context, 92));
-        card.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_ELEVATED, 12, LineTheme.BORDER_LIGHT));
+        card.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD, LineTheme.BORDER_LIGHT));
         card.setClickable(true);
         card.setOnClickListener(v -> onClick.run());
         LineTheme.padding(card, LineTheme.LG, LineTheme.LG, LineTheme.LG, LineTheme.LG);
 
         FrameLayout largeIcon = new FrameLayout(context);
-        largeIcon.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 8));
+        largeIcon.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_SM));
         IconButtonView icon = new IconButtonView(context, iconType);
         icon.setIconColor(LineTheme.ACCENT);
         icon.setIconSizeDp(44, 22);
@@ -106,14 +106,14 @@ public final class ModelAddOptionsScreenView extends ScreenScaffoldView {
         LinearLayout row = new LinearLayout(context);
         row.setOrientation(HORIZONTAL);
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_ELEVATED, 12, LineTheme.BORDER_LIGHT));
+        row.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD, LineTheme.BORDER_LIGHT));
         row.setClickable(true);
         row.setOnClickListener(v -> listener.onProvider(preset.getId()));
         LineTheme.padding(row, LineTheme.MD, LineTheme.MD, LineTheme.MD, LineTheme.MD);
 
         TextView initial = LineTheme.text(context, name.substring(0, 1), LineTheme.FONT_MD, LineTheme.ACCENT, Typeface.BOLD);
         initial.setGravity(Gravity.CENTER);
-        initial.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 8));
+        initial.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_SM));
         row.addView(initial, new LinearLayout.LayoutParams(LineTheme.dp(context, 38), LineTheme.dp(context, 38)));
 
         LinearLayout text = new LinearLayout(context);

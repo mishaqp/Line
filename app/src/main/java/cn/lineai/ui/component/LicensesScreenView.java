@@ -31,7 +31,7 @@ public final class LicensesScreenView extends ScreenScaffoldView {
         Context context = content.getContext();
         LinearLayout item = new LinearLayout(context);
         item.setOrientation(LinearLayout.VERTICAL);
-        item.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 12));
+        item.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         LineTheme.padding(item, LineTheme.MD, LineTheme.MD, LineTheme.MD, LineTheme.MD);
         item.addView(LineTheme.text(context, name, LineTheme.FONT_MD, LineTheme.TEXT, Typeface.NORMAL), new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         item.addView(LineTheme.text(context, meta, LineTheme.FONT_SM, LineTheme.TEXT_SECONDARY, Typeface.NORMAL), new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));

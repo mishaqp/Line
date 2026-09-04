@@ -24,14 +24,14 @@ public final class MarkdownCodeBlockView extends LinearLayout {
         super(context);
         setOrientation(VERTICAL);
         setBackground(LineTheme.roundedStroke(context, LineTheme.CODE_BG, 8, LineTheme.CODE_BORDER));
-        LineTheme.padding(this, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
+        LineTheme.chatPadding(this, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
 
         String safeCode = code == null ? "" : code;
         String lang = language == null ? "" : language.trim();
         LinearLayout header = new LinearLayout(context);
         header.setOrientation(HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
-        TextView label = LineTheme.text(context, lang, LineTheme.FONT_XS, LineTheme.TEXT_TERTIARY, Typeface.NORMAL);
+        TextView label = LineTheme.chatText(context, lang, LineTheme.FONT_XS, LineTheme.TEXT_TERTIARY, Typeface.NORMAL);
         label.setSingleLine(true);
         header.addView(label, new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f));
 
@@ -47,19 +47,19 @@ public final class MarkdownCodeBlockView extends LinearLayout {
         float density = context.getResources().getDisplayMetrics().density;
         copyButton.setPadding(Math.round(5 * density), Math.round(4 * density), Math.round(5 * density), Math.round(4 * density));
         copyButton.setOnClickListener(v -> copyCode(safeCode));
-        header.addView(copyButton, new LinearLayout.LayoutParams(LineTheme.dp(context, 28), LineTheme.dp(context, 24)));
+        header.addView(copyButton, new LinearLayout.LayoutParams(LineTheme.chatDp(context, 28), LineTheme.chatDp(context, 24)));
 
         LinearLayout.LayoutParams headerParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        headerParams.bottomMargin = LineTheme.dp(context, LineTheme.SM);
+        headerParams.bottomMargin = LineTheme.chatDp(context, LineTheme.SM);
         addView(header, headerParams);
 
         HorizontalScrollView scroll = new HorizontalScrollView(context);
         scroll.setHorizontalScrollBarEnabled(false);
-        TextView text = LineTheme.text(context, safeCode, LineTheme.FONT_SM, LineTheme.TEXT, Typeface.NORMAL);
+        TextView text = LineTheme.chatText(context, safeCode, LineTheme.FONT_SM, LineTheme.TEXT, Typeface.NORMAL);
         text.setTypeface(Typeface.MONOSPACE);
         text.setTextIsSelectable(true);
         text.setIncludeFontPadding(false);
-        text.setLineSpacing(LineTheme.dp(context, 3), 1.0f);
+        text.setLineSpacing(LineTheme.chatDp(context, 3), 1.0f);
         text.setSingleLine(false);
         text.setHorizontallyScrolling(!wrap);
         if (wrap) {

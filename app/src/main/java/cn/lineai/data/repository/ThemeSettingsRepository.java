@@ -1,5 +1,6 @@
 package cn.lineai.data.repository;
 
+import cn.lineai.model.ChatScale;
 import cn.lineai.model.ThemePalette;
 import cn.lineai.model.ThemeSettingsState;
 import cn.lineai.resource.SystemConfigProvider;
@@ -10,6 +11,7 @@ import org.json.JSONObject;
 public final class ThemeSettingsRepository {
     public static final String KEY_THEME_MODE = "@lineai_theme_mode";
     public static final String KEY_CUSTOM_THEME_COLORS = "@lineai_custom_theme_colors";
+    public static final String KEY_CHAT_SCALE = "@lineai_chat_scale";
 
     private final SystemConfigProvider systemConfigProvider;
     private final SettingsRepository settingsRepository;
@@ -33,6 +35,21 @@ public final class ThemeSettingsRepository {
 
     public synchronized void setThemeMode(String mode) {
         settingsRepository.setString(KEY_THEME_MODE, ThemePalette.normalizeMode(mode));
+    }
+
+    /** Chat-only density/text preset; never returns null. */
+    public synchronized ChatScale getChatScale() {
+        return ChatScale.forMode(settingsRepository.getString(KEY_CHAT_SCALE, ChatScale.MODE_NORMAL));
+    }
+
+    public synchronized String getChatScaleMode() {
+        return getChatScale().getMode();
+    }
+
+    public synchronized ChatScale setChatScaleMode(String mode) {
+        String normalized = ChatScale.normalizeMode(mode);
+        settingsRepository.setString(KEY_CHAT_SCALE, normalized);
+        return ChatScale.forMode(normalized);
     }
 
     public synchronized Map<String, String> getCustomThemeColors() {

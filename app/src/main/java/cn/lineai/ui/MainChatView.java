@@ -522,7 +522,7 @@ public final class MainChatView extends FrameLayout implements MainContract.View
 
         LinearLayout panel = new LinearLayout(getContext());
         panel.setOrientation(LinearLayout.VERTICAL);
-        panel.setBackground(LineTheme.rounded(getContext(), LineTheme.SURFACE_ELEVATED, 16));
+        panel.setBackground(LineTheme.rounded(getContext(), LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_LG));
         LineTheme.padding(panel, LineTheme.LG, LineTheme.LG, LineTheme.LG, LineTheme.LG);
 
         TextView titleView = LineTheme.textMedium(getContext(),

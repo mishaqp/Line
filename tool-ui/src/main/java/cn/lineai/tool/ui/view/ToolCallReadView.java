@@ -56,10 +56,12 @@ public final class ToolCallReadView extends BaseToolCallView implements ToolCall
         boolean complete = !running;
         String actionLabel = actionLabel(name);
 
+        applyCardBackground(error);
+
         LinearLayout header = new LinearLayout(getContext());
         header.setOrientation(HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
-        header.setMinimumHeight(LineTheme.dp(getContext(), 36));
+        header.setMinimumHeight(LineTheme.dp(getContext(), 32));
         LineTheme.padding(header, LineTheme.SM, LineTheme.XS, LineTheme.SM, LineTheme.XS);
 
         int headerIconColor = error ? LineTheme.DANGER
@@ -78,14 +80,14 @@ public final class ToolCallReadView extends BaseToolCallView implements ToolCall
         path.setIncludeFontPadding(false);
         path.setTypeface(Typeface.MONOSPACE);
         SpannableStringBuilder builder = new SpannableStringBuilder();
-        int actionColor = error ? LineTheme.DANGER : LineTheme.TEXT_SECONDARY;
+        int actionColor = LineTheme.TEXT_SECONDARY;
         builder.append(actionLabel);
         builder.setSpan(new StyleSpan(Typeface.BOLD), 0, actionLabel.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         builder.setSpan(new ForegroundColorSpan(actionColor), 0, actionLabel.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         builder.append("  ");
         int pathStart = builder.length();
         builder.append(label);
-        builder.setSpan(new ForegroundColorSpan(error ? LineTheme.DANGER : LineTheme.TEXT),
+        builder.setSpan(new ForegroundColorSpan(LineTheme.TEXT),
                 pathStart, builder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         path.setText(builder);
         path.setSingleLine(true);

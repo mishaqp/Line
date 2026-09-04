@@ -1,5 +1,6 @@
 package cn.lineai.ui.component;
 import cn.lineai.ui.theme.IconButtonView;
+import cn.lineai.ui.theme.LineCards;
 import cn.lineai.model.tool.ToolCall;
 import cn.lineai.model.tool.ToolResult;
 import cn.lineai.ui.theme.LineTheme;
@@ -40,6 +41,20 @@ public final class ChatMessageListView extends FrameLayout {
     private final MessageAdapter adapter;
     private final IconButtonView scrollToBottomButton;
     private boolean followTailEnabled;
+    private boolean scrollToBottomPending;
+    private boolean visibilityUpdatePending;
+    private boolean scrollButtonStyled;
+    private int styledAccent;
+    private int styledIconColor;
+    private int bottomTolerancePx;
+    private final Runnable scrollToBottomTask = () -> {
+        scrollToBottomPending = false;
+        scrollToBottomInternal(false);
+    };
+    private final Runnable visibilityTask = () -> {
+        visibilityUpdatePending = false;
+        updateScrollToBottomVisibility();
+    };
     private ToolReviewListener toolReviewListener;
     private MarkdownLinkHandler markdownLinkHandler;
     private MessageActionListener messageActionListener;
@@ -76,7 +91,11 @@ public final class ChatMessageListView extends FrameLayout {
         listView.setSelector(new ColorDrawable(Color.TRANSPARENT));
         listView.setSmoothScrollbarEnabled(true);
         listView.setStackFromBottom(false);
+        // Transcript mode is toggled by setFollowTail(): while the tail is followed we let
+        // AbsListView pin it inside its own layout pass instead of chasing it from a posted
+        // runnable, which is what made the list shake during streaming.
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_DISABLED);
+        bottomTolerancePx = LineTheme.dp(context, 2);
         addView(listView, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         scrollToBottomButton = new IconButtonView(context, IconButtonView.CHEVRON_DOWN);
@@ -84,7 +103,6 @@ public final class ChatMessageListView extends FrameLayout {
         refreshScrollToBottomButtonStyle();
         scrollToBottomButton.setVisibility(GONE);
         scrollToBottomButton.setOnClickListener(v -> scrollToBottom());
-        scrollToBottomButton.setElevation(LineTheme.dp(context, 8));
         FrameLayout.LayoutParams buttonParams = new FrameLayout.LayoutParams(
                 LineTheme.dp(context, 44),
                 LineTheme.dp(context, 44),
@@ -94,7 +112,7 @@ public final class ChatMessageListView extends FrameLayout {
         buttonParams.bottomMargin = LineTheme.dp(context, LineTheme.LG);
         addView(scrollToBottomButton, buttonParams);
         addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
-                post(this::updateScrollToBottomVisibility));
+                postVisibilityUpdate());
         buildMultiSelectBar();
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
@@ -107,12 +125,28 @@ public final class ChatMessageListView extends FrameLayout {
             }
         });
 
+        // Long press reveals the secondary message actions. Handled by the list rather than
+        // by the row so the rows stay non-clickable and item clicks keep reaching
+        // multi-select.
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+            if (multiSelectMode) {
+                return false;
+            }
+            if (view instanceof UserMessageView) {
+                return ((UserMessageView) view).toggleActionBar();
+            }
+            if (view instanceof AssistantMessageView) {
+                return ((AssistantMessageView) view).toggleActionBar();
+            }
+            return false;
+        });
+
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL
                         || scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
-                    followTailEnabled = false;
+                    setFollowTail(false);
                 }
                 updateScrollToBottomVisibility();
             }
@@ -128,13 +162,46 @@ public final class ChatMessageListView extends FrameLayout {
         refreshScrollToBottomButtonStyle();
         boolean conversationChanged = adapter.render(state);
         if (conversationChanged) {
-            followTailEnabled = true;
+            setFollowTail(true);
+            // A freshly opened conversation still needs one explicit jump: transcript mode
+            // only pins the tail across subsequent data set changes.
+            requestScrollToBottom();
+            return;
         }
-        if (followTailEnabled && adapter.getCount() > 0) {
-            listView.post(() -> scrollToBottomInternal(false));
-        } else {
-            listView.post(this::updateScrollToBottomVisibility);
+        postVisibilityUpdate();
+    }
+
+    /**
+     * Turns tail following on or off. While on, AbsListView keeps the last row pinned during
+     * its own layout pass, so a streaming answer grows without the list being scrolled from
+     * a posted callback one frame later.
+     */
+    private void setFollowTail(boolean enabled) {
+        if (followTailEnabled == enabled) {
+            return;
         }
+        followTailEnabled = enabled;
+        listView.setTranscriptMode(enabled
+                ? AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL
+                : AbsListView.TRANSCRIPT_MODE_DISABLED);
+    }
+
+    /** Coalesces repeated scroll requests into a single post per frame. */
+    private void requestScrollToBottom() {
+        if (scrollToBottomPending || adapter.getCount() <= 0) {
+            return;
+        }
+        scrollToBottomPending = true;
+        listView.post(scrollToBottomTask);
+    }
+
+    /** Coalesces repeated visibility refreshes into a single post per frame. */
+    private void postVisibilityUpdate() {
+        if (visibilityUpdatePending) {
+            return;
+        }
+        visibilityUpdatePending = true;
+        post(visibilityTask);
     }
 
     public void setToolReviewListener(ToolReviewListener listener) {
@@ -243,7 +310,7 @@ public final class ChatMessageListView extends FrameLayout {
 
         multiSelectCountText = LineTheme.text(context,
                 context.getString(R.string.screen_models_selected_count, 0),
-                LineTheme.FONT_MD, LineTheme.TEXT, Typeface.NORMAL);
+                LineTheme.TYPE_TITLE, LineTheme.TEXT, Typeface.NORMAL);
         multiSelectBar.addView(multiSelectCountText, new LinearLayout.LayoutParams(
                 0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
@@ -251,7 +318,8 @@ public final class ChatMessageListView extends FrameLayout {
         exportButton.setContentDescription(context.getString(R.string.export_button_label));
         exportButton.setIconColor(LineTheme.TEXT_ON_COLOR);
         exportButton.setIconSizeDp(44, 20);
-        exportButton.setBackground(LineTheme.roundedStroke(context, LineTheme.ACCENT, 22, LineTheme.ACCENT));
+        exportButton.setBackground(LineCards.pillBackground(context, LineTheme.ACCENT));
+        LineTheme.attachStateLayer(exportButton, LineTheme.TEXT_ON_COLOR);
         exportButton.setOnClickListener(v -> {
             if (multiSelectListener != null) {
                 multiSelectListener.onExportRequested(getSelectedMessages());
@@ -266,6 +334,8 @@ public final class ChatMessageListView extends FrameLayout {
         closeButton.setContentDescription(context.getString(R.string.common_close));
         closeButton.setIconColor(LineTheme.TEXT_SECONDARY);
         closeButton.setIconSizeDp(44, 20);
+        closeButton.setBackground(LineCards.pillBackground(context, android.graphics.Color.TRANSPARENT));
+        LineTheme.attachStateLayer(closeButton);
         closeButton.setOnClickListener(v -> {
             exitMultiSelectMode();
             if (multiSelectListener != null) {
@@ -291,7 +361,7 @@ public final class ChatMessageListView extends FrameLayout {
     }
 
     private void scrollToBottom() {
-        followTailEnabled = true;
+        setFollowTail(true);
         scrollToBottomInternal(true);
     }
 
@@ -302,6 +372,24 @@ public final class ChatMessageListView extends FrameLayout {
             return;
         }
         int target = count - 1;
+        int laidOutIndex = target - listView.getFirstVisiblePosition();
+        if (laidOutIndex >= 0 && laidOutIndex < listView.getChildCount()) {
+            // Fast path: the tail row is already on screen, so nudge by the exact delta.
+            // Going through setSelection() here would first snap the row's top to the
+            // viewport top and only correct it on the next frame - a visible bounce.
+            View child = listView.getChildAt(laidOutIndex);
+            int viewportBottom = listView.getHeight() - listView.getPaddingBottom();
+            int delta = child.getBottom() - viewportBottom;
+            if (delta > 0) {
+                if (animated) {
+                    listView.smoothScrollBy(delta, 180);
+                } else {
+                    listView.scrollListBy(delta);
+                }
+            }
+            updateScrollToBottomVisibility();
+            return;
+        }
         listView.setSelection(target);
         listView.post(() -> {
             int childIndex = target - listView.getFirstVisiblePosition();
@@ -323,16 +411,31 @@ public final class ChatMessageListView extends FrameLayout {
 
     private void updateScrollToBottomVisibility() {
         boolean show = !multiSelectMode && adapter.getCount() > 0 && !isAtBottom();
-        scrollToBottomButton.setVisibility(show ? VISIBLE : GONE);
+        int visibility = show ? VISIBLE : GONE;
+        if (scrollToBottomButton.getVisibility() == visibility) {
+            // onScroll() fires on every frame of a fling; bringToFront() requests a layout
+            // of the whole container, so it must only run on an actual transition.
+            return;
+        }
+        scrollToBottomButton.setVisibility(visibility);
         if (show) {
             scrollToBottomButton.bringToFront();
         }
     }
 
+    /** Styles the jump-to-latest control as an M3 FAB (SHAPE_LG container + state layer). */
     private void refreshScrollToBottomButtonStyle() {
+        // render() runs on every streaming flush; rebuilding the FAB drawables that often
+        // is pure allocation churn, so re-style only when the palette actually moved.
+        if (scrollButtonStyled && styledAccent == LineTheme.ACCENT && styledIconColor == LineTheme.TEXT_ON_COLOR) {
+            return;
+        }
+        scrollButtonStyled = true;
+        styledAccent = LineTheme.ACCENT;
+        styledIconColor = LineTheme.TEXT_ON_COLOR;
         scrollToBottomButton.setIconColor(LineTheme.TEXT_ON_COLOR);
         scrollToBottomButton.setIconSizeDp(44, 20);
-        scrollToBottomButton.setBackground(LineTheme.roundedStroke(getContext(), LineTheme.ACCENT, 22, LineTheme.ACCENT));
+        LineCards.applyFab(scrollToBottomButton, LineTheme.ACCENT);
     }
 
     private boolean isAtBottom() {
@@ -349,7 +452,7 @@ public final class ChatMessageListView extends FrameLayout {
         }
         View lastChild = listView.getChildAt(childCount - 1);
         int viewportBottom = listView.getHeight() - listView.getPaddingBottom();
-        return lastChild.getBottom() <= viewportBottom + LineTheme.dp(getContext(), 2);
+        return lastChild.getBottom() <= viewportBottom + bottomTolerancePx;
     }
 
     private static View createConfigureState(Context context, EmptyStateListener listener) {
@@ -358,14 +461,14 @@ public final class ChatMessageListView extends FrameLayout {
         box.setGravity(Gravity.CENTER);
         LineTheme.padding(box, LineTheme.XL, 80, LineTheme.XL, 80);
 
-        TextView prompt = LineTheme.text(context, "›_", LineTheme.FONT_XL, LineTheme.ACCENT, Typeface.NORMAL);
+        TextView prompt = LineTheme.text(context, "›_", LineTheme.TYPE_HEADLINE, LineTheme.ACCENT, Typeface.NORMAL);
         prompt.setTypeface(Typeface.MONOSPACE);
         box.addView(prompt, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         ));
 
-        TextView title = LineTheme.text(context, context.getString(R.string.message_list_configure_title), LineTheme.FONT_TITLE, LineTheme.TEXT, Typeface.BOLD);
+        TextView title = LineTheme.text(context, context.getString(R.string.message_list_configure_title), LineTheme.TYPE_HEADLINE, LineTheme.TEXT, Typeface.BOLD);
         LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -375,7 +478,7 @@ public final class ChatMessageListView extends FrameLayout {
 
         TextView desc = LineTheme.text(context,
                 context.getString(R.string.message_list_configure_desc),
-                LineTheme.FONT_MD,
+                LineTheme.TYPE_BODY,
                 LineTheme.TEXT_SECONDARY,
                 Typeface.NORMAL);
         desc.setGravity(Gravity.CENTER);
@@ -422,18 +525,9 @@ public final class ChatMessageListView extends FrameLayout {
         return row;
     }
 
+    /** Empty-state CTA: M3 filled / outlined pill with a state layer. */
     private static TextView actionButton(Context context, String label, boolean primary) {
-        TextView button = LineTheme.text(context, label, LineTheme.FONT_MD,
-                primary ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT, Typeface.NORMAL);
-        button.setGravity(Gravity.CENTER);
-        button.setClickable(true);
-        button.setFocusable(true);
-        button.setBackground(primary
-                ? LineTheme.rounded(context, LineTheme.ACCENT, 22)
-                : LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, 22, LineTheme.BORDER_LIGHT));
-        button.setPadding(LineTheme.dp(context, LineTheme.LG), LineTheme.dp(context, LineTheme.SM),
-                LineTheme.dp(context, LineTheme.LG), LineTheme.dp(context, LineTheme.SM));
-        return button;
+        return primary ? LineCards.primaryButton(context, label) : LineCards.secondaryButton(context, label);
     }
 
     private static View createNoticeView(Context context, String noticeText) {
@@ -441,7 +535,7 @@ public final class ChatMessageListView extends FrameLayout {
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setGravity(Gravity.CENTER);
         LineTheme.padding(row, LineTheme.LG, LineTheme.SM, LineTheme.LG, LineTheme.SM);
-        TextView label = LineTheme.text(context, noticeText, LineTheme.FONT_XS, LineTheme.TEXT_TERTIARY, Typeface.NORMAL);
+        TextView label = LineTheme.text(context, noticeText, LineTheme.TYPE_BODY_SMALL, LineTheme.TEXT_TERTIARY, Typeface.NORMAL);
         label.setGravity(Gravity.CENTER);
         label.setSingleLine(true);
         label.setEllipsize(TextUtils.TruncateAt.END);
@@ -470,6 +564,7 @@ public final class ChatMessageListView extends FrameLayout {
         private Set<String> selectedMessageIds = java.util.Collections.emptySet();
         private String conversationId = "";
         private String projectPath = "";
+        private String modelLabel = "";
         private ToolReviewListener toolReviewListener;
         private MarkdownLinkHandler markdownLinkHandler;
         private MessageActionListener messageActionListener;
@@ -483,18 +578,31 @@ public final class ChatMessageListView extends FrameLayout {
             ArrayList<ChatMessage> nextMessages = new ArrayList<>();
             if (state != null) {
                 List<ChatMessage> messages = state.getMessages();
-                HashMap<String, ToolResult> toolResults = new HashMap<>();
-                for (ChatMessage message : messages) {
-                    if (message.getRole() == ChatMessage.Role.TOOL && message.getToolCallId().length() > 0) {
-                        toolResults.put(message.getToolCallId(), ToolResult.withReview(
-                                message.getToolCallId(),
-                                message.getToolName(),
-                                message.getContent(),
-                                message.isError(),
-                                message.getDiffId(),
-                                message.getReviewState(),
-                                message.getReviewMessage()
-                        ));
+                // render() runs on every streaming flush. Most conversations never call a
+                // tool, so the result map (and the ToolResult copies feeding it) is only
+                // built when something actually needs it.
+                boolean anyToolCalls = false;
+                for (int i = 0; i < messages.size(); i++) {
+                    if (messages.get(i).hasToolCalls()) {
+                        anyToolCalls = true;
+                        break;
+                    }
+                }
+                HashMap<String, ToolResult> toolResults = null;
+                if (anyToolCalls) {
+                    toolResults = new HashMap<>();
+                    for (ChatMessage message : messages) {
+                        if (message.getRole() == ChatMessage.Role.TOOL && message.getToolCallId().length() > 0) {
+                            toolResults.put(message.getToolCallId(), ToolResult.withReview(
+                                    message.getToolCallId(),
+                                    message.getToolName(),
+                                    message.getContent(),
+                                    message.isError(),
+                                    message.getDiffId(),
+                                    message.getReviewState(),
+                                    message.getReviewMessage()
+                            ));
+                        }
                     }
                 }
                 for (ChatMessage message : messages) {
@@ -503,7 +611,9 @@ public final class ChatMessageListView extends FrameLayout {
                             || message.getRole() == ChatMessage.Role.TOOL) {
                         continue;
                     }
-                    nextMessages.add(message.hasToolCalls() ? message.withToolResults(toolResultsFor(message, toolResults)) : message);
+                    nextMessages.add(toolResults != null && message.hasToolCalls()
+                            ? message.withToolResults(toolResultsFor(message, toolResults))
+                            : message);
                 }
             }
             boolean nextShowConfigureState = nextMessages.isEmpty() && state != null && !state.hasConfiguredModel();
@@ -512,6 +622,7 @@ public final class ChatMessageListView extends FrameLayout {
             boolean nextCodeWrapEnabled = state != null && state.isCodeWrapEnabled();
             String nextConversationId = state == null ? "" : state.getConversationId();
             String nextProjectPath = state == null ? "" : state.getProjectPath();
+            String nextModelLabel = state == null ? "" : state.getModelLabel();
             boolean conversationChanged = !stringEquals(conversationId, nextConversationId);
 
             if (showConfigureState == nextShowConfigureState
@@ -520,8 +631,22 @@ public final class ChatMessageListView extends FrameLayout {
                     && codeWrapEnabled == nextCodeWrapEnabled
                     && stringEquals(conversationId, nextConversationId)
                     && stringEquals(projectPath, nextProjectPath)
+                    && stringEquals(modelLabel, nextModelLabel)
                     && sameMessages(nextMessages)) {
                 return false;
+            }
+
+            // Cache keys are derived from message ids, so a content-only update (the common
+            // case while streaming) cannot invalidate any entry. Pruning then would rebuild a
+            // HashSet of concatenated keys for nothing.
+            boolean rowSetChanged = conversationChanged || visibleMessages.size() != nextMessages.size();
+            if (!rowSetChanged) {
+                for (int i = 0; i < nextMessages.size(); i++) {
+                    if (!stringEquals(visibleMessages.get(i).getId(), nextMessages.get(i).getId())) {
+                        rowSetChanged = true;
+                        break;
+                    }
+                }
             }
 
             if (conversationChanged) {
@@ -535,7 +660,10 @@ public final class ChatMessageListView extends FrameLayout {
             codeWrapEnabled = nextCodeWrapEnabled;
             conversationId = nextConversationId;
             projectPath = nextProjectPath;
-            pruneCache();
+            modelLabel = nextModelLabel;
+            if (rowSetChanged) {
+                pruneCache();
+            }
             notifyDataSetChanged();
             return conversationChanged;
         }
@@ -627,6 +755,7 @@ public final class ChatMessageListView extends FrameLayout {
                     view.setMarkdownLinkHandler(markdownLinkHandler);
                     view.setMessageActionListener(messageActionListener);
                     view.setProjectPath(projectPath);
+                    view.setModelLabel(modelLabel);
                     view.bind(message, thinkingAutoExpand, thinkingScroll, codeWrapEnabled);
                     applyMultiSelectStyle(view, message);
                     return view;
@@ -645,6 +774,7 @@ public final class ChatMessageListView extends FrameLayout {
             view.setMarkdownLinkHandler(markdownLinkHandler);
             view.setMessageActionListener(messageActionListener);
             view.setProjectPath(projectPath);
+            view.setModelLabel(modelLabel);
             view.bind(message, thinkingAutoExpand, thinkingScroll, codeWrapEnabled);
             applyMultiSelectStyle(view, message);
             return view;
@@ -658,7 +788,7 @@ public final class ChatMessageListView extends FrameLayout {
             }
             if (multiSelectMode && selectedMessageIds.contains(message.getId())) {
                 view.setBackground(LineTheme.roundedStroke(
-                        context, LineTheme.ACCENT, 12, LineTheme.ACCENT));
+                        context, LineTheme.ACCENT, LineTheme.SHAPE_MD, LineTheme.ACCENT));
                 view.setPadding(LineTheme.dp(context, 4), LineTheme.dp(context, 4),
                         LineTheme.dp(context, 4), LineTheme.dp(context, 4));
             } else {
@@ -863,7 +993,7 @@ public final class ChatMessageListView extends FrameLayout {
         @Override
         public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
             if (disallowIntercept) {
-                followTailEnabled = false;
+                setFollowTail(false);
             }
             super.requestDisallowInterceptTouchEvent(disallowIntercept);
         }
@@ -872,7 +1002,7 @@ public final class ChatMessageListView extends FrameLayout {
         public boolean onTouchEvent(MotionEvent event) {
             int action = event.getActionMasked();
             if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
-                followTailEnabled = false;
+                setFollowTail(false);
             } else if (action == MotionEvent.ACTION_UP) {
                 performClick();
             }

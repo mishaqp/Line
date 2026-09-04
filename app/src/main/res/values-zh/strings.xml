@@ -49,6 +49,9 @@
     <string name="composer_attachment_remove_desc">移除附件</string>
     <string name="composer_image_button_desc">选择图片发送</string>
     <string name="composer_image_remove_desc">移除已选图片</string>
+    <string name="composer_image_default_name">图片</string>
+    <string name="composer_queue_overflow">… 还有 %1$d 条排队中</string>
+    <string name="composer_queue_remove_desc">移除排队消息</string>
     <string name="composer_image_loading">正在加载图片…</string>
     <string name="composer_image_load_failed">加载图片失败</string>
     <string name="chat_mode_control_label">控制</string>
@@ -68,6 +71,8 @@
     <string name="slash_command_reasoning_max_desc">最深度思考，适合极难问题</string>
 
     <string name="message_user_attached_files">已附加文件</string>
+    <string name="message_header_user">你</string>
+    <string name="message_header_assistant">助手</string>
     <string name="message_assistant_generating">正在生成…</string>
     <string name="message_assistant_working">正在工作</string>
     <string name="message_assistant_thinking">正在思考</string>
@@ -808,6 +813,15 @@
     <string name="screen_theme_section_preview">主题预览</string>
     <string name="screen_theme_section_preview_desc">保存后会应用到自定义主题。</string>
     <string name="screen_theme_section_themes">主题</string>
+    <string name="screen_theme_section_chat_scale">聊天缩放</string>
+    <string name="screen_theme_scale_ultra_compact">超紧凑</string>
+    <string name="screen_theme_scale_ultra_compact_desc">可用的最高密度</string>
+    <string name="screen_theme_scale_compact">紧凑</string>
+    <string name="screen_theme_scale_compact_desc">间距更紧，文字更小</string>
+    <string name="screen_theme_scale_normal">标准</string>
+    <string name="screen_theme_scale_normal_desc">系统大小，保持不变</string>
+    <string name="screen_theme_scale_large">宽松</string>
+    <string name="screen_theme_scale_large_desc">间距更宽，文字更大</string>
     <string name="screen_theme_system">跟随系统</string>
     <string name="screen_theme_system_desc">自动匹配系统外观</string>
     <string name="screen_theme_light">亮色模式</string>
@@ -978,6 +992,7 @@
     <string name="header_more_desc">更多</string>
 
     <string name="message_action_copy_desc">复制消息</string>
+    <string name="message_action_more_desc">更多操作</string>
     <string name="message_action_recall_desc">撤回消息</string>
     <string name="message_action_quote_desc">引用消息</string>
     <string name="message_action_share_desc">分享消息</string>

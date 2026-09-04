@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import cn.lineai.model.ChatMessage;
+import cn.lineai.R;
 import cn.lineai.tool.ui.ToolCallBlockView;
 import cn.lineai.tool.ToolReviewListener;
 import cn.lineai.ui.markdown.MarkdownLinkHandler;
@@ -23,6 +24,7 @@ public final class AssistantMessageView extends LinearLayout {
     private final WorkingStatusView workingStatusView;
     private final LinearLayout toolCallsContainer;
     private final MessageActionBarView actionBar;
+    private final MessageHeaderView headerView;
     private final int defaultPaddingLeft;
     private final int defaultPaddingTop;
     private final int defaultPaddingRight;
@@ -47,11 +49,17 @@ public final class AssistantMessageView extends LinearLayout {
         super(context);
         setOrientation(VERTICAL);
         setGravity(Gravity.START);
-        LineTheme.padding(this, LineTheme.LG, 0, LineTheme.LG, LineTheme.MD);
+        LineTheme.chatPadding(this, LineTheme.LG, LineTheme.XS, LineTheme.LG, LineTheme.LG);
         defaultPaddingLeft = getPaddingLeft();
         defaultPaddingTop = getPaddingTop();
         defaultPaddingRight = getPaddingRight();
         defaultPaddingBottom = getPaddingBottom();
+
+        headerView = new MessageHeaderView(context, false);
+        LinearLayout.LayoutParams headerParams = new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        headerParams.bottomMargin = LineTheme.chatDp(context, LineTheme.XS);
+        addView(headerView, headerParams);
 
         compactBlockView = new ContextCompactBlockView(context);
         LinearLayout.LayoutParams compactParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -64,7 +72,12 @@ public final class AssistantMessageView extends LinearLayout {
         thinkingParams.bottomMargin = LineTheme.dp(context, LineTheme.SM);
         addView(thinkingBlockView, thinkingParams);
 
+        // No bubble on the assistant side, the way RikkaHub renders it by default
+        // (showAssistantBubble = false): the answer is the page, not a card on the page.
+        // That also removes the whole "short reply paints a full-width band" problem, and
+        // lets code blocks and tables measure against the real column again.
         contentView = new MarkdownView(context);
+        LineTheme.chatPadding(contentView, 0, 0, 0, 0);
         addView(contentView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         workingStatusView = new WorkingStatusView(context);
@@ -116,10 +129,34 @@ public final class AssistantMessageView extends LinearLayout {
                 }
             }
         });
-        LinearLayout.LayoutParams actionParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LineTheme.dp(context, 22));
-        actionParams.topMargin = LineTheme.dp(context, 3);
+        actionBar.setMoreListener(this::toggleActionBar);
+        LinearLayout.LayoutParams actionParams = new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        actionParams.topMargin = LineTheme.dp(context, LineTheme.XS);
         addView(actionBar, actionParams);
     }
+
+    /**
+     * Toggles the secondary actions; driven by the list's item long-press.
+     *
+     * <p>Deliberately not an {@code OnLongClickListener} on this view: that would make the
+     * row consume touches and {@code ListView} would stop reporting item clicks, which is
+     * how multi-select picks messages.</p>
+     *
+     * @return {@code true} when the press was consumed.
+     */
+    public boolean toggleActionBar() {
+        if (actionBar.getVisibility() != VISIBLE) {
+            return false;
+        }
+        boolean next = !actionBar.isExpanded();
+        actionBar.setExpanded(next);
+        if (next) {
+            performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS);
+        }
+        return true;
+    }
+
 
     public void bind(ChatMessage message) {
         bind(message, false, true, false);
@@ -144,6 +181,7 @@ public final class AssistantMessageView extends LinearLayout {
             toolCallsContainer.setVisibility(GONE);
             toolCallsContainer.removeAllViews();
             actionBar.setVisibility(GONE);
+            headerView.setVisibility(GONE);
             lastMessageId = messageId;
             lastReasoning = safeReasoning;
             lastContent = "";
@@ -184,8 +222,11 @@ public final class AssistantMessageView extends LinearLayout {
         }
         bindToolCalls(message);
         actionBar.setVisibility(message.isStreaming() || message.getContent().trim().isEmpty() ? GONE : VISIBLE);
+        headerView.setVisibility(VISIBLE);
         setWorkingStatusVisible(message.isStreaming(), WorkingStatusView.isThinking(safeReasoning, content));
         if (!lastAnimatedMessageId.equals(messageId)) {
+            // A recycled row must not inherit the previous message's expanded actions.
+            actionBar.setExpanded(false);
             lastAnimatedMessageId = messageId;
             setAlpha(0f);
             animate().alpha(1f).setDuration(ENTRANCE_FADE_MS).start();
@@ -207,7 +248,7 @@ public final class AssistantMessageView extends LinearLayout {
                 workingStatusView.setVisibility(VISIBLE);
             }
             workingStatusView.startWorking();
-        } else {
+        } else if (workingStatusView.getVisibility() != GONE || workingStatusView.isWorking()) {
             workingStatusView.stopWorking();
             workingStatusView.setVisibility(GONE);
         }
@@ -233,6 +274,13 @@ public final class AssistantMessageView extends LinearLayout {
     public void setMarkdownLinkHandler(MarkdownLinkHandler handler) {
         markdownLinkHandler = handler;
         contentView.setLinkHandler(handler);
+    }
+
+    /** Display name of the model that produced the answer; shown in the header row. */
+    public void setModelLabel(String modelLabel) {
+        headerView.bind(modelLabel == null || modelLabel.trim().isEmpty()
+                ? getContext().getString(R.string.message_header_assistant)
+                : modelLabel);
     }
 
     public void setProjectPath(String projectPath) {

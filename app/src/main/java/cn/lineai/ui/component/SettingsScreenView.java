@@ -86,7 +86,7 @@ public final class SettingsScreenView extends LinearLayout {
 
         LinearLayout group = new LinearLayout(context);
         group.setOrientation(VERTICAL);
-        group.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 12));
+        group.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         LinearLayout.LayoutParams groupParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         groupParams.leftMargin = LineTheme.dp(context, LineTheme.LG);
         groupParams.rightMargin = LineTheme.dp(context, LineTheme.LG);
@@ -106,7 +106,7 @@ public final class SettingsScreenView extends LinearLayout {
         LineTheme.padding(item, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
 
         FrameLayout iconWrap = new FrameLayout(context);
-        iconWrap.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 18));
+        iconWrap.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_LG));
         IconButtonView icon = new IconButtonView(context, row.icon);
         icon.setIconColor(LineTheme.ACCENT);
         icon.setIconSizeDp(36, 20);

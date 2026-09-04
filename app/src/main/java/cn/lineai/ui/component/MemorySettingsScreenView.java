@@ -334,7 +334,7 @@ public final class MemorySettingsScreenView extends LinearLayout {
         input.setGravity(Gravity.TOP | Gravity.START);
         input.setMinLines(5);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        input.setBackground(LineTheme.roundedStroke(getContext(), LineTheme.INPUT_BG, 8, LineTheme.BORDER_LIGHT));
+        input.setBackground(LineTheme.roundedStroke(getContext(), LineTheme.INPUT_BG, LineTheme.SHAPE_SM, LineTheme.BORDER_LIGHT));
         input.setPadding(LineTheme.dp(getContext(), LineTheme.MD), LineTheme.dp(getContext(), LineTheme.MD),
                 LineTheme.dp(getContext(), LineTheme.MD), LineTheme.dp(getContext(), LineTheme.MD));
         LinearLayout.LayoutParams inputParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LineTheme.dp(getContext(), 132));
@@ -385,7 +385,7 @@ public final class MemorySettingsScreenView extends LinearLayout {
     private LinearLayout dialogPanel(Context context) {
         LinearLayout panel = new LinearLayout(context);
         panel.setOrientation(LinearLayout.VERTICAL);
-        panel.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 12));
+        panel.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         LineTheme.padding(panel, LineTheme.LG, LineTheme.LG, LineTheme.LG, LineTheme.LG);
         return panel;
     }

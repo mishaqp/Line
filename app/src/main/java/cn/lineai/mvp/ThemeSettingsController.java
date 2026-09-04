@@ -9,4 +9,8 @@ public interface ThemeSettingsController {
     void onThemeModeChanged(String mode);
 
     void onCustomThemeColorsSaved(Map<String, String> colors);
+
+    String getChatScaleMode();
+
+    void onChatScaleModeChanged(String mode);
 }

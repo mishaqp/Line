@@ -19,14 +19,14 @@ public final class MarkdownListBlockView extends LinearLayout {
         row.setOrientation(HORIZONTAL);
         row.setGravity(Gravity.TOP);
         LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        rowParams.bottomMargin = LineTheme.dp(context, 3);
+        rowParams.bottomMargin = LineTheme.chatDp(context, 3);
         addView(row, rowParams);
 
-        TextView markerView = LineTheme.text(context, marker == null ? "•" : marker, LineTheme.FONT_MD, LineTheme.TEXT_SECONDARY, Typeface.NORMAL);
+        TextView markerView = LineTheme.chatText(context, marker == null ? "•" : marker, LineTheme.FONT_MD, LineTheme.TEXT_SECONDARY, Typeface.NORMAL);
         markerView.setGravity(Gravity.END);
         int markerWidth = Math.max(18, 22 + Math.max(0, depth) * 4);
-        LinearLayout.LayoutParams markerParams = new LinearLayout.LayoutParams(LineTheme.dp(context, markerWidth), LayoutParams.WRAP_CONTENT);
-        markerParams.rightMargin = LineTheme.dp(context, LineTheme.SM);
+        LinearLayout.LayoutParams markerParams = new LinearLayout.LayoutParams(LineTheme.chatDp(context, markerWidth), LayoutParams.WRAP_CONTENT);
+        markerParams.rightMargin = LineTheme.chatDp(context, LineTheme.SM);
         row.addView(markerView, markerParams);
 
         LinearLayout content = new LinearLayout(context);

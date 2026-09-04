@@ -60,19 +60,19 @@ public final class WorkingStatusView extends View {
 
     WorkingStatusView(Context context, String workingLabel, String thinkingLabel) {
         super(context);
-        matrixSizePx = LineTheme.dp(context, 16);
-        dotRadiusPx = LineTheme.dp(context, 1.35f);
+        matrixSizePx = LineTheme.chatDp(context, 16);
+        dotRadiusPx = LineTheme.chatDp(context, 1.35f);
         dotStepPx = matrixSizePx / DOT_COLUMNS;
-        summaryGapPx = LineTheme.dp(context, 8);
-        horizontalPaddingPx = LineTheme.dp(context, 1);
-        shimmerWidthPx = LineTheme.dp(context, SHIMMER_WIDTH_DP);
-        minimumHeightPx = LineTheme.dp(context, 24);
+        summaryGapPx = LineTheme.chatDp(context, 8);
+        horizontalPaddingPx = LineTheme.chatDp(context, 1);
+        shimmerWidthPx = LineTheme.chatDp(context, SHIMMER_WIDTH_DP);
+        minimumHeightPx = LineTheme.chatDp(context, 24);
         this.workingLabel = workingLabel == null ? "" : workingLabel;
         this.thinkingLabel = thinkingLabel == null ? "" : thinkingLabel;
 
         dotPaint.setColor(LineTheme.ACCENT);
         textPaint.setColor(LineTheme.TEXT_SECONDARY);
-        textPaint.setTextSize(context.getResources().getDisplayMetrics().scaledDensity * LineTheme.FONT_SM);
+        textPaint.setTextSize(context.getResources().getDisplayMetrics().scaledDensity * LineTheme.chatSp(LineTheme.FONT_SM));
         textPaint.setTypeface(Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL));
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
     }

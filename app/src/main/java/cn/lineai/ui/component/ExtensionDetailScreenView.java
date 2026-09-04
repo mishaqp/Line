@@ -432,7 +432,7 @@ public final class ExtensionDetailScreenView extends ScreenScaffoldView {
     private TextView actionButton(String title, Runnable action) {
         TextView view = LineTheme.textMedium(getContext(), title, LineTheme.FONT_MD, LineTheme.ACCENT);
         view.setGravity(Gravity.CENTER);
-        view.setBackground(LineTheme.rounded(getContext(), LineTheme.ACCENT_MUTED, 8));
+        view.setBackground(LineTheme.rounded(getContext(), LineTheme.ACCENT_MUTED, LineTheme.SHAPE_SM));
         LineTheme.padding(view, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
         view.setOnClickListener(v -> action.run());
         return view;
@@ -511,7 +511,7 @@ public final class ExtensionDetailScreenView extends ScreenScaffoldView {
     private LinearLayout panel(String title) {
         LinearLayout panel = new LinearLayout(getContext());
         panel.setOrientation(LinearLayout.VERTICAL);
-        panel.setBackground(LineTheme.rounded(getContext(), LineTheme.SURFACE_ELEVATED, 16));
+        panel.setBackground(LineTheme.rounded(getContext(), LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_LG));
         LineTheme.padding(panel, LineTheme.LG, LineTheme.LG, LineTheme.LG, LineTheme.LG);
         panel.addView(LineTheme.textMedium(getContext(), title, LineTheme.FONT_LG, LineTheme.TEXT));
         return panel;
@@ -548,7 +548,7 @@ public final class ExtensionDetailScreenView extends ScreenScaffoldView {
     private LinearLayout createBottomPanel() {
         LinearLayout panel = new LinearLayout(getContext());
         panel.setOrientation(LinearLayout.VERTICAL);
-        panel.setBackground(LineTheme.roundedTop(getContext(), LineTheme.SURFACE_ELEVATED, 16));
+        panel.setBackground(LineTheme.roundedTop(getContext(), LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_LG));
         return panel;
     }
 
@@ -566,7 +566,7 @@ public final class ExtensionDetailScreenView extends ScreenScaffoldView {
 
     private void addHandle(LinearLayout panel) {
         View handle = new View(panel.getContext());
-        handle.setBackground(LineTheme.rounded(panel.getContext(), LineTheme.TEXT_TERTIARY, 2));
+        handle.setBackground(LineTheme.rounded(panel.getContext(), LineTheme.TEXT_TERTIARY, LineTheme.SHAPE_XS));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LineTheme.dp(panel.getContext(), 36), LineTheme.dp(panel.getContext(), 4));
         params.gravity = Gravity.CENTER_HORIZONTAL;
         params.topMargin = LineTheme.dp(panel.getContext(), LineTheme.SM);
@@ -630,7 +630,7 @@ public final class ExtensionDetailScreenView extends ScreenScaffoldView {
         IconButtonView button = new IconButtonView(context, IconButtonView.PLUS);
         button.setIconColor(LineTheme.ACCENT);
         button.setIconSizeDp(36, 19);
-        button.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 18));
+        button.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_LG));
         button.setOnClickListener(v -> {
             if (uiModel == null) return;
             switch (uiModel.getAddActionType()) {

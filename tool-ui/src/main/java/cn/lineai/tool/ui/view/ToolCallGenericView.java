@@ -46,6 +46,8 @@ public final class ToolCallGenericView extends BaseToolCallView implements ToolC
                 : unknown ? LineTheme.TEXT_TERTIARY
                 : LineTheme.ACCENT;
 
+        applyCardBackground(error);
+
         LinearLayout header = new LinearLayout(getContext());
         header.setOrientation(HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
@@ -65,7 +67,7 @@ public final class ToolCallGenericView extends BaseToolCallView implements ToolC
         header.addView(titleBlock, titleParams);
         titleBlock.addView(LineTheme.text(getContext(), label, 10, LineTheme.TEXT_TERTIARY, Typeface.BOLD),
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        TextView nameView = LineTheme.text(getContext(), name, LineTheme.FONT_SM, error ? LineTheme.DANGER : LineTheme.TEXT, Typeface.NORMAL);
+        TextView nameView = LineTheme.text(getContext(), name, LineTheme.FONT_SM, LineTheme.TEXT, Typeface.NORMAL);
         nameView.setTypeface(Typeface.MONOSPACE);
         nameView.setSingleLine(true);
         titleBlock.addView(nameView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));

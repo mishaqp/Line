@@ -145,6 +145,7 @@ public final class MainDependencies {
         themeSettingsRepository = new ThemeSettingsRepository(systemConfigProvider, settingsRepository);
         promptTemplateRepository = new PromptTemplateRepository(resourceProvider, settingsRepository);
         LineTheme.apply(themeSettingsRepository.resolveCurrentPalette());
+        LineTheme.applyChatScale(themeSettingsRepository.getChatScale());
         conversationRepository = new ConversationRepository(database);
         WorkspacePaths workspacePaths = new WorkspacePaths(context);
         projectRepository = new ProjectRepository(database, settingsRepository, workspacePaths);

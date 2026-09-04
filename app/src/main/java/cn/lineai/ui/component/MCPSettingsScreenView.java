@@ -136,7 +136,7 @@ public final class MCPSettingsScreenView extends ScreenScaffoldView {
         icon.setIconColor(config.isEnabled() ? LineTheme.ACCENT : LineTheme.TEXT_TERTIARY);
         icon.setIconSizeDp(36, 18);
         icon.setClickable(false);
-        icon.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 18));
+        icon.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_LG));
         header.addView(icon, new LinearLayout.LayoutParams(LineTheme.dp(context, 36), LineTheme.dp(context, 36)));
 
         LinearLayout labels = new LinearLayout(context);
@@ -168,7 +168,7 @@ public final class MCPSettingsScreenView extends ScreenScaffoldView {
         for (String tool : config.getTools()) {
             TextView badge = LineTheme.text(context, tool, LineTheme.FONT_XS, LineTheme.TEXT_SECONDARY, Typeface.NORMAL);
             badge.setTypeface(Typeface.MONOSPACE);
-            badge.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, 4));
+            badge.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_XS));
             LineTheme.padding(badge, LineTheme.SM, 2, LineTheme.SM, 2);
             toolWrap.addView(badge);
         }

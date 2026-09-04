@@ -88,7 +88,7 @@ public final class SshSettingsScreenView extends ScreenScaffoldView {
         statusView.setTypeface(Typeface.MONOSPACE);
         statusView.setVisibility(GONE);
         statusView.setLineSpacing(LineTheme.dp(context, 3), 1f);
-        statusView.setBackground(LineTheme.roundedStroke(context, LineTheme.CODE_BG, 8, LineTheme.CODE_BORDER));
+        statusView.setBackground(LineTheme.roundedStroke(context, LineTheme.CODE_BG, LineTheme.SHAPE_SM, LineTheme.CODE_BORDER));
         LineTheme.padding(statusView, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
         LinearLayout.LayoutParams statusParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         statusParams.topMargin = LineTheme.dp(context, LineTheme.SM);
@@ -155,8 +155,7 @@ public final class SshSettingsScreenView extends ScreenScaffoldView {
         statusView.setTextColor(error ? LineTheme.DANGER : LineTheme.TEXT_SECONDARY);
         statusView.setBackground(LineTheme.roundedStroke(
                 getContext(),
-                error ? LineTheme.DANGER_MUTED : LineTheme.CODE_BG,
-                8,
+                error ? LineTheme.DANGER_MUTED : LineTheme.CODE_BG, LineTheme.SHAPE_SM,
                 error ? LineTheme.DANGER : LineTheme.CODE_BORDER
         ));
     }
@@ -178,7 +177,7 @@ public final class SshSettingsScreenView extends ScreenScaffoldView {
         button.setOrientation(HORIZONTAL);
         button.setGravity(Gravity.CENTER);
         button.setClickable(true);
-        button.setBackground(LineTheme.roundedStroke(context, primary ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, 8, primary ? LineTheme.ACCENT : LineTheme.BORDER_LIGHT));
+        button.setBackground(LineTheme.roundedStroke(context, primary ? LineTheme.ACCENT : LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_SM, primary ? LineTheme.ACCENT : LineTheme.BORDER_LIGHT));
         button.setOnClickListener(listener);
         IconButtonView icon = new IconButtonView(context, iconType);
         icon.setIconColor(primary ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT_SECONDARY);
@@ -195,7 +194,7 @@ public final class SshSettingsScreenView extends ScreenScaffoldView {
     private LinearLayout card(Context context) {
         LinearLayout card = new LinearLayout(context);
         card.setOrientation(VERTICAL);
-        card.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 12));
+        card.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         LineTheme.padding(card, LineTheme.LG, LineTheme.LG, LineTheme.LG, LineTheme.LG);
         return card;
     }

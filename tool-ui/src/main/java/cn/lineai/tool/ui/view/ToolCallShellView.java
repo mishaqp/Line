@@ -162,6 +162,7 @@ public final class ToolCallShellView extends BaseToolCallView implements ToolCal
         boolean pending = "pending".equals(reviewState);
         boolean streaming = "running".equals(reviewState);
         boolean error = result != null && result.isError();
+        applyCardBackground(error);
         String content = result == null ? "" : result.getContent();
         String displayResult = streaming ? (content.length() == 0 ? getContext().getString(R.string.tool_call_shell_executing) : content) : content;
 

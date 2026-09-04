@@ -62,7 +62,7 @@ public final class TutorialScreenView extends ScreenScaffoldView {
 
         LinearLayout selector = new LinearLayout(getContext());
         selector.setOrientation(LinearLayout.VERTICAL);
-        selector.setBackground(LineTheme.roundedStroke(getContext(), LineTheme.SURFACE_ELEVATED, 16, LineTheme.BORDER_LIGHT));
+        selector.setBackground(LineTheme.roundedStroke(getContext(), LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_LG, LineTheme.BORDER_LIGHT));
         content.addView(selector, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         simpleRow = addVariant(selector,
@@ -149,7 +149,7 @@ public final class TutorialScreenView extends ScreenScaffoldView {
                     (i + 1) + " " + shortSectionTitle(title),
                     LineTheme.FONT_XS, LineTheme.TEXT_SECONDARY, Typeface.BOLD);
             chip.setGravity(Gravity.CENTER);
-            chip.setBackground(LineTheme.roundedStroke(getContext(), LineTheme.SURFACE_ELEVATED, 14, LineTheme.BORDER_LIGHT));
+            chip.setBackground(LineTheme.roundedStroke(getContext(), LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD, LineTheme.BORDER_LIGHT));
             chip.setPadding(LineTheme.dp(getContext(), LineTheme.MD), LineTheme.dp(getContext(), 5),
                     LineTheme.dp(getContext(), LineTheme.MD), LineTheme.dp(getContext(), 5));
             chip.setClickable(true);

@@ -1,0 +1,106 @@
+name: Test build APK
+
+# Публикует подписанный debug-сертификатом APK как GitHub Release, чтобы его можно
+# было скачать прямой ссылкой с телефона (артефакты Actions — это zip и требуют логина).
+#
+# Запуск:
+#   * вручную — «Run workflow» / `gh workflow run test-build-apk.yml` (работает после
+#     попадания файла в master: workflow_dispatch виден только с ветки по умолчанию);
+#   * тегом `testbuild-*` — работает с любой ветки, тег можно удалить после проверки.
+#
+# Тесты и lint здесь намеренно не запускаются: их гоняет основной CI на каждый коммит,
+# а этой сборке нужна только скорость получения APK.
+
+on:
+  workflow_dispatch:
+    inputs:
+      note:
+        description: 'Короткая заметка в описании релиза'
+        required: false
+        default: ''
+  push:
+    tags:
+      - 'testbuild-*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: test-build-apk-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Sideload APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build APKs
+        # exportDebugUserCertApk наполняет debugUserCert/export — без него APK
+        # для сайдлоада не появится под ожидаемым именем.
+        run: ./gradlew :app:assembleDebug :app:assembleDebugUserCert :app:exportDebugUserCertApk
+
+      - name: Collect APKs
+        id: collect
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          short="$(git rev-parse --short HEAD)"
+          cp app/build/outputs/apk/debugUserCert/export/*.apk "dist/LineCode-user-cert-${short}.apk"
+          cp app/build/outputs/apk/debug/*.apk "dist/LineCode-debug-${short}.apk"
+          ls -l dist
+          echo "short=${short}" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve release tag
+        id: meta
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=testbuild-$(date -u +%Y%m%d-%H%M%S)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.meta.outputs.tag }}
+          NOTE: ${{ github.event.inputs.note }}
+        run: |
+          set -euo pipefail
+          body="Тестовая сборка для проверки на устройстве.
+
+          Коммит: \`${GITHUB_SHA}\`
+          Ветка/тег: \`${GITHUB_REF_NAME}\`
+          ${NOTE}
+
+          **Для установки на телефон берите \`LineCode-user-cert-*.apk\`** — он подписан
+          debug-сертификатом для сайдлоада. Это НЕ релизная сборка: debuggable, без
+          обфускации, ставить поверх продовой версии не стоит."
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/*.apk --clobber
+          else
+            gh release create "$TAG" dist/*.apk \
+              --title "Test build ${{ steps.collect.outputs.short }}" \
+              --notes "$body" \
+              --prerelease \
+              --target "$GITHUB_SHA"
+          fi
+          echo "--- release ---"
+          gh release view "$TAG" --json url,assets \
+            --jq '.url, (.assets[] | "\(.name)  \(.size) bytes")'

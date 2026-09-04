@@ -8,6 +8,6 @@ public final class MarkdownThematicBreakView extends View {
     public MarkdownThematicBreakView(Context context) {
         super(context);
         setBackgroundColor(LineTheme.BORDER_LIGHT);
-        setMinimumHeight(Math.max(1, LineTheme.dp(context, 1)));
+        setMinimumHeight(Math.max(1, LineTheme.chatDp(context, 1)));
     }
 }

@@ -165,8 +165,8 @@ public final class MarkdownRenderer {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        params.topMargin = LineTheme.dp(context, topDp);
-        params.bottomMargin = LineTheme.dp(context, bottomDp);
+        params.topMargin = LineTheme.chatDp(context, topDp);
+        params.bottomMargin = LineTheme.chatDp(context, bottomDp);
         target.addView(view, params);
     }
 

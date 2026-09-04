@@ -14,8 +14,8 @@ public final class MarkdownQuoteBlockView extends LinearLayout {
 
         View rail = new View(context);
         rail.setBackground(LineTheme.rounded(context, LineTheme.BORDER_LIGHT, 2));
-        LinearLayout.LayoutParams railParams = new LinearLayout.LayoutParams(LineTheme.dp(context, 3), LayoutParams.MATCH_PARENT);
-        railParams.rightMargin = LineTheme.dp(context, LineTheme.MD);
+        LinearLayout.LayoutParams railParams = new LinearLayout.LayoutParams(LineTheme.chatDp(context, 3), LayoutParams.MATCH_PARENT);
+        railParams.rightMargin = LineTheme.chatDp(context, LineTheme.MD);
         addView(rail, railParams);
 
         content = new LinearLayout(context);

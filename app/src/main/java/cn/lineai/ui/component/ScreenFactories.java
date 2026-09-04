@@ -425,7 +425,7 @@ public final class ScreenFactories {
     public static final class ThemeSettingsScreenFactory implements ScreenFactory {
         @Override
         public View createScreen(MainChatView view, MainUiController controller, Context context) {
-            return new ThemeSettingsScreenView(context, controller.getThemeSettings(), new ThemeSettingsScreenView.Listener() {
+            return new ThemeSettingsScreenView(context, controller.getThemeSettings(), controller.getChatScaleMode(), new ThemeSettingsScreenView.Listener() {
                 @Override
                 public void onBack() {
                     view.handleScreenBack();
@@ -439,6 +439,11 @@ public final class ScreenFactories {
                 @Override
                 public void onCustomThemeColorsSaved(Map<String, String> colors) {
                     controller.onCustomThemeColorsSaved(colors);
+                }
+
+                @Override
+                public void onChatScaleModeChanged(String mode) {
+                    controller.onChatScaleModeChanged(mode);
                 }
             });
         }

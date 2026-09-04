@@ -21,7 +21,7 @@ public final class SettingsSectionView extends LinearLayout {
 
         group = new LinearLayout(context);
         group.setOrientation(VERTICAL);
-        group.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, 12));
+        group.setBackground(LineTheme.rounded(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD));
         LinearLayout.LayoutParams groupParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         groupParams.leftMargin = LineTheme.dp(context, LineTheme.LG);
         groupParams.rightMargin = LineTheme.dp(context, LineTheme.LG);

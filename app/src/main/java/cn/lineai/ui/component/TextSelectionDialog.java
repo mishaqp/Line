@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import cn.lineai.R;
+import cn.lineai.ui.theme.LineTheme;
 
 public final class TextSelectionDialog {
 
@@ -16,7 +17,7 @@ public final class TextSelectionDialog {
         editText.setText(content);
         editText.setTextSize(15);
         editText.setTextColor(Color.WHITE);
-        editText.setBackgroundColor(0xFF1E1E2E);
+        editText.setBackgroundColor(LineTheme.SURFACE_ELEVATED);
         editText.setPadding(30, 30, 30, 30);
         editText.setFocusable(true);
         editText.setFocusableInTouchMode(true);

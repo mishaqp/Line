@@ -29,7 +29,7 @@ public final class FormTextFieldView extends LinearLayout {
         input.setMinHeight(LineTheme.dp(context, multiline ? 120 : 44));
         input.setGravity((multiline ? Gravity.TOP : Gravity.CENTER_VERTICAL) | Gravity.START);
         input.setIncludeFontPadding(false);
-        input.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, 8, LineTheme.BORDER_LIGHT));
+        input.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_LIGHT, LineTheme.SHAPE_SM, LineTheme.BORDER_LIGHT));
         input.setPadding(LineTheme.dp(context, LineTheme.MD), LineTheme.dp(context, LineTheme.SM), LineTheme.dp(context, LineTheme.MD), LineTheme.dp(context, LineTheme.SM));
         if (secure) {
             input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);

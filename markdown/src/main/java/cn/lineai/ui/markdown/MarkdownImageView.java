@@ -27,7 +27,7 @@ public final class MarkdownImageView extends LinearLayout {
             String fallbackText = altText == null || altText.trim().length() == 0
                     ? imageLabel
                     : imageLabel + ": " + altText.trim();
-            TextView fallback = LineTheme.text(context,
+            TextView fallback = LineTheme.chatText(context,
                     fallbackText,
                     LineTheme.FONT_SM,
                     LineTheme.TEXT_TERTIARY,
@@ -38,14 +38,14 @@ public final class MarkdownImageView extends LinearLayout {
         ImageView image = new ImageView(context);
         image.setAdjustViewBounds(true);
         image.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        image.setMaxHeight(LineTheme.dp(context, 520));
+        image.setMaxHeight(LineTheme.chatDp(context, 520));
         image.setImageBitmap(bitmap);
         addView(image, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         String caption = altText == null ? "" : altText.trim();
         if (caption.length() > 0 && caption.length() <= 120) {
-            TextView text = LineTheme.text(context, caption, LineTheme.FONT_XS, LineTheme.TEXT_TERTIARY, Typeface.NORMAL);
+            TextView text = LineTheme.chatText(context, caption, LineTheme.FONT_XS, LineTheme.TEXT_TERTIARY, Typeface.NORMAL);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            params.topMargin = LineTheme.dp(context, 4);
+            params.topMargin = LineTheme.chatDp(context, 4);
             addView(text, params);
         }
     }

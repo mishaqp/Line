@@ -50,14 +50,14 @@ public final class ExtensionsScreenView extends LinearLayout {
         card.setGravity(Gravity.CENTER_VERTICAL);
         card.setClickable(true);
         card.setOnClickListener(v -> listener.onOpen(id));
-        card.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_ELEVATED, 12, LineTheme.BORDER));
+        card.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_MD, LineTheme.BORDER));
         LineTheme.padding(card, LineTheme.LG, LineTheme.MD, LineTheme.MD, LineTheme.MD);
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         cardParams.bottomMargin = LineTheme.dp(context, LineTheme.SM);
         content.addView(card, cardParams);
 
         FrameLayout iconWrap = new FrameLayout(context);
-        iconWrap.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 12));
+        iconWrap.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_MD));
         IconButtonView icon = new IconButtonView(context, iconType);
         icon.setIconColor(LineTheme.ACCENT);
         icon.setIconSizeDp(44, 22);
@@ -80,7 +80,7 @@ public final class ExtensionsScreenView extends LinearLayout {
         TextView titleView = LineTheme.text(context, title, LineTheme.FONT_LG, LineTheme.TEXT, Typeface.BOLD);
         titleRow.addView(titleView, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         TextView badgeView = LineTheme.text(context, badge, LineTheme.FONT_XS, LineTheme.ACCENT, Typeface.BOLD);
-        badgeView.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, 999));
+        badgeView.setBackground(LineTheme.rounded(context, LineTheme.ACCENT_MUTED, LineTheme.SHAPE_FULL));
         LineTheme.padding(badgeView, LineTheme.SM, 3, LineTheme.SM, 3);
         LinearLayout.LayoutParams badgeParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         badgeParams.leftMargin = LineTheme.dp(context, LineTheme.SM);

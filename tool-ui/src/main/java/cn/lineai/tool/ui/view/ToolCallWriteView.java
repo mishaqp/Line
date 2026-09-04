@@ -54,6 +54,7 @@ public final class ToolCallWriteView extends BaseToolCallView implements ToolCal
 
         boolean complete = result != null;
         boolean error = result != null && result.isError();
+        applyCardBackground(error);
         boolean hasDiff = complete && !error && diffRecord != null;
         String reviewState = result == null ? "" : result.getReviewState();
         boolean rejected = "rejected".equals(reviewState) || (diffRecord != null && diffRecord.isReverted());
