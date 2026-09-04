@@ -362,7 +362,7 @@ check("ChatScale parses", ok, detail)
 scale_src = read(scale_model)
 check("ChatScale is free of Android types",
       "android." not in scale_src and "androidx." not in scale_src)
-for token in ("MODE_COMPACT", "MODE_NORMAL", "MODE_LARGE", "MIN_SCALE", "MAX_SCALE"):
+for token in ("MODE_ULTRA_COMPACT", "MODE_COMPACT", "MODE_NORMAL", "MODE_LARGE", "MIN_SCALE", "MAX_SCALE"):
     check("ChatScale declares %s" % token, "public static final" in scale_src and token in scale_src)
 check("ChatScale exposes normalizeMode/clamp/forMode",
       all(sig in scale_src for sig in ("static ChatScale forMode(",
@@ -441,8 +441,10 @@ check("startup restores the saved chat scale",
       in read("app/src/main/java/cn/lineai/mvp/MainDependencies.java"))
 
 theme_screen = read("app/src/main/java/cn/lineai/ui/component/ThemeSettingsScreenView.java")
-check("theme screen lists exactly three chat scale presets",
-      theme_screen.count("new ScaleOption(") == 3)
+check("theme screen lists exactly four chat scale presets",
+      theme_screen.count("new ScaleOption(") == 4)
+check("the densest preset is listed first",
+      theme_screen.index("ChatScale.MODE_ULTRA_COMPACT") < theme_screen.index("ChatScale.MODE_COMPACT,"))
 check("chat scale presets are rendered as OptionRowView rows",
       "addChatScaleModes(" in theme_screen and "listener.onChatScaleModeChanged(option.mode)" in theme_screen)
 check("chat scale section sits under the theme list",
@@ -456,12 +458,51 @@ check("ScreenFactories passes the saved mode into the screen",
 
 for locale in ("values", "values-ru", "values-zh"):
     src = read("app/src/main/res/%s/strings.xml" % locale)
-    missing = [name for name in ("screen_theme_section_chat_scale", "screen_theme_scale_compact",
+    missing = [name for name in ("screen_theme_section_chat_scale",
+                                 "screen_theme_scale_ultra_compact", "screen_theme_scale_ultra_compact_desc",
+                                 "screen_theme_scale_compact",
                                  "screen_theme_scale_compact_desc", "screen_theme_scale_normal",
                                  "screen_theme_scale_normal_desc", "screen_theme_scale_large",
                                  "screen_theme_scale_large_desc")
                if 'name="%s"' % name not in src]
     check("%s defines all chat scale strings" % locale, not missing, ", ".join(missing))
+
+# --------------------------------------------------------------- Chat list performance
+list_path = "app/src/main/java/cn/lineai/ui/component/ChatMessageListView.java"
+ok, detail = parses(list_path)
+check("ChatMessageListView parses", ok, detail)
+list_src = read(list_path)
+
+check("tail following runs through setFollowTail()",
+      list_src.count("private void setFollowTail(boolean enabled)") == 1)
+check("no raw writes to followTailEnabled outside setFollowTail",
+      list_src.count("followTailEnabled = ") == 1,
+      "transcript mode would desync from the flag")
+check("following the tail uses AbsListView transcript mode",
+      "AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL" in list_src)
+check("render() no longer posts a scroll on every streaming flush",
+      "listView.post(() -> scrollToBottomInternal(false))" not in list_src)
+check("scroll requests are coalesced", "scrollToBottomPending" in list_src)
+check("visibility refreshes are coalesced", "visibilityUpdatePending" in list_src)
+check("the tail correction has a laid-out fast path",
+      "listView.scrollListBy(delta)" in list_src and "int laidOutIndex" in list_src)
+check("bringToFront() only runs on a visibility transition",
+      "if (scrollToBottomButton.getVisibility() == visibility)" in list_src)
+check("the scroll FAB is re-styled only when the palette moves",
+      "scrollButtonStyled" in list_src and "styledAccent" in list_src)
+check("isAtBottom() does not convert dp on every scroll frame",
+      "LineTheme.dp(getContext(), 2)" not in list_src and "bottomTolerancePx" in list_src)
+check("the tool result map is skipped when nothing calls tools",
+      "boolean anyToolCalls" in list_src)
+check("the row cache is pruned only when the row set changes",
+      "boolean rowSetChanged" in list_src)
+
+assistant_src = read("app/src/main/java/cn/lineai/ui/component/AssistantMessageView.java")
+check("the working indicator is not torn down on every bind",
+      "workingStatusView.getVisibility() != GONE || workingStatusView.isWorking()" in assistant_src)
+working_src = read("app/src/main/java/cn/lineai/ui/component/WorkingStatusView.java")
+check("WorkingStatusView follows the chat scale",
+      "LineTheme.chatDp(context, 16)" in working_src and "LineTheme.chatSp(LineTheme.FONT_SM)" in working_src)
 
 # ---------------------------------------------------------------- No XML layouts added
 check("no XML layouts introduced", not list((ROOT / "app/src/main/res").glob("layout*/*.xml")))

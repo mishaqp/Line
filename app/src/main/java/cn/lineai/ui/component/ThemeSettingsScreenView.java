@@ -49,6 +49,7 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
     };
 
     private static final ScaleOption[] CHAT_SCALES = new ScaleOption[] {
+            new ScaleOption(ChatScale.MODE_ULTRA_COMPACT, R.string.screen_theme_scale_ultra_compact, R.string.screen_theme_scale_ultra_compact_desc, IconButtonView.MESSAGE_CIRCLE),
             new ScaleOption(ChatScale.MODE_COMPACT, R.string.screen_theme_scale_compact, R.string.screen_theme_scale_compact_desc, IconButtonView.MESSAGE_SQUARE),
             new ScaleOption(ChatScale.MODE_NORMAL, R.string.screen_theme_scale_normal, R.string.screen_theme_scale_normal_desc, IconButtonView.MESSAGE_SQUARE_TEXT),
             new ScaleOption(ChatScale.MODE_LARGE, R.string.screen_theme_scale_large, R.string.screen_theme_scale_large_desc, IconButtonView.EXPAND)

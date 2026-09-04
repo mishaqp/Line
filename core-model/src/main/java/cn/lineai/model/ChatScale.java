@@ -17,6 +17,8 @@ package cn.lineai.model;
  */
 public final class ChatScale {
 
+    /** The densest preset: one step below compact, for fitting the most on screen. */
+    public static final String MODE_ULTRA_COMPACT = "ultra_compact";
     /** Tighter padding and slightly smaller text — more messages on screen. */
     public static final String MODE_COMPACT = "compact";
     /** Untouched: matches the system density exactly. */
@@ -25,15 +27,17 @@ public final class ChatScale {
     public static final String MODE_LARGE = "large";
 
     /** All selectable modes, in the order the settings screen lists them. */
-    public static final String[] MODES = {MODE_COMPACT, MODE_NORMAL, MODE_LARGE};
+    public static final String[] MODES = {MODE_ULTRA_COMPACT, MODE_COMPACT, MODE_NORMAL, MODE_LARGE};
 
+    private static final float ULTRA_COMPACT_TEXT = 0.80f;
+    private static final float ULTRA_COMPACT_DENSITY = 0.68f;
     private static final float COMPACT_TEXT = 0.88f;
     private static final float COMPACT_DENSITY = 0.82f;
     private static final float LARGE_TEXT = 1.15f;
     private static final float LARGE_DENSITY = 1.12f;
 
     /** Lower bound for any scale factor; below this the UI starts to break. */
-    public static final float MIN_SCALE = 0.75f;
+    public static final float MIN_SCALE = 0.65f;
     /** Upper bound for any scale factor. */
     public static final float MAX_SCALE = 1.30f;
 
@@ -50,6 +54,9 @@ public final class ChatScale {
     /** Resolves a stored mode string (unknown / null values fall back to normal). */
     public static ChatScale forMode(String rawMode) {
         String normalized = normalizeMode(rawMode);
+        if (MODE_ULTRA_COMPACT.equals(normalized)) {
+            return new ChatScale(normalized, ULTRA_COMPACT_TEXT, ULTRA_COMPACT_DENSITY);
+        }
         if (MODE_COMPACT.equals(normalized)) {
             return new ChatScale(normalized, COMPACT_TEXT, COMPACT_DENSITY);
         }

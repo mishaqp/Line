@@ -213,7 +213,7 @@ public final class AssistantMessageView extends LinearLayout {
                 workingStatusView.setVisibility(VISIBLE);
             }
             workingStatusView.startWorking();
-        } else {
+        } else if (workingStatusView.getVisibility() != GONE || workingStatusView.isWorking()) {
             workingStatusView.stopWorking();
             workingStatusView.setVisibility(GONE);
         }

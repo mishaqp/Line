@@ -52,11 +52,30 @@ public final class ChatScaleTest {
     }
 
     @Test
-    public void modesArrayIsTheThreePresetsInOrder() {
-        assertEquals(3, ChatScale.MODES.length);
-        assertEquals(ChatScale.MODE_COMPACT, ChatScale.MODES[0]);
-        assertEquals(ChatScale.MODE_NORMAL, ChatScale.MODES[1]);
-        assertEquals(ChatScale.MODE_LARGE, ChatScale.MODES[2]);
+    public void modesArrayIsThePresetsInDensestFirstOrder() {
+        assertEquals(4, ChatScale.MODES.length);
+        assertEquals(ChatScale.MODE_ULTRA_COMPACT, ChatScale.MODES[0]);
+        assertEquals(ChatScale.MODE_COMPACT, ChatScale.MODES[1]);
+        assertEquals(ChatScale.MODE_NORMAL, ChatScale.MODES[2]);
+        assertEquals(ChatScale.MODE_LARGE, ChatScale.MODES[3]);
+    }
+
+    @Test
+    public void ultraCompactIsOneStepBelowCompact() {
+        ChatScale ultra = ChatScale.forMode(ChatScale.MODE_ULTRA_COMPACT);
+        ChatScale compact = ChatScale.forMode(ChatScale.MODE_COMPACT);
+        assertEquals(ChatScale.MODE_ULTRA_COMPACT, ultra.getMode());
+        assertTrue(ultra.getTextScale() < compact.getTextScale());
+        assertTrue(ultra.getDensityScale() < compact.getDensityScale());
+        assertFalse(ultra.isDefault());
+    }
+
+    @Test
+    public void ultraCompactSurvivesTheClamp() {
+        // A preset silently pinned to MIN_SCALE would be indistinguishable from compact.
+        ChatScale ultra = ChatScale.forMode(ChatScale.MODE_ULTRA_COMPACT);
+        assertTrue(ultra.getTextScale() > ChatScale.MIN_SCALE);
+        assertTrue(ultra.getDensityScale() > ChatScale.MIN_SCALE);
     }
 
     @Test
@@ -108,11 +127,22 @@ public final class ChatScaleTest {
     }
 
     @Test
-    public void presetsAreDistinctFromEachOther() {
-        float compact = ChatScale.forMode(ChatScale.MODE_COMPACT).getTextScale();
-        float normal = ChatScale.forMode(ChatScale.MODE_NORMAL).getTextScale();
-        float large = ChatScale.forMode(ChatScale.MODE_LARGE).getTextScale();
-        assertTrue(compact < normal);
-        assertTrue(normal < large);
+    public void presetsAreStrictlyOrderedOnBothAxes() {
+        for (int i = 1; i < ChatScale.MODES.length; i++) {
+            ChatScale previous = ChatScale.forMode(ChatScale.MODES[i - 1]);
+            ChatScale current = ChatScale.forMode(ChatScale.MODES[i]);
+            String message = previous.getMode() + " -> " + current.getMode();
+            assertTrue(message, previous.getTextScale() < current.getTextScale());
+            assertTrue(message, previous.getDensityScale() < current.getDensityScale());
+        }
+    }
+
+    @Test
+    public void everyPresetIsReachableByItsStoredName() {
+        for (String mode : ChatScale.MODES) {
+            assertEquals(mode, ChatScale.normalizeMode(mode));
+            assertEquals(mode, ChatScale.forMode(mode).getMode());
+            assertEquals(mode, ChatScale.normalizeMode(mode.toUpperCase(java.util.Locale.ROOT)));
+        }
     }
 }

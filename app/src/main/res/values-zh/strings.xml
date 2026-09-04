@@ -812,6 +812,8 @@
     <string name="screen_theme_section_preview_desc">保存后会应用到自定义主题。</string>
     <string name="screen_theme_section_themes">主题</string>
     <string name="screen_theme_section_chat_scale">聊天缩放</string>
+    <string name="screen_theme_scale_ultra_compact">超紧凑</string>
+    <string name="screen_theme_scale_ultra_compact_desc">可用的最高密度</string>
     <string name="screen_theme_scale_compact">紧凑</string>
     <string name="screen_theme_scale_compact_desc">间距更紧，文字更小</string>
     <string name="screen_theme_scale_normal">标准</string>

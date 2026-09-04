@@ -811,6 +811,8 @@
     <string name="screen_theme_section_preview_desc">Сохранённая тема применяется как пользовательская.</string>
     <string name="screen_theme_section_themes">Темы</string>
     <string name="screen_theme_section_chat_scale">Масштаб чата</string>
+    <string name="screen_theme_scale_ultra_compact">Очень компактный</string>
+    <string name="screen_theme_scale_ultra_compact_desc">Максимальная плотность</string>
     <string name="screen_theme_scale_compact">Компактный</string>
     <string name="screen_theme_scale_compact_desc">Плотнее отступы, мельче текст</string>
     <string name="screen_theme_scale_normal">Обычный</string>
