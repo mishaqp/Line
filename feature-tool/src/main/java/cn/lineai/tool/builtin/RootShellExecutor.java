@@ -108,7 +108,7 @@ public final class RootShellExecutor implements RootCommandRunner, RootSupport.A
     public static final class RootTimeoutException extends Exception {
         private final String partialOutput;
 
-        RootTimeoutException(String partialOutput) {
+        public RootTimeoutException(String partialOutput) {
             super("root command timed out");
             this.partialOutput = partialOutput == null ? "" : partialOutput;
         }

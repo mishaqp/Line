@@ -67,7 +67,7 @@ final class FakeToolSettingsStore implements ToolSettingsStore {
 
     @Override
     public WebSearchConfig getWebSearchConfig() {
-        return new WebSearchConfig();
+        return WebSearchConfig.defaultConfig();
     }
 
     @Override
