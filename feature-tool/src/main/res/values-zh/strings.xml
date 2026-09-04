@@ -156,6 +156,7 @@
     <string name="tool_shell_no_provider">没有已绑定的终端提供者。请在设置中添加并启用终端提供者。</string>
     <string name="tool_shell_provider_not_bound">终端提供者服务未绑定。</string>
     <string name="tool_shell_exec_failed_exit">命令执行失败，退出码: %1$d</string>
+    <string name="tool_shell_exec_timed_out">命令执行超时: %1$d 毫秒</string>
     <string name="tool_shell_exec_no_output">命令执行完成，无输出</string>
     <string name="tool_shell_exec_failed">命令执行失败: %1$s</string>
     <string name="tool_shell_ssh_not_init">当前环境未初始化 SSH 服务。</string>

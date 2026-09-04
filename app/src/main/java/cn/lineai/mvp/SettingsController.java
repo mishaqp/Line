@@ -10,4 +10,8 @@ public interface SettingsController extends AiBehaviorSettingsController,
     void onMoreClick();
 
     void onSettingsItemSelected(String id);
+
+    boolean isFullAccessEnabled();
+
+    void onFullAccessChanged(boolean enabled);
 }

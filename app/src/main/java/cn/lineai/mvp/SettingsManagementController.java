@@ -82,6 +82,10 @@ public final class SettingsManagementController {
 
         void setBypassPathProtection(boolean enabled);
 
+        boolean isFullAccessEnabled();
+
+        void setFullAccessEnabled(boolean enabled);
+
         ThemeSettingsState getThemeSettings();
 
         void applyThemeMode(String mode);
@@ -254,6 +258,16 @@ public final class SettingsManagementController {
         @Override
         public void setBypassPathProtection(boolean enabled) {
             outputSettingsRepository.setPathProtectionBypassed(enabled);
+        }
+
+        @Override
+        public boolean isFullAccessEnabled() {
+            return toolSettingsRepository.isFullAccessEnabled();
+        }
+
+        @Override
+        public void setFullAccessEnabled(boolean enabled) {
+            toolSettingsRepository.setFullAccessEnabled(enabled);
         }
 
         @Override
@@ -459,6 +473,15 @@ public final class SettingsManagementController {
 
     public void setBypassPathProtection(boolean enabled) {
         settingsStore.setBypassPathProtection(enabled);
+        host.render();
+    }
+
+    public boolean isFullAccessEnabled() {
+        return settingsStore.isFullAccessEnabled();
+    }
+
+    public void setFullAccessEnabled(boolean enabled) {
+        settingsStore.setFullAccessEnabled(enabled);
         host.render();
     }
 

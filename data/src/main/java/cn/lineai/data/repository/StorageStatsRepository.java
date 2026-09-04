@@ -186,6 +186,8 @@ public final class StorageStatsRepository {
             db.delete("tool_results", null, null);
             db.delete("message_blocks", null, null);
             db.delete("attachments", null, null);
+            db.delete(LineCodeSchema.TABLE_AGENT_TASK_EVENTS, null, null);
+            db.delete(LineCodeSchema.TABLE_AGENT_TASKS, null, null);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();

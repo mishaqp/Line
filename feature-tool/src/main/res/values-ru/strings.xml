@@ -156,6 +156,7 @@
     <string name="tool_shell_no_provider">Нет привязанного терминального провайдера. Добавьте и включите его в настройках.</string>
     <string name="tool_shell_provider_not_bound">Сервис терминального провайдера не привязан.</string>
     <string name="tool_shell_exec_failed_exit">Сбой выполнения команды, код выхода: %1$d</string>
+    <string name="tool_shell_exec_timed_out">Превышено время выполнения команды: %1$d мс</string>
     <string name="tool_shell_exec_no_output">Команда выполнена без вывода</string>
     <string name="tool_shell_exec_failed">Сбой выполнения команды: %1$s</string>
     <string name="tool_shell_ssh_not_init">SSH сервис не инициализирован в текущей среде.</string>

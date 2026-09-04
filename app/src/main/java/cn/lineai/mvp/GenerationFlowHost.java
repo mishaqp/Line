@@ -88,4 +88,24 @@ class GenerationFlowHost implements GenerationFlowController.Host {
     public String toolLimitNotExecutedMessage() {
         return coordinator.context().getString(R.string.tool_call_limit_not_executed);
     }
+
+    @Override
+    public void onGenerationCheckpoint(int generationId, String phase, int toolCallCount, String payloadJson) {
+        coordinator.onGenerationCheckpoint(generationId, phase, toolCallCount, payloadJson);
+    }
+
+    @Override
+    public void onGenerationFinished(int generationId, boolean success, String error) {
+        coordinator.onGenerationFinished(generationId, success, error);
+    }
+
+    @Override
+    public boolean isGenerationDeadlineExceeded(int generationId) {
+        return coordinator.isGenerationDeadlineExceeded(generationId);
+    }
+
+    @Override
+    public String generationBudgetExceededMessage() {
+        return coordinator.generationBudgetExceededMessage();
+    }
 }

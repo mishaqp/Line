@@ -34,7 +34,7 @@ public final class ToolPermissionService {
     }
 
     public boolean needsConfirmation(String toolName) {
-        if (isFullAccess()) {
+        if (isFullAccess() || toolSettingsStore.isFullAccessEnabled()) {
             return false;
         }
         if (toolRegistry != null) {
