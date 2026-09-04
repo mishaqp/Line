@@ -156,6 +156,7 @@
     <string name="tool_shell_no_provider">No bound terminal provider. Please add and enable one in settings.</string>
     <string name="tool_shell_provider_not_bound">Terminal provider service not bound.</string>
     <string name="tool_shell_exec_failed_exit">Command execution failed, exit code: %1$d</string>
+    <string name="tool_shell_exec_timed_out">Shell command timed out after %1$d ms</string>
     <string name="tool_shell_exec_no_output">Command executed with no output</string>
     <string name="tool_shell_exec_failed">Command execution failed: %1$s</string>
     <string name="tool_shell_ssh_not_init">SSH service not initialized in the current environment.</string>
