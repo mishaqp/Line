@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.model.ChatMessageCompactTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:37:15.171Z" hostname="runnervmgx7h7" time="0.002">
+<testsuite name="cn.lineai.model.ChatMessageCompactTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:36.225Z" hostname="runnervmgx7h7" time="0.0">
   <properties/>
-  <testcase name="compactProgressMessageIsHiddenFromContext" classname="cn.lineai.model.ChatMessageCompactTest" time="0.001"/>
+  <testcase name="compactProgressMessageIsHiddenFromContext" classname="cn.lineai.model.ChatMessageCompactTest" time="0.0"/>
   <testcase name="attachmentsSurviveMessageCopies" classname="cn.lineai.model.ChatMessageCompactTest" time="0.0"/>
-  <testcase name="responseInputItemSurvivesMessageCopies" classname="cn.lineai.model.ChatMessageCompactTest" time="0.001"/>
+  <testcase name="responseInputItemSurvivesMessageCopies" classname="cn.lineai.model.ChatMessageCompactTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

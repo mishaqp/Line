@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.lineai.tool.builtin.ImageGenerationToolTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:41.204Z" hostname="runnervmgx7h7" time="0.011">
+  <properties/>
+  <testcase name="responsesParserRejectsNullStringResult" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.001"/>
+  <testcase name="legacyImageRequestCanAskForBase64" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.006"/>
+  <testcase name="responsesImageToolForcesGenerationAction" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.0"/>
+  <testcase name="imagesParserAcceptsPngBase64Result" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.001"/>
+  <testcase name="imagesParserRejectsNullStringFields" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.0"/>
+  <testcase name="responsesParserAcceptsPngBase64Result" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.0"/>
+  <testcase name="gptImageRequestAvoidsDeprecatedResponseFormat" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.0"/>
+  <testcase name="responsesRequestBodyForcesImageGenerationToolChoice" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.001"/>
+  <testcase name="responsesEndpointDerivesFromCommonBaseUrls" classname="cn.lineai.tool.builtin.ImageGenerationToolTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

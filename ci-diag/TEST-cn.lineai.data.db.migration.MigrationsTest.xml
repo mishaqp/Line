@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.data.db.migration.MigrationsTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:37:14.891Z" hostname="runnervmgx7h7" time="0.003">
+<testsuite name="cn.lineai.data.db.migration.MigrationsTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:35.989Z" hostname="runnervmgx7h7" time="0.001">
   <properties/>
-  <testcase name="migrationTargetsDoNotExceedSchemaVersion" classname="cn.lineai.data.db.migration.MigrationsTest" time="0.001"/>
-  <testcase name="migrationTargetsAreUnique" classname="cn.lineai.data.db.migration.MigrationsTest" time="0.001"/>
+  <testcase name="migrationTargetsDoNotExceedSchemaVersion" classname="cn.lineai.data.db.migration.MigrationsTest" time="0.0"/>
+  <testcase name="migrationTargetsAreUnique" classname="cn.lineai.data.db.migration.MigrationsTest" time="0.0"/>
   <testcase name="migrationListTargetsAreStrictlyIncreasing" classname="cn.lineai.data.db.migration.MigrationsTest" time="0.0"/>
-  <testcase name="migrationListIsNotEmpty" classname="cn.lineai.data.db.migration.MigrationsTest" time="0.001"/>
+  <testcase name="migrationListIsNotEmpty" classname="cn.lineai.data.db.migration.MigrationsTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

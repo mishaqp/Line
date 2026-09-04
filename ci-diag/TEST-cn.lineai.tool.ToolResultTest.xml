@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.tool.ToolResultTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:37:15.317Z" hostname="runnervmgx7h7" time="0.018">
+<testsuite name="cn.lineai.tool.ToolResultTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:36.357Z" hostname="runnervmgx7h7" time="0.018">
   <properties/>
   <testcase name="truncateContent_returnsSameWhenUnderLimit" classname="cn.lineai.tool.ToolResultTest" time="0.0"/>
-  <testcase name="truncateContent_truncatesMiddleWhenOverLimit" classname="cn.lineai.tool.ToolResultTest" time="0.011"/>
-  <testcase name="truncateContent_preservesHeadAndTail" classname="cn.lineai.tool.ToolResultTest" time="0.005"/>
+  <testcase name="truncateContent_truncatesMiddleWhenOverLimit" classname="cn.lineai.tool.ToolResultTest" time="0.009"/>
+  <testcase name="truncateContent_preservesHeadAndTail" classname="cn.lineai.tool.ToolResultTest" time="0.006"/>
   <testcase name="truncateContent_returnsNullForNull" classname="cn.lineai.tool.ToolResultTest" time="0.0"/>
   <testcase name="truncateContent_returnsSameAtExactLimit" classname="cn.lineai.tool.ToolResultTest" time="0.002"/>
   <system-out><![CDATA[]]></system-out>

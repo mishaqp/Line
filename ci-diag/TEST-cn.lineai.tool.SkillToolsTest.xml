@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.lineai.tool.SkillToolsTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:40.959Z" hostname="runnervmgx7h7" time="0.038">
+  <properties/>
+  <testcase name="deleteRemovesResolvedSkill" classname="cn.lineai.tool.SkillToolsTest" time="0.003"/>
+  <testcase name="listShowsIdLocationAndEnabledState" classname="cn.lineai.tool.SkillToolsTest" time="0.002"/>
+  <testcase name="createNormalizesUnknownLocationToApp" classname="cn.lineai.tool.SkillToolsTest" time="0.002"/>
+  <testcase name="setEnabledReportsUnknownSkill" classname="cn.lineai.tool.SkillToolsTest" time="0.001"/>
+  <testcase name="toolsRequireExtensionStore" classname="cn.lineai.tool.SkillToolsTest" time="0.002"/>
+  <testcase name="createRequiresName" classname="cn.lineai.tool.SkillToolsTest" time="0.001"/>
+  <testcase name="installWithoutSourceIsRejected" classname="cn.lineai.tool.SkillToolsTest" time="0.002"/>
+  <testcase name="listCanFilterToEnabledOnly" classname="cn.lineai.tool.SkillToolsTest" time="0.001"/>
+  <testcase name="mutatingToolsAskForConfirmationAndListDoesNot" classname="cn.lineai.tool.SkillToolsTest" time="0.001"/>
+  <testcase name="allFiveSkillToolsAreRegisteredAsBuiltins" classname="cn.lineai.tool.SkillToolsTest" time="0.014"/>
+  <testcase name="createWritesSkillIntoRequestedLocation" classname="cn.lineai.tool.SkillToolsTest" time="0.002"/>
+  <testcase name="repositoryFailureIsSurroundedByFriendlyMessage" classname="cn.lineai.tool.SkillToolsTest" time="0.001"/>
+  <testcase name="listWithoutSkillsExplainsHowToInstall" classname="cn.lineai.tool.SkillToolsTest" time="0.002"/>
+  <testcase name="setEnabledResolvesByNameAndDelegatesId" classname="cn.lineai.tool.SkillToolsTest" time="0.001"/>
+  <testcase name="installSupportsLocalPathUriAndGitHub" classname="cn.lineai.tool.SkillToolsTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

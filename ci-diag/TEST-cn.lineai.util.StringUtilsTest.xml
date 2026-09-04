@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.util.StringUtilsTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:37:15.358Z" hostname="runnervmgx7h7" time="0.001">
+<testsuite name="cn.lineai.util.StringUtilsTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:36.393Z" hostname="runnervmgx7h7" time="0.001">
   <properties/>
   <testcase name="keepsIncompleteEscapeSequences" classname="cn.lineai.util.StringUtilsTest" time="0.0"/>
   <testcase name="leavesPlainTextUnchanged" classname="cn.lineai.util.StringUtilsTest" time="0.0"/>
-  <testcase name="decodesMixedContent" classname="cn.lineai.util.StringUtilsTest" time="0.0"/>
+  <testcase name="decodesMixedContent" classname="cn.lineai.util.StringUtilsTest" time="0.001"/>
   <testcase name="handlesNullAndShortInput" classname="cn.lineai.util.StringUtilsTest" time="0.0"/>
   <testcase name="doesNotDecodeWindowsStylePaths" classname="cn.lineai.util.StringUtilsTest" time="0.0"/>
   <testcase name="decodesBasicUnicodeEscapes" classname="cn.lineai.util.StringUtilsTest" time="0.0"/>

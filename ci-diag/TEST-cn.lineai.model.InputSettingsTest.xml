@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.model.InputSettingsTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:37:15.179Z" hostname="runnervmgx7h7" time="0.0">
+<testsuite name="cn.lineai.model.InputSettingsTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:36.229Z" hostname="runnervmgx7h7" time="0.0">
   <properties/>
   <testcase name="normalizeEnterKeyBehaviorFallsBackToSend" classname="cn.lineai.model.InputSettingsTest" time="0.0"/>
   <testcase name="normalizeEnterKeyBehaviorKeepsNewline" classname="cn.lineai.model.InputSettingsTest" time="0.0"/>

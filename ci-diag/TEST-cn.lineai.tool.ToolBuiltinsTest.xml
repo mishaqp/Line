@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.lineai.tool.ToolBuiltinsTest" tests="23" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:41.032Z" hostname="runnervmgx7h7" time="0.16">
+  <properties/>
+  <testcase name="globFindsFilesAndSkipsNodeModules" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.011"/>
+  <testcase name="fileReadLargeFileWithKbRangeDoesNotError" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.053"/>
+  <testcase name="webFetchRejectsRemoteCleartextHttp" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.004"/>
+  <testcase name="agentPipelineRejectsSelfDependency" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.002"/>
+  <testcase name="fileReadKbMidFileChunkReturnsCompleteLines" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.029"/>
+  <testcase name="agentPipelineRejectsDuplicateWriteScope" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.002"/>
+  <testcase name="agentFailsClearlyWhenRunnerMissing" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.002"/>
+  <testcase name="fileWriteCreatesParentDirectories" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.002"/>
+  <testcase name="agentPipelineRejectsNestedWriteScope" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.001"/>
+  <testcase name="fileEditReplacesUniqueMatchOnce" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.002"/>
+  <testcase name="fileReadRangeWithoutKbOnLargeFileErrors" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.004"/>
+  <testcase name="fileDeleteRequiresReason" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.002"/>
+  <testcase name="fileReadEndKbBeyond50ReadsPastFirst50Kb" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.026"/>
+  <testcase name="agentPipelineRequiresSubCodingWriteScope" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.001"/>
+  <testcase name="fileEditRejectsMultipleMatchesWithoutReplaceAll" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.001"/>
+  <testcase name="fileReadWithKbRange" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.001"/>
+  <testcase name="fileEditReplaceAllReplacesEveryOccurrence" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.002"/>
+  <testcase name="builtinToolsDeclareViewClasses" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.005"/>
+  <testcase name="fileDeleteDeletesRequestedPaths" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.001"/>
+  <testcase name="agentExploreRejectsWriteScope" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.001"/>
+  <testcase name="webSearchFailsClearlyWhenNotConfigured" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.001"/>
+  <testcase name="fileReadReturnsNumberedLines" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.001"/>
+  <testcase name="fileWriteRejectsPathTraversalOutsideWorkspace" classname="cn.lineai.tool.ToolBuiltinsTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

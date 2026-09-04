@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.lineai.model.AiBehaviorSettingsAutoTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:37:15.169Z" hostname="runnervmgx7h7" time="0.001">
+<testsuite name="cn.lineai.model.AiBehaviorSettingsAutoTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-09-04T03:39:36.223Z" hostname="runnervmgx7h7" time="0.001">
   <properties/>
-  <testcase name="offDisablesReasoning" classname="cn.lineai.model.AiBehaviorSettingsAutoTest" time="0.001"/>
-  <testcase name="autoIsNormalizedAndEnabled" classname="cn.lineai.model.AiBehaviorSettingsAutoTest" time="0.0"/>
+  <testcase name="offDisablesReasoning" classname="cn.lineai.model.AiBehaviorSettingsAutoTest" time="0.0"/>
+  <testcase name="autoIsNormalizedAndEnabled" classname="cn.lineai.model.AiBehaviorSettingsAutoTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
