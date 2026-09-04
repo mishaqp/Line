@@ -304,6 +304,9 @@
     <string name="screen_security_section_http">HTTP restrictions</string>
     <string name="screen_security_section_browser">Built-in browser</string>
     <string name="screen_security_section_path">Path protection</string>
+    <string name="screen_security_section_agent">Agent access</string>
+    <string name="settings_row_security_full_access_title">Full access</string>
+    <string name="settings_row_security_full_access_desc">Allow agents to execute tools without confirming every action. Use only with trusted models and projects.</string>
     <string name="settings_row_security_bypass_path_title">Bypass path protection</string>
     <string name="settings_row_security_bypass_path_desc">Allow tools and agents to access any path, not limited to the workspace</string>
     <string name="settings_row_security_bypass_path_warning_title">Warning</string>

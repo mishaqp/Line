@@ -657,6 +657,16 @@ public final class MainCoordinator implements MainUiController {
     }
 
     @Override
+    public boolean isFullAccessEnabled() {
+        return settingsManagementController.isFullAccessEnabled();
+    }
+
+    @Override
+    public void onFullAccessChanged(boolean enabled) {
+        settingsManagementController.setFullAccessEnabled(enabled);
+    }
+
+    @Override
     public ThemeSettingsState getThemeSettings() {
         return settingsManagementController.getThemeSettings();
     }

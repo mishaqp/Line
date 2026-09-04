@@ -304,6 +304,9 @@
     <string name="screen_security_section_http">HTTP 限制</string>
     <string name="screen_security_section_browser">内置浏览器</string>
     <string name="screen_security_section_path">路径保护</string>
+    <string name="screen_security_section_agent">代理访问</string>
+    <string name="settings_row_security_full_access_title">完全访问</string>
+    <string name="settings_row_security_full_access_desc">允许代理无需逐一确认即可执行工具。仅对可信模型和项目使用。</string>
     <string name="settings_row_security_bypass_path_title">无视路径保护</string>
     <string name="settings_row_security_bypass_path_desc">允许工具和 Agent 访问任意路径,不限制在工作区内</string>
     <string name="settings_row_security_bypass_path_warning_title">警告</string>

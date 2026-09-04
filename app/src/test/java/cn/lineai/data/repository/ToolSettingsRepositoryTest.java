@@ -3,6 +3,7 @@ import cn.lineai.model.tool.ToolResult;
 
 import cn.lineai.ai.prompt.ToolPromptRenderer;
 import cn.lineai.model.McpToolConfig;
+import cn.lineai.resource.ResourceProvider;
 import cn.lineai.tool.BaseTool;
 import cn.lineai.tool.ToolCategory;
 import cn.lineai.tool.ToolCategoryResolver;
@@ -12,9 +13,12 @@ import cn.lineai.tool.ToolDisplayResolver;
 import cn.lineai.tool.ToolInfo;
 import cn.lineai.tool.ToolNames;
 import cn.lineai.tool.ToolRegistry;
+import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.json.JSONObject;
@@ -424,6 +428,58 @@ public final class ToolSettingsRepositoryTest {
         enabled.add(ToolNames.MEMORY_UPDATE);
         ToolSettingsRepository.applyLearningModeGate(enabled, true);
         Assert.assertTrue(enabled.contains(ToolNames.MEMORY_UPDATE));
+    }
+
+    @Test
+    public void shellToolGroupIsEnabledInEveryExecutionModeByDefault() {
+        List<McpToolConfig> configs = ToolSettingsRepository.buildDefaultConfigs(new TestResourceProvider());
+        McpToolConfig shell = null;
+        for (McpToolConfig config : configs) {
+            if ("shell".equals(config.getId())) {
+                shell = config;
+            }
+        }
+        Assert.assertNotNull(shell);
+        Assert.assertTrue(shell.isEnabled());
+        Assert.assertTrue(Arrays.asList(shell.getTools()).contains(ToolNames.SHELL_EXECUTE));
+        Assert.assertTrue(shell.getSupportedExecutionModes().contains(ToolSettingsRepository.EXECUTION_LOCAL));
+        Assert.assertTrue(shell.getSupportedExecutionModes().contains(ToolSettingsRepository.EXECUTION_SSH));
+        Assert.assertTrue(shell.getSupportedExecutionModes().contains(ToolSettingsRepository.EXECUTION_TERMINAL_PROVIDER));
+    }
+
+    @Test
+    public void shellToolGroupRespectsExplicitDisableFlag() {
+        List<McpToolConfig> configs = ToolSettingsRepository.buildDefaultConfigs(new TestResourceProvider());
+        McpToolConfig shell = null;
+        for (McpToolConfig config : configs) {
+            if ("shell".equals(config.getId())) {
+                shell = config;
+            }
+        }
+        Assert.assertNotNull(shell);
+
+        McpToolConfig disabled = ToolSettingsRepository.displayConfigForMode(
+                ToolSettingsRepository.EXECUTION_LOCAL, shell, false, new TestResourceProvider());
+
+        Assert.assertFalse(disabled.isEnabled());
+        Assert.assertTrue(disabled.getSupportedExecutionModes().contains(ToolSettingsRepository.EXECUTION_LOCAL));
+    }
+
+    private static final class TestResourceProvider implements ResourceProvider {
+        @Override
+        public InputStream openAsset(String path) {
+            return null;
+        }
+
+        @Override
+        public String getString(int resId) {
+            return "test";
+        }
+
+        @Override
+        public String getString(int resId, Object... formatArgs) {
+            return "test";
+        }
     }
 
     private static final class DummyCustomMcpTool extends BaseTool {

@@ -65,6 +65,122 @@ public final class GlobalToolApprovalPolicyTest {
     }
 
     @Test
+    public void askModeRequiresConfirmationForToolMarkedDangerous() {
+        ToolRegistry registry = new ToolRegistry();
+        RecordingTool tool = new RecordingTool("dangerous_write", ToolCategory.WRITE, false, true);
+        registry.register(tool);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true);
+        ToolExecutor executor = new ToolExecutor(registry, settings, null, null, null, null, null);
+        ToolCall call = new ToolCall("call_1", tool.getName(), "{}");
+
+        ToolResult rejected = executor.execute(call, ToolContext.builder().homePath("").build());
+
+        assertTrue(rejected.isError());
+        assertEquals(0, tool.runCount);
+        ToolResult accepted = executor.executeConfirmed(call, ToolContext.builder().homePath("").build());
+        assertFalse(accepted.isError());
+        assertEquals(1, tool.runCount);
+    }
+
+    @Test
+    public void autoModeStillConfirmsDangerousToolWithoutFullAccess() {
+        ToolRegistry registry = new ToolRegistry();
+        RecordingTool tool = new RecordingTool("dangerous_write", ToolCategory.WRITE, false, true);
+        registry.register(tool);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_AUTO, true, false);
+        ToolExecutor executor = new ToolExecutor(registry, settings, null, null, null, null, null);
+
+        ToolResult rejected = executor.execute(
+                new ToolCall("call_1", tool.getName(), "{}"),
+                ToolContext.builder().homePath("").build());
+
+        assertTrue(rejected.isError());
+        assertEquals(0, tool.runCount);
+    }
+
+    @Test
+    public void fullAccessRunsDangerousToolWithoutConfirmation() {
+        ToolRegistry registry = new ToolRegistry();
+        RecordingTool tool = new RecordingTool("dangerous_write", ToolCategory.WRITE, false, true);
+        registry.register(tool);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true, true);
+        ToolExecutor executor = new ToolExecutor(registry, settings, null, null, null, null, null);
+
+        ToolResult result = executor.execute(
+                new ToolCall("call_1", tool.getName(), "{}"),
+                ToolContext.builder().homePath("").build());
+
+        assertFalse(result.isError());
+        assertEquals(1, tool.runCount);
+    }
+
+    @Test
+    public void fullAccessSkipsConfirmationForRegularTool() {
+        ToolRegistry registry = new ToolRegistry();
+        RecordingTool tool = new RecordingTool("safe_read", ToolCategory.READ, true, false);
+        registry.register(tool);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true, true);
+        ToolExecutor executor = new ToolExecutor(registry, settings, null, null, null, null, null);
+
+        ToolResult result = executor.execute(
+                new ToolCall("call_1", tool.getName(), "{}"),
+                ToolContext.builder().homePath("").build());
+
+        assertFalse(result.isError());
+        assertEquals(1, tool.runCount);
+    }
+
+    @Test
+    public void fullAccessToggleChangesConfirmationPolicy() {
+        ToolRegistry registry = new ToolRegistry();
+        RecordingTool tool = new RecordingTool("dangerous_write", ToolCategory.WRITE, false, true);
+        registry.register(tool);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_AUTO, true, false);
+        ToolRunController controller = new ToolRunController(
+                new ToolExecutionCoordinator(registry), registry, settings);
+
+        assertTrue(controller.shouldPauseForConfirmation(
+                new ToolCall("call_1", tool.getName(), "{}")));
+
+        settings.setFullAccessEnabled(true);
+        assertFalse(controller.shouldPauseForConfirmation(
+                new ToolCall("call_2", tool.getName(), "{}")));
+
+        settings.setFullAccessEnabled(false);
+        assertTrue(controller.shouldPauseForConfirmation(
+                new ToolCall("call_3", tool.getName(), "{}")));
+    }
+
+    @Test
+    public void fullAccessSubAgentSkipsReviewForDangerousTool() {
+        ToolRegistry registry = new ToolRegistry();
+        RecordingTool tool = new RecordingTool("dangerous_write", ToolCategory.WRITE, false, true);
+        registry.register(tool);
+        TestSettings settings = new TestSettings(ToolSettingsStore.PERMISSION_CONFIRM, true, true);
+        ToolExecutor executor = new ToolExecutor(registry, settings, null, null, null, null, null);
+        AgentExecutionController controller = new AgentExecutionController(
+                null, null, settings, executor, registry, null, null);
+        controller.setToolReviewAwaiter((displayToolCallId, call, cancellationToken) -> {
+            throw new AssertionError("Full access must not request review for a dangerous tool");
+        });
+        AgentProgressSession progress = new AgentProgressSession(
+                1, "agent_call", "agent", AgentTool.TYPE_SUB_CODING, "dangerous write");
+
+        ToolResult result = controller.executeAgentToolCall(
+                new ToolCall("read_1", tool.getName(), "{}"),
+                Collections.singleton(tool.getName()),
+                AgentTool.TYPE_SUB_CODING,
+                Collections.emptyList(),
+                "",
+                progress,
+                new FakeHost(),
+                null);
+
+        assertFalse(result.isError());
+        assertEquals(1, tool.runCount);
+    }
+
+    @Test
     public void executorCannotBypassGlobalConfirmationPolicy() {
         ToolRegistry registry = new ToolRegistry();
         RecordingTool tool = new RecordingTool("safe_read", ToolCategory.READ, false);
@@ -148,12 +264,18 @@ public final class GlobalToolApprovalPolicyTest {
         private final String name;
         private final ToolCategory category;
         private final boolean concurrencySafe;
+        private final boolean requiresConfirmation;
         private int runCount;
 
         RecordingTool(String name, ToolCategory category, boolean concurrencySafe) {
+            this(name, category, concurrencySafe, false);
+        }
+
+        RecordingTool(String name, ToolCategory category, boolean concurrencySafe, boolean requiresConfirmation) {
             this.name = name;
             this.category = category;
             this.concurrencySafe = concurrencySafe;
+            this.requiresConfirmation = requiresConfirmation;
         }
 
         @Override
@@ -177,6 +299,11 @@ public final class GlobalToolApprovalPolicyTest {
         }
 
         @Override
+        public boolean needsConfirmation() {
+            return requiresConfirmation;
+        }
+
+        @Override
         public JSONObject getParameters() {
             return new JSONObject();
         }
@@ -191,10 +318,16 @@ public final class GlobalToolApprovalPolicyTest {
     private static final class TestSettings implements ToolSettingsStore {
         private final String permissionMode;
         private final boolean confirmationRequired;
+        private boolean fullAccessEnabled;
 
         TestSettings(String permissionMode, boolean confirmationRequired) {
+            this(permissionMode, confirmationRequired, false);
+        }
+
+        TestSettings(String permissionMode, boolean confirmationRequired, boolean fullAccessEnabled) {
             this.permissionMode = permissionMode;
             this.confirmationRequired = confirmationRequired;
+            this.fullAccessEnabled = fullAccessEnabled;
         }
 
         @Override
@@ -204,6 +337,16 @@ public final class GlobalToolApprovalPolicyTest {
 
         @Override
         public void setPermissionMode(String mode) {
+        }
+
+        @Override
+        public boolean isFullAccessEnabled() {
+            return fullAccessEnabled;
+        }
+
+        @Override
+        public void setFullAccessEnabled(boolean enabled) {
+            this.fullAccessEnabled = enabled;
         }
 
         @Override
