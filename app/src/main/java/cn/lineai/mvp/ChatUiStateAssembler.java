@@ -14,6 +14,7 @@ import cn.lineai.model.ModelContextInfo;
 import cn.lineai.model.ModelContextParser;
 import cn.lineai.model.ModelStore;
 import cn.lineai.model.OutputSettings;
+import cn.lineai.tool.ExecutionTargetLabel;
 import cn.lineai.workspace.WorkspacePaths;
 import java.util.List;
 
@@ -47,6 +48,20 @@ public final class ChatUiStateAssembler {
             boolean streaming,
             List<ChatMessage> messages
     ) {
+        return assemble(projectLabel, projectSource, projectPath, conversationId, activeChatMode,
+                streaming, messages, "");
+    }
+
+    public ChatUiState assemble(
+            String projectLabel,
+            String projectSource,
+            String projectPath,
+            String conversationId,
+            String activeChatMode,
+            boolean streaming,
+            List<ChatMessage> messages,
+            String executionMode
+    ) {
         ModelConfig selectedModel = modelRepository.getSelectedModel();
         boolean hasConfiguredModel = selectedModel != null;
         ModelContextInfo contextInfo = ModelContextParser.parse(selectedModel);
@@ -63,6 +78,7 @@ public final class ChatUiStateAssembler {
         String uiProjectPath = WorkspacePaths.SOURCE_SSH.equals(projectSource) && safe(projectPath).length() == 0
                 ? "SSH 登录目录"
                 : safe(projectPath);
+        String targetLabel = ExecutionTargetLabel.format(executionMode, uiProjectPath);
         return new ChatUiState(
                 projectLabel,
                 uiProjectPath,
@@ -80,7 +96,8 @@ public final class ChatUiStateAssembler {
                 conversationId,
                 messages,
                 selectedModelId,
-                availableModels
+                availableModels,
+                targetLabel
         );
     }
 

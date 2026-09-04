@@ -27,6 +27,7 @@ public final class RootShellExecutor implements RootCommandRunner, RootSupport.A
     private long availabilityCheckedAt;
     private boolean availabilityCached;
     private boolean availabilityValue;
+    private RootProbe.Status availabilityStatus = RootProbe.Status.UNKNOWN;
 
     /** 忘记缓存的健康检查结果（设置页切换执行目标、授权状态变化时调用）。 */
     @Override
@@ -34,6 +35,7 @@ public final class RootShellExecutor implements RootCommandRunner, RootSupport.A
         synchronized (lock) {
             availabilityCached = false;
             availabilityValue = false;
+            availabilityStatus = RootProbe.Status.UNKNOWN;
             availabilityCheckedAt = 0L;
         }
     }
@@ -47,20 +49,32 @@ public final class RootShellExecutor implements RootCommandRunner, RootSupport.A
                 return availabilityValue;
             }
         }
-        boolean available = false;
+        RootProbe.Status status;
+        boolean available;
         try {
             Result result = runScript("id -u", timeoutMs);
-            available = result.isSuccess() && "0".equals(result.firstLine());
+            status = RootProbe.fromResult(result);
+            available = status == RootProbe.Status.READY;
         } catch (Exception e) {
             ExceptionUtils.restoreInterrupt(e);
+            status = RootProbe.fromFailure(e);
             available = false;
         }
         synchronized (lock) {
             availabilityCached = true;
             availabilityValue = available;
+            availabilityStatus = status;
             availabilityCheckedAt = System.currentTimeMillis();
         }
         return available;
+    }
+
+    @Override
+    public RootProbe.Status probe(long timeoutMs) {
+        isRootAvailable(timeoutMs);
+        synchronized (lock) {
+            return availabilityStatus;
+        }
     }
 
     @Override

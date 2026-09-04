@@ -20,6 +20,10 @@ public final class RootSupport {
         boolean isRootAvailable(long timeoutMs);
 
         void invalidateAvailability();
+
+        default RootProbe.Status probe(long timeoutMs) {
+            return isRootAvailable(timeoutMs) ? RootProbe.Status.READY : RootProbe.Status.DENIED;
+        }
     }
 
     /** 创建一对（命令执行器, 可用性探测）。 */
