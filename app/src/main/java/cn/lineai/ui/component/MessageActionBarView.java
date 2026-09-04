@@ -34,7 +34,7 @@ public final class MessageActionBarView extends LinearLayout {
         super(context);
         setOrientation(HORIZONTAL);
         setGravity(align == ALIGN_RIGHT ? Gravity.END : Gravity.START);
-        setMinimumHeight(LineTheme.dp(context, ROW_HEIGHT_DP));
+        setMinimumHeight(LineTheme.chatDp(context, ROW_HEIGHT_DP));
         // Subtle tonal container: groups the actions instead of leaving loose icons
         // floating under the bubble, while staying quiet enough not to compete with it.
         setBackground(LineTheme.rounded(context,
@@ -158,6 +158,6 @@ public final class MessageActionBarView extends LinearLayout {
 
     private LinearLayout.LayoutParams iconParams(Context context) {
         return new LinearLayout.LayoutParams(
-                LineTheme.dp(context, ICON_WIDTH_DP), LineTheme.dp(context, ROW_HEIGHT_DP));
+                LineTheme.chatDp(context, ICON_WIDTH_DP), LineTheme.chatDp(context, ROW_HEIGHT_DP));
     }
 }

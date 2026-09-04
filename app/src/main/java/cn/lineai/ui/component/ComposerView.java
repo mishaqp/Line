@@ -233,7 +233,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         input.setTextColor(LineTheme.TEXT);
         input.setHintTextColor(LineTheme.TEXT_TERTIARY);
         input.setHint(context.getString(R.string.composer_hint_default));
-        input.setTextSize(LineTheme.TYPE_TITLE);
+        input.setTextSize(LineTheme.chatSp(LineTheme.TYPE_TITLE));
         input.setSingleLine(false);
         input.setMinLines(2);
         input.setMaxLines(6);

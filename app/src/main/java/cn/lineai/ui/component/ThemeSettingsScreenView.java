@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import cn.lineai.R;
+import cn.lineai.model.ChatScale;
 import cn.lineai.model.ThemePalette;
 import cn.lineai.model.ThemeSettingsState;
 import java.util.LinkedHashMap;
@@ -30,6 +31,8 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
         void onThemeModeChanged(String mode);
 
         void onCustomThemeColorsSaved(Map<String, String> colors);
+
+        void onChatScaleModeChanged(String mode);
     }
 
     private static final ThemeOption[] THEMES = new ThemeOption[] {
@@ -43,6 +46,12 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
             new ThemeOption(ThemePalette.MODE_HIGH_CONTRAST, R.string.screen_theme_high_contrast, R.string.screen_theme_high_contrast_desc, IconButtonView.CONTRAST),
             new ThemeOption(ThemePalette.MODE_DYNAMIC_COLOR, R.string.screen_theme_dynamic_color, R.string.screen_theme_dynamic_color_desc, IconButtonView.PALETTE),
             new ThemeOption(ThemePalette.MODE_CUSTOM, R.string.screen_theme_custom, R.string.screen_theme_custom_desc, IconButtonView.PAINTBRUSH)
+    };
+
+    private static final ScaleOption[] CHAT_SCALES = new ScaleOption[] {
+            new ScaleOption(ChatScale.MODE_COMPACT, R.string.screen_theme_scale_compact, R.string.screen_theme_scale_compact_desc, IconButtonView.MESSAGE_SQUARE),
+            new ScaleOption(ChatScale.MODE_NORMAL, R.string.screen_theme_scale_normal, R.string.screen_theme_scale_normal_desc, IconButtonView.MESSAGE_SQUARE_TEXT),
+            new ScaleOption(ChatScale.MODE_LARGE, R.string.screen_theme_scale_large, R.string.screen_theme_scale_large_desc, IconButtonView.EXPAND)
     };
 
     private static final ColorField[] COLOR_FIELDS = new ColorField[] {
@@ -97,6 +106,10 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
     private String activeStarter = "default";
 
     public ThemeSettingsScreenView(Context context, ThemeSettingsState state, Listener listener) {
+        this(context, state, ChatScale.MODE_NORMAL, listener);
+    }
+
+    public ThemeSettingsScreenView(Context context, ThemeSettingsState state, String chatScaleMode, Listener listener) {
         super(context, context.getString(R.string.screen_theme_section_themes), listener::onBack, null);
         this.listener = listener;
         ThemeSettingsState safeState = state == null
@@ -110,6 +123,7 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
 
         LinearLayout content = getContent();
         addThemeModes(content, safeState.getThemeMode());
+        addChatScaleModes(content, chatScaleMode);
         addCustomHeader(content);
         addStarterPanel(content);
 
@@ -170,6 +184,30 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
             ), i < THEMES.length - 1);
         }
         content.addView(themes, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+    }
+
+    /**
+     * Chat density presets. Deliberately placed right under the theme list: both answer
+     * "how does the app look", and both take effect through the same recreate path.
+     */
+    private void addChatScaleModes(LinearLayout content, String chatScaleMode) {
+        Context context = content.getContext();
+        SettingsSectionView scales = new SettingsSectionView(context, getResources().getString(R.string.screen_theme_section_chat_scale));
+        String currentMode = ChatScale.normalizeMode(chatScaleMode);
+        for (int i = 0; i < CHAT_SCALES.length; i++) {
+            ScaleOption option = CHAT_SCALES[i];
+            scales.addRow(new OptionRowView(
+                    context,
+                    option.iconType,
+                    getResources().getString(option.labelResId),
+                    getResources().getString(option.descResId),
+                    option.mode.equals(currentMode),
+                    () -> listener.onChatScaleModeChanged(option.mode)
+            ), i < CHAT_SCALES.length - 1);
+        }
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        params.topMargin = LineTheme.dp(context, LineTheme.MD);
+        content.addView(scales, params);
     }
 
     private void addCustomHeader(LinearLayout content) {
@@ -517,6 +555,20 @@ public final class ThemeSettingsScreenView extends ScreenScaffoldView {
         private final int iconType;
 
         ThemeOption(String mode, int labelResId, int descResId, int iconType) {
+            this.mode = mode;
+            this.labelResId = labelResId;
+            this.descResId = descResId;
+            this.iconType = iconType;
+        }
+    }
+
+    private static final class ScaleOption {
+        final String mode;
+        final int labelResId;
+        final int descResId;
+        final int iconType;
+
+        ScaleOption(String mode, int labelResId, int descResId, int iconType) {
             this.mode = mode;
             this.labelResId = labelResId;
             this.descResId = descResId;

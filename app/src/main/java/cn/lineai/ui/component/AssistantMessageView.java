@@ -47,7 +47,7 @@ public final class AssistantMessageView extends LinearLayout {
         super(context);
         setOrientation(VERTICAL);
         setGravity(Gravity.START);
-        LineTheme.padding(this, LineTheme.LG, LineTheme.XS, LineTheme.LG, LineTheme.LG);
+        LineTheme.chatPadding(this, LineTheme.LG, LineTheme.XS, LineTheme.LG, LineTheme.LG);
         defaultPaddingLeft = getPaddingLeft();
         defaultPaddingTop = getPaddingTop();
         defaultPaddingRight = getPaddingRight();
@@ -69,7 +69,7 @@ public final class AssistantMessageView extends LinearLayout {
         // blocks and GFM tables that must measure against the full column width.
         contentView = new MarkdownView(context);
         contentView.setBackground(LineTheme.assistantBubble(context));
-        LineTheme.padding(contentView, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
+        LineTheme.chatPadding(contentView, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
         addView(contentView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         workingStatusView = new WorkingStatusView(context);

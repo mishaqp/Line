@@ -120,6 +120,66 @@ public final class LineTheme {
         DIFF_DEL_TEXT = palette.diffDelText;
     }
 
+    /**
+     * Chat-only text multiplier, driven by {@link cn.lineai.model.ChatScale}. Applied by
+     * {@link #chatSp(float)} / {@link #chatText}; global {@link #text} is deliberately
+     * untouched so settings screens keep the system size.
+     */
+    public static float CHAT_TEXT_SCALE = 1f;
+
+    /** Chat-only spacing multiplier; applied by {@link #chatDp(Context, float)}. */
+    public static float CHAT_DENSITY_SCALE = 1f;
+
+    /** Installs the chat scale factors; values are clamped by {@code ChatScale}. */
+    public static void applyChatScale(cn.lineai.model.ChatScale scale) {
+        if (scale == null) {
+            CHAT_TEXT_SCALE = 1f;
+            CHAT_DENSITY_SCALE = 1f;
+            return;
+        }
+        CHAT_TEXT_SCALE = scale.getTextScale();
+        CHAT_DENSITY_SCALE = scale.getDensityScale();
+    }
+
+    /** Scales an sp text size for the chat. Never returns below 1sp. */
+    public static float chatSp(float sizeSp) {
+        float scaled = sizeSp * CHAT_TEXT_SCALE;
+        return scaled < 1f ? 1f : scaled;
+    }
+
+    /**
+     * Scales a dp spacing value for the chat and converts it to pixels. A positive input
+     * never collapses to zero, so hairline dividers and strokes survive the compact preset.
+     */
+    public static int chatDp(Context context, float value) {
+        int scaled = dp(context, value * CHAT_DENSITY_SCALE);
+        if (value > 0f && scaled < 1) {
+            return 1;
+        }
+        return scaled;
+    }
+
+    /** {@link #text} with the chat text scale applied. */
+    public static TextView chatText(Context context, String value, float sizeSp, int color, int style) {
+        TextView textView = text(context, value, 0, color, style);
+        textView.setTextSize(chatSp(sizeSp));
+        return textView;
+    }
+
+    /** {@link #textMedium} with the chat text scale applied. */
+    public static TextView chatTextMedium(Context context, String value, float sizeSp, int color) {
+        TextView textView = textMedium(context, value, 0, color);
+        textView.setTextSize(chatSp(sizeSp));
+        return textView;
+    }
+
+    /** Applies chat padding (in dp, scaled) to a view. */
+    public static void chatPadding(View view, int left, int top, int right, int bottom) {
+        Context context = view.getContext();
+        view.setPadding(chatDp(context, left), chatDp(context, top),
+                chatDp(context, right), chatDp(context, bottom));
+    }
+
     public static int dp(Context context, float value) {
         return Math.round(value * context.getResources().getDisplayMetrics().density);
     }

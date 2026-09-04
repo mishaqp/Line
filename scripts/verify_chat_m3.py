@@ -355,6 +355,114 @@ check("CI builds both APKs",
       ":app:assembleDebug" in ci and ":app:assembleDebugUserCert" in ci)
 check("CI never pushes to branches", "git push" not in ci)
 
+# ------------------------------------------------------------------ Chat scale feature
+scale_model = "core-model/src/main/java/cn/lineai/model/ChatScale.java"
+ok, detail = parses(scale_model)
+check("ChatScale parses", ok, detail)
+scale_src = read(scale_model)
+check("ChatScale is free of Android types",
+      "android." not in scale_src and "androidx." not in scale_src)
+for token in ("MODE_COMPACT", "MODE_NORMAL", "MODE_LARGE", "MIN_SCALE", "MAX_SCALE"):
+    check("ChatScale declares %s" % token, "public static final" in scale_src and token in scale_src)
+check("ChatScale exposes normalizeMode/clamp/forMode",
+      all(sig in scale_src for sig in ("static ChatScale forMode(",
+                                       "static String normalizeMode(",
+                                       "static float clamp(")))
+check("ChatScale guards NaN", "Float.isNaN" in scale_src)
+
+scale_test = "core-model/src/test/java/cn/lineai/model/ChatScaleTest.java"
+ok, detail = parses(scale_test)
+check("ChatScaleTest parses", ok, detail)
+scale_test_src = read(scale_test)
+check("ChatScaleTest imports no Robolectric/Mockito",
+      not re.search(r"import\s+org\.(robolectric|mockito)", scale_test_src))
+check("ChatScaleTest covers null / unknown / case / clamp",
+      all(frag in scale_test_src for frag in ("normalizeMode(null)", '"gigantic"', '"COMPACT"', "Float.NaN")))
+check("ChatScaleTest has at least 8 cases", scale_test_src.count("@Test") >= 8)
+
+theme_src = read("ui-theme/src/main/java/cn/lineai/ui/theme/LineTheme.java")
+check("LineTheme exposes chat scale fields",
+      "CHAT_TEXT_SCALE" in theme_src and "CHAT_DENSITY_SCALE" in theme_src)
+check("LineTheme chat scale defaults to 1f",
+      "CHAT_TEXT_SCALE = 1f" in theme_src and "CHAT_DENSITY_SCALE = 1f" in theme_src)
+for helper in ("chatSp(", "chatDp(", "chatText(", "chatTextMedium(", "chatPadding(", "applyChatScale("):
+    check("LineTheme provides %s" % helper, "static " in theme_src and helper in theme_src)
+check("applyChatScale tolerates a null scale", "if (scale == null)" in theme_src)
+check("chatSp never returns below 1sp", "scaled < 1f ? 1f : scaled" in theme_src)
+check("global dp()/text() stay unscaled",
+      "CHAT_DENSITY_SCALE" not in theme_src.split("public static int dp(Context context, float value) {", 1)[1][:400])
+
+# The chat scale must not leak into non-chat surfaces.
+for screen in ("SettingsScreenView", "SimpleSettingsScreenView", "SecuritySettingsScreenView",
+               "DataSettingsScreenView", "ToolSettingsScreenView"):
+    path = "app/src/main/java/cn/lineai/ui/component/%s.java" % screen
+    if (ROOT / path).exists():
+        check("%s does not use chat scaling" % screen,
+              not re.search(r"LineTheme\.chat(Sp|Dp|Text|TextMedium|Padding)\(", read(path)))
+
+# Chat surfaces must actually consume it, otherwise the setting is invisible.
+check("markdown scales its text",
+      "LineTheme.chatSp(sizeSp)" in read("markdown/src/main/java/cn/lineai/ui/markdown/MarkdownTextBlockView.java"))
+check("chatDp keeps hairlines visible", "value > 0f && scaled < 1" in theme_src)
+check("markdown has no unscaled LineTheme.dp(/padding( left",
+      not any(re.search(r"LineTheme\.(dp|padding)\(", read("markdown/src/main/java/cn/lineai/ui/markdown/%s" % f.name))
+              for f in (ROOT / "markdown/src/main/java/cn/lineai/ui/markdown").glob("*.java")))
+check("markdown has no unscaled LineTheme.text( left",
+      not any("LineTheme.text(" in read("markdown/src/main/java/cn/lineai/ui/markdown/%s" % f.name)
+              for f in (ROOT / "markdown/src/main/java/cn/lineai/ui/markdown").glob("*.java")))
+for view in ("UserMessageView", "AssistantMessageView"):
+    src = read("app/src/main/java/cn/lineai/ui/component/%s.java" % view)
+    check("%s scales its padding" % view, "LineTheme.chatPadding(" in src)
+check("UserMessageView scales its bubble text",
+      "LineTheme.chatText(context, \"\", LineTheme.TYPE_TITLE" in read("app/src/main/java/cn/lineai/ui/component/UserMessageView.java"))
+check("MessageActionBarView scales its row",
+      "LineTheme.chatDp(context, ROW_HEIGHT_DP)" in read("app/src/main/java/cn/lineai/ui/component/MessageActionBarView.java"))
+check("ComposerView scales its input text",
+      "LineTheme.chatSp(LineTheme.TYPE_TITLE)" in read("app/src/main/java/cn/lineai/ui/component/ComposerView.java"))
+
+repo_src = read("app/src/main/java/cn/lineai/data/repository/ThemeSettingsRepository.java")
+check("ThemeSettingsRepository persists the chat scale",
+      'KEY_CHAT_SCALE = "@lineai_chat_scale"' in repo_src)
+check("ThemeSettingsRepository exposes get/set for the chat scale",
+      "getChatScale()" in repo_src and "setChatScaleMode(" in repo_src)
+check("chat scale reads default to normal",
+      "KEY_CHAT_SCALE, ChatScale.MODE_NORMAL" in repo_src)
+
+controller_src = read("app/src/main/java/cn/lineai/mvp/SettingsManagementController.java")
+check("SettingsStore declares the chat scale hooks",
+      "String getChatScaleMode();" in controller_src and "void applyChatScaleMode(String mode);" in controller_src)
+check("changing the chat scale recreates the theme scope",
+      re.search(r"setChatScaleMode\(String mode\)\s*\{[^}]*applyChatScaleMode\(mode\);[^}]*recreateForTheme\(\"theme\"\)",
+                controller_src, re.S) is not None)
+check("the store applies the scale to LineTheme",
+      "LineTheme.applyChatScale(themeSettingsRepository.setChatScaleMode(mode))" in controller_src)
+check("startup restores the saved chat scale",
+      "LineTheme.applyChatScale(themeSettingsRepository.getChatScale())"
+      in read("app/src/main/java/cn/lineai/mvp/MainDependencies.java"))
+
+theme_screen = read("app/src/main/java/cn/lineai/ui/component/ThemeSettingsScreenView.java")
+check("theme screen lists exactly three chat scale presets",
+      theme_screen.count("new ScaleOption(") == 3)
+check("chat scale presets are rendered as OptionRowView rows",
+      "addChatScaleModes(" in theme_screen and "listener.onChatScaleModeChanged(option.mode)" in theme_screen)
+check("chat scale section sits under the theme list",
+      theme_screen.index("addThemeModes(content,") < theme_screen.index("addChatScaleModes(content,"))
+check("theme screen keeps a 3-arg constructor for compatibility",
+      "this(context, state, ChatScale.MODE_NORMAL, listener);" in theme_screen)
+check("ThemeSettingsController exposes the chat scale",
+      "String getChatScaleMode();" in read("app/src/main/java/cn/lineai/mvp/ThemeSettingsController.java"))
+check("ScreenFactories passes the saved mode into the screen",
+      "controller.getChatScaleMode()" in read("app/src/main/java/cn/lineai/ui/component/ScreenFactories.java"))
+
+for locale in ("values", "values-ru", "values-zh"):
+    src = read("app/src/main/res/%s/strings.xml" % locale)
+    missing = [name for name in ("screen_theme_section_chat_scale", "screen_theme_scale_compact",
+                                 "screen_theme_scale_compact_desc", "screen_theme_scale_normal",
+                                 "screen_theme_scale_normal_desc", "screen_theme_scale_large",
+                                 "screen_theme_scale_large_desc")
+               if 'name="%s"' % name not in src]
+    check("%s defines all chat scale strings" % locale, not missing, ", ".join(missing))
+
 # ---------------------------------------------------------------- No XML layouts added
 check("no XML layouts introduced", not list((ROOT / "app/src/main/res").glob("layout*/*.xml")))
 

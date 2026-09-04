@@ -810,6 +810,13 @@
     <string name="screen_theme_section_preview">Theme preview</string>
     <string name="screen_theme_section_preview_desc">The saved theme is applied as the custom theme.</string>
     <string name="screen_theme_section_themes">Themes</string>
+    <string name="screen_theme_section_chat_scale">Chat scale</string>
+    <string name="screen_theme_scale_compact">Compact</string>
+    <string name="screen_theme_scale_compact_desc">Tighter spacing, smaller text</string>
+    <string name="screen_theme_scale_normal">Normal</string>
+    <string name="screen_theme_scale_normal_desc">System size, unchanged</string>
+    <string name="screen_theme_scale_large">Large</string>
+    <string name="screen_theme_scale_large_desc">Roomier spacing, larger text</string>
     <string name="screen_theme_system">Follow system</string>
     <string name="screen_theme_system_desc">Match system appearance automatically</string>
     <string name="screen_theme_light">Light mode</string>

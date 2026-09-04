@@ -811,6 +811,13 @@
     <string name="screen_theme_section_preview">主题预览</string>
     <string name="screen_theme_section_preview_desc">保存后会应用到自定义主题。</string>
     <string name="screen_theme_section_themes">主题</string>
+    <string name="screen_theme_section_chat_scale">聊天缩放</string>
+    <string name="screen_theme_scale_compact">紧凑</string>
+    <string name="screen_theme_scale_compact_desc">间距更紧，文字更小</string>
+    <string name="screen_theme_scale_normal">标准</string>
+    <string name="screen_theme_scale_normal_desc">系统大小，保持不变</string>
+    <string name="screen_theme_scale_large">宽松</string>
+    <string name="screen_theme_scale_large_desc">间距更宽，文字更大</string>
     <string name="screen_theme_system">跟随系统</string>
     <string name="screen_theme_system_desc">自动匹配系统外观</string>
     <string name="screen_theme_light">亮色模式</string>

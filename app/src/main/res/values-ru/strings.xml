@@ -810,6 +810,13 @@
     <string name="screen_theme_section_preview">Предпросмотр темы</string>
     <string name="screen_theme_section_preview_desc">Сохранённая тема применяется как пользовательская.</string>
     <string name="screen_theme_section_themes">Темы</string>
+    <string name="screen_theme_section_chat_scale">Масштаб чата</string>
+    <string name="screen_theme_scale_compact">Компактный</string>
+    <string name="screen_theme_scale_compact_desc">Плотнее отступы, мельче текст</string>
+    <string name="screen_theme_scale_normal">Обычный</string>
+    <string name="screen_theme_scale_normal_desc">Системный размер, без изменений</string>
+    <string name="screen_theme_scale_large">Крупный</string>
+    <string name="screen_theme_scale_large_desc">Просторнее отступы, крупнее текст</string>
     <string name="screen_theme_system">Следовать системе</string>
     <string name="screen_theme_system_desc">Автоматически соответствовать системному внешнему виду</string>
     <string name="screen_theme_light">Светлый режим</string>

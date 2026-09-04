@@ -31,16 +31,16 @@ public final class UserMessageView extends LinearLayout {
         super(context);
         setOrientation(VERTICAL);
         setGravity(Gravity.END);
-        LineTheme.padding(this, LineTheme.LG, LineTheme.XS, LineTheme.LG, LineTheme.LG);
+        LineTheme.chatPadding(this, LineTheme.LG, LineTheme.XS, LineTheme.LG, LineTheme.LG);
         defaultPaddingLeft = getPaddingLeft();
         defaultPaddingTop = getPaddingTop();
         defaultPaddingRight = getPaddingRight();
         defaultPaddingBottom = getPaddingBottom();
 
-        contentText = LineTheme.text(context, "", LineTheme.TYPE_TITLE, LineTheme.TEXT_ON_COLOR, Typeface.NORMAL);
+        contentText = LineTheme.chatText(context, "", LineTheme.TYPE_TITLE, LineTheme.TEXT_ON_COLOR, Typeface.NORMAL);
         contentText.setLineSpacing(LineTheme.dp(context, 2), 1.0f);
         contentText.setBackground(LineTheme.userBubble(context));
-        LineTheme.padding(contentText, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
+        LineTheme.chatPadding(contentText, LineTheme.LG, LineTheme.MD, LineTheme.LG, LineTheme.MD);
         int horizontalPaddingPx = LineTheme.dp(context, LineTheme.LG) * 2;
         int availableWidth = context.getResources().getDisplayMetrics().widthPixels - horizontalPaddingPx;
         contentText.setMaxWidth((int) (availableWidth * 0.80f));
@@ -157,7 +157,7 @@ public final class UserMessageView extends LinearLayout {
     }
 
     private TextView attachmentChip(InputAttachment attachment) {
-        TextView chip = LineTheme.textMedium(getContext(), attachment.getName(), LineTheme.TYPE_BODY_SMALL, LineTheme.TEXT_SECONDARY);
+        TextView chip = LineTheme.chatTextMedium(getContext(), attachment.getName(), LineTheme.TYPE_BODY_SMALL, LineTheme.TEXT_SECONDARY);
         chip.setSingleLine(true);
         chip.setEllipsize(TextUtils.TruncateAt.MIDDLE);
         chip.setMaxWidth(LineTheme.dp(getContext(), 220));

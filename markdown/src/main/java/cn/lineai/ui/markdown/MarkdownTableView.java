@@ -94,12 +94,12 @@ public final class MarkdownTableView extends HorizontalScrollView {
         LinearLayout cellView = new LinearLayout(context);
         cellView.setOrientation(LinearLayout.VERTICAL);
         cellView.setGravity(Gravity.CENTER_VERTICAL);
-        cellView.setMinimumWidth(LineTheme.dp(context, 84));
-        cellView.setMinimumHeight(LineTheme.dp(context, 38));
+        cellView.setMinimumWidth(LineTheme.chatDp(context, 84));
+        cellView.setMinimumHeight(LineTheme.chatDp(context, 38));
         cellView.setBackground(LineTheme.roundedStroke(context, cellBackground(header), 0, LineTheme.BORDER_LIGHT));
-        LineTheme.padding(cellView, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
+        LineTheme.chatPadding(cellView, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
 
-        TextView textView = LineTheme.text(
+        TextView textView = LineTheme.chatText(
                 context,
                 "",
                 LineTheme.FONT_SM,
@@ -108,7 +108,7 @@ public final class MarkdownTableView extends HorizontalScrollView {
         );
         MarkdownLinks.apply(textView, inlineRenderer.render(cell), linkHandler);
         textView.setGravity(gravityFor(cell.getAlignment()) | Gravity.CENTER_VERTICAL);
-        textView.setMaxWidth(LineTheme.dp(context, 196));
+        textView.setMaxWidth(LineTheme.chatDp(context, 196));
         textView.setSingleLine(false);
         cellView.addView(textView, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         return cellView;
