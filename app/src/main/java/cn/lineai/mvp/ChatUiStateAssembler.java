@@ -49,11 +49,12 @@ public final class ChatUiStateAssembler {
             boolean streaming,
             List<ChatMessage> messages
     ) {
-        String guessed = WorkspacePaths.SOURCE_SSH.equals(projectSource)
-                ? ToolSettingsStore.EXECUTION_SSH
-                : "";
+        String mode = ExecutionTargetLabel.current();
+        if (mode.length() == 0 && WorkspacePaths.SOURCE_SSH.equals(projectSource)) {
+            mode = ToolSettingsStore.EXECUTION_SSH;
+        }
         return assemble(projectLabel, projectSource, projectPath, conversationId, activeChatMode,
-                streaming, messages, guessed);
+                streaming, messages, mode);
     }
 
     public ChatUiState assemble(

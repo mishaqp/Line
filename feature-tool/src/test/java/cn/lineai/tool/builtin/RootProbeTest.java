@@ -41,4 +41,12 @@ public final class RootProbeTest {
         Assert.assertEquals("SSH",
                 ExecutionTargetLabel.format("ssh", "", null));
     }
+
+    @Test
+    public void rememberIsWhatAssemblerReadsWithoutCoordinator() {
+        ExecutionTargetLabel.remember("root");
+        Assert.assertEquals("root", ExecutionTargetLabel.current());
+        ExecutionTargetLabel.remember(null);
+        Assert.assertEquals("", ExecutionTargetLabel.current());
+    }
 }

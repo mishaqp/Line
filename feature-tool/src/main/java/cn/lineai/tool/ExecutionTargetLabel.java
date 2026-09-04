@@ -8,7 +8,18 @@ import cn.lineai.tool.builtin.RootProbe;
  * {@code Root · /data/project} or {@code Root · su denied · /data/project}.
  */
 public final class ExecutionTargetLabel {
+    private static volatile String currentMode = "";
+
     private ExecutionTargetLabel() {
+    }
+
+    /** Last execution mode read or written by ToolSettingsRepository. */
+    public static void remember(String executionMode) {
+        currentMode = executionMode == null ? "" : executionMode;
+    }
+
+    public static String current() {
+        return currentMode;
     }
 
     public static String format(String executionMode, String cwd) {
