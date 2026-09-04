@@ -35,7 +35,7 @@ public final class SkillListTool extends BaseSkillTool {
 
     @Override
     public ToolDisplayCategory getDisplayCategory() {
-        return ToolDisplayCategory.GENERIC;
+        return ToolDisplayCategory.READ;
     }
 
     @Override

@@ -136,13 +136,14 @@ public final class ToolSettingsRepositoryTest {
 
         Assert.assertTrue(prompt, prompt.contains("Root (su)"));
         Assert.assertTrue(prompt, prompt.contains("workspace boundary checks are lifted"));
-        Assert.assertTrue(prompt, prompt.contains("shell_execute [system]"));
+        Assert.assertTrue(prompt, prompt.contains("shell_execute [system, needs confirmation]"));
         Assert.assertTrue(prompt, prompt.contains("skill_list [read]"));
     }
 
     @Test
     public void skillMutatingToolsResolveToWriteCategory() {
         Assert.assertEquals(ToolCategory.READ, ToolSettingsRepository.getToolCategory("skill_list"));
+        Assert.assertEquals(ToolCategory.WRITE, ToolSettingsRepository.getToolCategory("skill_install"));
         Assert.assertEquals(ToolCategory.WRITE, ToolSettingsRepository.getToolCategory("skill_create"));
         Assert.assertEquals(ToolCategory.WRITE, ToolSettingsRepository.getToolCategory("skill_delete"));
     }

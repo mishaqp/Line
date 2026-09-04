@@ -152,7 +152,9 @@ public final class PermissionModeController {
                 || ToolSettingsRepository.PERMISSION_READONLY.equals(id)
                 || "ask".equals(id)
                 || "workspace".equals(id)
-                || "manual".equals(id);
+                || "manual".equals(id)
+                || "full".equals(id)
+                || "yolo".equals(id);
     }
 
     public boolean applyPermissionModeOption(String id) {
