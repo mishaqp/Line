@@ -208,7 +208,7 @@ public final class ProjectRepository extends BaseRepository implements ProjectSt
                 ? WorkspacePaths.basename(resolved)
                 : label.trim();
         if (name.length() == 0) {
-            name = "外部工作区";
+            name = "Внешняя рабочая область";
         }
         long now = System.currentTimeMillis();
         ProjectRecord project = new ProjectRecord(
@@ -231,7 +231,7 @@ public final class ProjectRepository extends BaseRepository implements ProjectSt
                 ? WorkspacePaths.basename(resolved)
                 : label.trim();
         if (name.length() == 0) {
-            name = "SSH 工作区";
+            name = "SSH-проект";
         }
         long now = System.currentTimeMillis();
         ProjectRecord project = new ProjectRecord(
@@ -239,7 +239,7 @@ public final class ProjectRepository extends BaseRepository implements ProjectSt
                 name,
                 resolved,
                 WorkspacePaths.SOURCE_SSH,
-                resolved.length() == 0 ? "SSH 登录目录" : resolved,
+                resolved.length() == 0 ? "Каталог входа SSH" : resolved,
                 true,
                 now,
                 now
@@ -343,7 +343,7 @@ public final class ProjectRepository extends BaseRepository implements ProjectSt
                 "LineCode",
                 home.getAbsolutePath(),
                 WorkspacePaths.SOURCE_DEFAULT,
-                "默认 home 工作区",
+                "Домашняя рабочая область",
                 true,
                 now,
                 now
@@ -357,7 +357,7 @@ public final class ProjectRepository extends BaseRepository implements ProjectSt
                 "SSH",
                 "",
                 WorkspacePaths.SOURCE_SSH,
-                "SSH 登录目录",
+                "Каталог входа SSH",
                 selected,
                 now,
                 now
