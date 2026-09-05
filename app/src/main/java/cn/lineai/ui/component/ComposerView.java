@@ -79,12 +79,6 @@ public final class ComposerView extends LinearLayout implements QuoteController.
     private IconButtonView quoteCloseButton;
     private QuoteDismissListener quoteDismissListener;
     private LinearLayout modelSelectorButton;
-    private TextView modelText;
-    private IconButtonView modelChevron;
-    private TextView contextText;
-    private LinearLayout modeSelectorButton;
-    private TextView modeSelectorText;
-    private IconButtonView modeSelectorChevron;
     private ComposerAttachmentStrip attachmentStrip;
     private IconButtonView attachButton;
     private IconButtonView imageButton;
@@ -942,17 +936,6 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         }
     }
 
-    private void updateModeButtons() {
-        modeSelectorText.setText(modeLabel(chatMode));
-        modeSelectorText.setTextColor(streaming ? LineTheme.TEXT_TERTIARY : LineTheme.TEXT);
-        modeSelectorChevron.setIconColor(streaming ? LineTheme.TEXT_TERTIARY : LineTheme.TEXT_SECONDARY);
-        // setBackground replaces the ripple wrapper, so the state layer is re-attached here.
-        modeSelectorButton.setBackground(LineCards.chipBackground(getContext()));
-        LineTheme.attachStateLayer(modeSelectorButton);
-        modeSelectorButton.setEnabled(!streaming);
-        modeSelectorButton.setAlpha(streaming ? 0.62f : 1f);
-    }
-
     private void updateModelSelector() {
         modelSelectorButton.setEnabled(!streaming);
         modelSelectorButton.setAlpha(streaming ? 0.62f : 1f);
@@ -1343,39 +1326,6 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         pp.leftMargin = LineTheme.dp(ctx, LineTheme.SM);
         row.addView(provider, pp);
         return row;
-    }
-
-    private void showModePopup(View anchor) {
-        if (streaming) {
-            return;
-        }
-        dismissSlashPopup();
-        if (modePopup != null && modePopup.isShowing()) {
-            modePopup.dismiss();
-            return;
-        }
-        Context context = getContext();
-        int popupWidth = LineTheme.dp(context, 112);
-        int rowHeight = LineTheme.dp(context, 38);
-        int popupHeight = rowHeight * 4 + LineTheme.dp(context, 6);
-        LinearLayout content = new LinearLayout(context);
-        content.setOrientation(VERTICAL);
-        content.setBackground(LineCards.cardBackground(context, LineTheme.INPUT_BG, LineTheme.BORDER_LIGHT));
-        LineTheme.padding(content, 3, 3, 3, 3);
-        content.addView(modeOption(context, "Chat", ChatMode.CHAT), new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, rowHeight));
-        content.addView(modeOption(context, "Plan", ChatMode.PLAN), new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, rowHeight));
-        content.addView(modeOption(context, "Agent", ChatMode.AGENT), new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, rowHeight));
-        content.addView(modeOption(context, "\u63a7\u5236", ChatMode.CONTROL), new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, rowHeight));
-        modePopup = new PopupWindow(content, popupWidth, popupHeight, true);
-        modePopup.setOutsideTouchable(true);
-        modePopup.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        int[] location = new int[2];
-        anchor.getLocationOnScreen(location);
-        int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-        int centeredX = location[0] + (anchor.getWidth() - popupWidth) / 2;
-        int popupX = Math.max(LineTheme.dp(context, LineTheme.SM),
-                Math.min(centeredX, screenWidth - popupWidth - LineTheme.dp(context, LineTheme.SM)));
-        modePopup.showAtLocation(this, Gravity.NO_GRAVITY, popupX, Math.max(0, location[1] - popupHeight - LineTheme.dp(context, 8)));
     }
 
     private TextView modeOption(Context context, String label, String mode) {

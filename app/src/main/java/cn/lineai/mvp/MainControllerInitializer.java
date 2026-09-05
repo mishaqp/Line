@@ -243,12 +243,12 @@ final class MainControllerInitializer {
                     @Override
                     public void showImportConfirmation(String sourceName) {
                         coordinator.viewProxy().showConfirmationDialog(
-                                "\u8986\u76d6\u5bfc\u5165 .linecode",
-                                "\u5c06\u4ece\u300c" + sourceName + "\u300d\u6062\u590d\u6570\u636e\u5e93\u3001\u804a\u5929\u8bb0\u5f55\u3001\u914d\u7f6e\u548c .linecode \u5de5\u4f5c\u533a\u6587\u4ef6\u3002\u5f53\u524d\u672c\u673a\u6570\u636e\u4f1a\u88ab\u8986\u76d6\u3002",
+                                context.getString(R.string.screen_data_import_linecode),
+                                context.getString(R.string.screen_data_import_linecode_desc) + "\n\n" + sourceName,
                                 context.getString(R.string.common_confirm),
                                 true,
                                 "data:import_linecode"
-                        );
+                        )
                     }
 
                     @Override
