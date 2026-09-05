@@ -248,7 +248,7 @@ final class MainControllerInitializer {
                                 context.getString(R.string.common_confirm),
                                 true,
                                 "data:import_linecode"
-                        )
+                        );
                     }
 
                     @Override
