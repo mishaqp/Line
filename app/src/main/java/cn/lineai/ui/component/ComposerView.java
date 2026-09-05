@@ -93,6 +93,8 @@ public final class ComposerView extends LinearLayout implements QuoteController.
     private IconButtonView sendButton;
     private PopupWindow modePopup;
     private PopupWindow modelPopup;
+    private IconButtonView reasoningButton;
+    private String currentReasoningEffort = AiBehaviorSettings.REASONING_MEDIUM;
     private PopupWindow modelSubPopup;
     private SlashCommandPopup slashPopup;
     private String lastSlashSignature = null;
@@ -300,7 +302,7 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         modelParams.rightMargin = LineTheme.dp(context, LineTheme.XS);
         toolbarRow.addView(modelSelectorButton, modelParams);
 
-        IconButtonView reasoningButton = new IconButtonView(context, IconButtonView.BRAIN);
+        reasoningButton = new IconButtonView(context, IconButtonView.BRAIN);
         reasoningButton.setIconColor(LineTheme.TEXT_SECONDARY);
         reasoningButton.setIconSizeDp(40, 20);
         LineTheme.attachStateLayer(reasoningButton);
@@ -480,7 +482,9 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         input.setHint(state.hasConfiguredModel()
                 ? getContext().getString(R.string.composer_hint_default)
                 : getContext().getString(R.string.composer_hint_no_model));
+        currentReasoningEffort = AiBehaviorSettings.normalizeReasoningEffort(state.getReasoningEffort());
         updateModelSelector();
+        updateReasoningButton();
         updateSendButton();
     }
 
@@ -955,6 +959,30 @@ public final class ComposerView extends LinearLayout implements QuoteController.
     }
 
 
+
+    private void updateReasoningButton() {
+        if (reasoningButton == null) return;
+        boolean off = AiBehaviorSettings.REASONING_OFF.equals(currentReasoningEffort);
+        boolean strong = AiBehaviorSettings.REASONING_HIGH.equals(currentReasoningEffort)
+                || AiBehaviorSettings.REASONING_MAX.equals(currentReasoningEffort);
+        reasoningButton.setIconColor(off ? LineTheme.TEXT_TERTIARY
+                : (strong ? LineTheme.ACCENT : LineTheme.TEXT_SECONDARY));
+        reasoningButton.setAlpha(off ? 0.72f : 1f);
+        reasoningButton.setContentDescription(reasoningLabel(currentReasoningEffort));
+    }
+
+    private String reasoningLabel(String effort) {
+        String value = AiBehaviorSettings.normalizeReasoningEffort(effort);
+        int res;
+        if (AiBehaviorSettings.REASONING_OFF.equals(value)) res = R.string.composer_reasoning_off;
+        else if (AiBehaviorSettings.REASONING_AUTO.equals(value)) res = R.string.composer_reasoning_auto;
+        else if (AiBehaviorSettings.REASONING_LOW.equals(value)) res = R.string.composer_reasoning_low;
+        else if (AiBehaviorSettings.REASONING_HIGH.equals(value)) res = R.string.composer_reasoning_high;
+        else if (AiBehaviorSettings.REASONING_MAX.equals(value)) res = R.string.composer_reasoning_max;
+        else res = R.string.composer_reasoning_medium;
+        return getContext().getString(R.string.composer_reasoning_title) + ": " + getContext().getString(res);
+    }
+
     private void showPopupAboveComposer(PopupWindow popup, View anchor, int popupWidth, int popupHeight) {
         showPopupAboveComposer(popup, anchor, popupWidth, popupHeight, false);
     }
@@ -1027,9 +1055,15 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         };
         for (int i = 0; i < values.length; i++) {
             final String effort = values[i];
+            boolean selected = effort.equals(currentReasoningEffort);
             TextView item = compactPopupItem(context, context.getString(labels[i]));
+            item.setTextColor(selected ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT);
+            item.setBackground(LineTheme.rounded(context,
+                    selected ? LineTheme.ACCENT : android.graphics.Color.TRANSPARENT, LineTheme.SHAPE_MD));
             item.setOnClickListener(v -> {
                 popup.dismiss();
+                currentReasoningEffort = effort;
+                updateReasoningButton();
                 if (listener != null) listener.onAiReasoningEffortChanged(effort);
             });
             content.addView(item, new LinearLayout.LayoutParams(
