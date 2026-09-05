@@ -28,20 +28,14 @@ public final class CodexModelsRepository {
         if (accountId == null || accountId.length() == 0) {
             throw new CodexApiException(401, "Codex account identity is unavailable");
         }
-        SimpleHttpClient.Request request = new SimpleHttpClient.Request(
-                MODELS_URL + "?client_version=" + CLIENT_VERSION,
-                "GET",
-                null
-        );
-        request.connectTimeoutMs = 20000;
-        request.readTimeoutMs = 30000;
-        request.headers.put("Authorization", "Bearer " + token);
-        request.headers.put("ChatGPT-Account-Id", accountId);
-        request.headers.put("OpenAI-Beta", "responses=experimental");
-        request.headers.put("originator", "codex_cli_rs");
-        request.headers.put("User-Agent", "codex_cli_rs/" + CLIENT_VERSION + " (Android; LineCode)");
-        request.headers.put("Accept", "application/json");
-        SimpleHttpClient.Response response = SimpleHttpClient.execute(request);
+        SimpleHttpClient.Response response = execute(token, accountId);
+        if (response.code == 401) {
+            String refreshed = auth.refreshAccessTokenNow();
+            if (refreshed != null && refreshed.length() > 0) {
+                accountId = auth.getAccountId();
+                response = execute(refreshed, accountId);
+            }
+        }
         if (response.code == 401) {
             auth.logout();
             throw new CodexApiException(401, "Codex model catalog is unauthorized");
@@ -50,6 +44,25 @@ public final class CodexModelsRepository {
             throw new CodexApiException(response.code, "Codex model catalog request failed");
         }
         return parseModelIds(response.body);
+    }
+
+    private static SimpleHttpClient.Response execute(String token, String accountId) throws Exception {
+        SimpleHttpClient.Request request = new SimpleHttpClient.Request(
+                MODELS_URL + "?client_version=" + CLIENT_VERSION,
+                "GET",
+                null
+        );
+        request.connectTimeoutMs = 20000;
+        request.readTimeoutMs = 30000;
+        request.headers.put("Authorization", "Bearer " + token);
+        if (accountId != null && accountId.length() > 0) {
+            request.headers.put("ChatGPT-Account-Id", accountId);
+        }
+        request.headers.put("OpenAI-Beta", "responses=experimental");
+        request.headers.put("originator", "codex_cli_rs");
+        request.headers.put("User-Agent", "codex_cli_rs/" + CLIENT_VERSION + " (Android; LineCode)");
+        request.headers.put("Accept", "application/json");
+        return SimpleHttpClient.execute(request);
     }
 
     public static List<String> parseModelIds(String raw) throws Exception {
