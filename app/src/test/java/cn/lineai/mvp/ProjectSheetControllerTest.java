@@ -21,7 +21,7 @@ public final class ProjectSheetControllerTest {
 
         ProjectSheetController.ProjectSheet sheet = fixture.controller.buildProjectSheet();
 
-        Assert.assertEquals("工作区", sheet.getTitle());
+        Assert.assertEquals("Рабочая область", sheet.getTitle());
         Assert.assertEquals(5, sheet.getOptions().size());
         Assert.assertTrue(sheet.getOptions().get(1).isSelected());
         Assert.assertEquals("", sheet.getOptions().get(0).getDeleteActionId());
@@ -41,10 +41,10 @@ public final class ProjectSheetControllerTest {
 
         ProjectSheetController.ProjectSheet sheet = fixture.controller.buildProjectSheet();
 
-        Assert.assertEquals("工作区 SSH", sheet.getTitle());
+        Assert.assertEquals("Рабочая область SSH", sheet.getTitle());
         Assert.assertEquals(2, sheet.getOptions().size());
         SheetOption project = sheet.getOptions().get(0);
-        Assert.assertEquals("SSH 登录目录", project.getDescription());
+        Assert.assertEquals("Каталог входа SSH", project.getDescription());
         Assert.assertEquals("", project.getDeleteActionId());
         Assert.assertEquals("project:create", sheet.getOptions().get(1).getId());
     }
@@ -55,17 +55,17 @@ public final class ProjectSheetControllerTest {
         fixture.host.executionMode = ToolSettingsRepository.EXECUTION_SSH;
         fixture.host.termuxSshHost = true;
         fixture.host.externalStorageAccess = false;
-        fixture.host.storageMessage = "未授权";
+        fixture.host.storageMessage = "Нет доступа";
         fixture.store.projects.add(project("ssh:default", "SSH Home", "", WorkspacePaths.SOURCE_SSH));
 
         ProjectSheetController.ProjectSheet sheet = fixture.controller.buildProjectSheet();
 
         Assert.assertEquals(4, sheet.getOptions().size());
         Assert.assertEquals("project:open_local_saf", sheet.getOptions().get(1).getId());
-        Assert.assertEquals("选择本机目录，并作为 SSH 工作区路径使用", sheet.getOptions().get(1).getDescription());
+        Assert.assertEquals("Выбрать папку на телефоне как путь SSH-проекта", sheet.getOptions().get(1).getDescription());
         Assert.assertEquals("project:create", sheet.getOptions().get(2).getId());
         Assert.assertEquals("storage:manage_all_files", sheet.getOptions().get(3).getId());
-        Assert.assertEquals("未授权", sheet.getOptions().get(3).getDescription());
+        Assert.assertEquals("Нет доступа", sheet.getOptions().get(3).getDescription());
         Assert.assertFalse(sheet.getOptions().get(3).isSelected());
     }
 
