@@ -1,5 +1,6 @@
 package cn.lineai.mvp;
 
+import cn.lineai.data.lip.LipInstaller;
 import cn.lineai.data.repository.ExtensionStore;
 import cn.lineai.data.repository.IpcProviderStore;
 import cn.lineai.ipc.IpcProviderType;
@@ -10,6 +11,7 @@ import cn.lineai.model.McpRequestHeader;
 import cn.lineai.model.McpToolSummary;
 import cn.lineai.model.SkillRecord;
 import cn.lineai.tool.ToolRegistry;
+import java.io.File;
 import java.util.List;
 
 final class ExtensionManagementController {
@@ -28,6 +30,8 @@ final class ExtensionManagementController {
     private final ExtensionStore extensionRepository;
     private final IpcProviderStore ipcProviderRepository;
     private final ToolRegistry toolRegistry;
+    private final LipInstaller lipInstaller;
+    private final cn.lineai.data.service.SkillFileManager skillFileManager;
     private final BackgroundTaskRunner backgroundTasks;
     private final MainThreadDispatcher mainThread;
     private final Host host;
@@ -36,6 +40,8 @@ final class ExtensionManagementController {
             ExtensionStore extensionRepository,
             IpcProviderStore ipcProviderRepository,
             ToolRegistry toolRegistry,
+            LipInstaller lipInstaller,
+            cn.lineai.data.service.SkillFileManager skillFileManager,
             BackgroundTaskRunner backgroundTasks,
             MainThreadDispatcher mainThread,
             Host host
@@ -43,6 +49,8 @@ final class ExtensionManagementController {
         this.extensionRepository = extensionRepository;
         this.ipcProviderRepository = ipcProviderRepository;
         this.toolRegistry = toolRegistry;
+        this.lipInstaller = lipInstaller;
+        this.skillFileManager = skillFileManager;
         this.backgroundTasks = backgroundTasks;
         this.mainThread = mainThread;
         this.host = host;
@@ -54,7 +62,8 @@ final class ExtensionManagementController {
                 base.getAgents(),
                 base.getMcps(),
                 base.getSkills(),
-                ipcProviderRepository.getProvidersByType(IpcProviderType.TERMINAL)
+                ipcProviderRepository.getProvidersByType(IpcProviderType.TERMINAL),
+                lipInstaller == null ? null : lipInstaller.list()
         );
     }
 
@@ -120,8 +129,48 @@ final class ExtensionManagementController {
         });
     }
 
+    void installLip(String location, String sourcePath) {
+        backgroundTasks.execute("lip-install", () -> {
+            try {
+                lipInstaller.installFile(host.projectPath(), location, new File(sourcePath));
+                mainThread.dispatch(this::completeLipInstall);
+            } catch (Exception e) {
+                mainThread.dispatch(() -> host.showSkillError(errorMessage(e)));
+            }
+        });
+    }
+
+    void installLipFromUri(String location, String uri, String displayName) {
+        backgroundTasks.execute("lip-install-from-uri", () -> {
+            File temp = null;
+            try {
+                String name = displayName == null || displayName.trim().length() == 0
+                        ? "package.lip"
+                        : displayName;
+                File tempRoot = new File(skillFileManager.getWorkspacePaths().getLinecodeRoot(), "tmp/lip");
+                tempRoot.mkdirs();
+                temp = new File(tempRoot, System.currentTimeMillis() + "-" + name);
+                skillFileManager.copyUriToFile(uri, temp);
+                lipInstaller.installFile(host.projectPath(), location, temp);
+                mainThread.dispatch(this::completeLipInstall);
+            } catch (Exception e) {
+                mainThread.dispatch(() -> host.showSkillError(errorMessage(e)));
+            } finally {
+                if (temp != null && temp.exists()) {
+                    temp.delete();
+                }
+            }
+        });
+    }
+
     private void completeSkillInstall() {
         host.returnToScreen("extension:skills");
+        host.render();
+    }
+
+    private void completeLipInstall() {
+        reloadExtensions();
+        host.returnToScreen("extension:linecode");
         host.render();
     }
 
@@ -147,9 +196,13 @@ final class ExtensionManagementController {
     }
 
     void setExtensionEnabled(String kind, String id, boolean enabled) {
-        ExtensionKindDescriptor descriptor = ExtensionKindRegistry.getInstance().get(kind);
-        if (descriptor != null) {
-            descriptor.setEnabled(extensionRepository, id, enabled);
+        if ("linecode".equals(kind) && lipInstaller != null) {
+            lipInstaller.setEnabled(id, enabled);
+        } else {
+            ExtensionKindDescriptor descriptor = ExtensionKindRegistry.getInstance().get(kind);
+            if (descriptor != null) {
+                descriptor.setEnabled(extensionRepository, id, enabled);
+            }
         }
         reloadExtensions();
         host.refreshVisibleScreen("extension:" + kind);
@@ -157,9 +210,13 @@ final class ExtensionManagementController {
     }
 
     void deleteExtension(String kind, String id) {
-        ExtensionKindDescriptor descriptor = ExtensionKindRegistry.getInstance().get(kind);
-        if (descriptor != null) {
-            descriptor.delete(extensionRepository, id);
+        if ("linecode".equals(kind) && lipInstaller != null) {
+            lipInstaller.delete(id);
+        } else {
+            ExtensionKindDescriptor descriptor = ExtensionKindRegistry.getInstance().get(kind);
+            if (descriptor != null) {
+                descriptor.delete(extensionRepository, id);
+            }
         }
         reloadExtensions();
         host.refreshVisibleScreen("extension:" + kind);
