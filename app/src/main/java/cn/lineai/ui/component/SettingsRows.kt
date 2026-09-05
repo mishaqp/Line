@@ -73,8 +73,16 @@ internal fun SettingsGroup(
     titleRes: Int,
     content: @Composable () -> Unit
 ) {
+    SettingsNamedGroup(stringResource(titleRes), content)
+}
+
+@Composable
+internal fun SettingsNamedGroup(
+    title: String,
+    content: @Composable () -> Unit
+) {
     Text(
-        text = stringResource(titleRes).uppercase(Locale.ROOT),
+        text = title.uppercase(Locale.ROOT),
         color = Color(LineTheme.TEXT_TERTIARY),
         fontSize = LineTheme.FONT_XS.sp,
         fontWeight = FontWeight.Medium,
