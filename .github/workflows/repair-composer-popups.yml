@@ -1,0 +1,26 @@
+name: Repair composer popups once
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/chat-compact
+          fetch-depth: 0
+      - name: Restore and patch ComposerView
+        run: |
+          set -euo pipefail
+          git checkout 50ad71fa4865f4c4d360d1fb4f67350a0c1236f1 -- app/src/main/java/cn/lineai/ui/component/ComposerView.java
+          python3 scripts/patch_composer_popups.py
+          git config user.name "mishaqp"
+          git config user.email "84035331+mishaqp@users.noreply.github.com"
+          git add app/src/main/java/cn/lineai/ui/component/ComposerView.java
+          git commit -m "fix(ui): show composer popups above the input card"
+          git push origin HEAD:feat/chat-compact
