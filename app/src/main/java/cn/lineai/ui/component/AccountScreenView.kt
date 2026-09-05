@@ -2,7 +2,6 @@ package cn.lineai.ui.component
 
 import android.content.Context
 import android.widget.FrameLayout
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,15 +47,14 @@ import cn.lineai.ui.model.AccountQuotaWindow
 import cn.lineai.ui.model.AccountScreenState
 import cn.lineai.ui.model.AccountScreenViewModel
 import cn.lineai.ui.theme.LineTheme
-import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 /**
  * Shared Compose account screen for Codex and Grok.
- *
- * OAuth and network logic remain in the data layer. This view renders the
- * lifecycle-aware StateFlow exposed by AccountScreenViewModel.
+ * Provider-specific OAuth, token storage and HTTP stay in the data layer.
  */
 class AccountScreenView(
     context: Context,
@@ -94,37 +92,37 @@ class AccountScreenView(
 }
 
 private data class AccountStrings(
-    @StringRes val title: Int,
-    @StringRes val authSection: Int,
-    @StringRes val signedOut: Int,
-    @StringRes val loginDescription: Int,
-    @StringRes val errorTitle: Int,
-    @StringRes val login: Int,
-    @StringRes val securityTitle: Int,
-    @StringRes val securityDescription: Int,
-    @StringRes val loginWait: Int,
-    @StringRes val loading: Int,
-    @StringRes val email: Int,
-    @StringRes val plan: Int,
-    @StringRes val accountId: Int,
-    @StringRes val refresh: Int,
-    @StringRes val addModel: Int,
-    @StringRes val logout: Int,
-    @StringRes val unknown: Int,
-    @StringRes val sessionExpired: Int,
-    @StringRes val usageSection: Int,
-    @StringRes val used: Int,
-    @StringRes val remaining: Int,
-    @StringRes val reset: Int,
-    @StringRes val resetUnknown: Int,
-    @StringRes val resetNow: Int,
-    @StringRes val resetIn: Int,
-    @StringRes val usageFailedTitle: Int,
-    @StringRes val requestFailed: Int,
-    @StringRes val modelsSection: Int,
-    @StringRes val modelsCount: Int,
-    @StringRes val modelsUnavailable: Int,
-    @StringRes val modelsUnavailableDescription: Int
+    val title: Int,
+    val authSection: Int,
+    val signedOut: Int,
+    val loginDescription: Int,
+    val errorTitle: Int,
+    val login: Int,
+    val securityTitle: Int,
+    val securityDescription: Int,
+    val loginWait: Int,
+    val loading: Int,
+    val email: Int,
+    val plan: Int,
+    val accountId: Int,
+    val refresh: Int,
+    val addModel: Int,
+    val logout: Int,
+    val unknown: Int,
+    val sessionExpired: Int,
+    val usageSection: Int,
+    val used: Int,
+    val remaining: Int,
+    val reset: Int,
+    val resetUnknown: Int,
+    val resetNow: Int,
+    val resetIn: Int,
+    val usageFailedTitle: Int,
+    val requestFailed: Int,
+    val modelsSection: Int,
+    val modelsCount: Int,
+    val modelsUnavailable: Int,
+    val modelsUnavailableDescription: Int
 )
 
 private fun stringsFor(kind: AccountProviderKind): AccountStrings = when (kind) {
@@ -230,7 +228,7 @@ private fun AccountScreen(
             .fillMaxSize()
             .background(Color(LineTheme.BG))
     ) {
-        AccountHeader(title = stringResource(strings.title), onBack = onBack)
+        AccountHeader(stringResource(strings.title), onBack)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -238,16 +236,10 @@ private fun AccountScreen(
                 .padding(horizontal = 20.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            if (!state.authenticated) {
-                SignedOutContent(state, strings, onLogin)
+            if (state.authenticated) {
+                SignedInContent(state, strings, onRefresh, onAddModel, onLogout)
             } else {
-                SignedInContent(
-                    state = state,
-                    strings = strings,
-                    onRefresh = onRefresh,
-                    onAddModel = onAddModel,
-                    onLogout = onLogout
-                )
+                SignedOutContent(state, strings, onLogin)
             }
             Spacer(Modifier.height(48.dp))
         }
@@ -257,9 +249,7 @@ private fun AccountScreen(
 @Composable
 private fun AccountHeader(title: String, onBack: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 10.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         TextButton(onClick = onBack) {
@@ -284,30 +274,23 @@ private fun SignedOutContent(
     onLogin: () -> Unit
 ) {
     SectionTitle(stringResource(strings.authSection))
-    InfoCard(
-        title = stringResource(strings.signedOut),
-        body = stringResource(strings.loginDescription)
-    )
+    InfoCard(stringResource(strings.signedOut), stringResource(strings.loginDescription))
 
     if (state.sessionExpired) {
         InfoCard(
-            title = stringResource(strings.errorTitle),
-            body = stringResource(strings.sessionExpired),
+            stringResource(strings.errorTitle),
+            stringResource(strings.sessionExpired),
             error = true
         )
     } else if (state.loginError.isNotBlank()) {
-        InfoCard(
-            title = stringResource(strings.errorTitle),
-            body = state.loginError,
-            error = true
-        )
+        InfoCard(stringResource(strings.errorTitle), state.loginError, error = true)
     }
 
     if (state.loginInProgress) {
         if (state.providerKind == AccountProviderKind.GROK && state.deviceCode.isNotBlank()) {
             InfoCard(
-                title = stringResource(R.string.screen_grok_account_device_code_title),
-                body = stringResource(R.string.screen_grok_account_device_code_desc, state.deviceCode)
+                stringResource(R.string.screen_grok_account_device_code_title),
+                stringResource(R.string.screen_grok_account_device_code_desc, state.deviceCode)
             )
             Text(
                 text = stringResource(R.string.screen_grok_account_browser_opened),
@@ -317,17 +300,7 @@ private fun SignedOutContent(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
             )
         } else {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CircularProgressIndicator(modifier = Modifier.padding(end = 12.dp))
-                Text(
-                    stringResource(strings.loginWait),
-                    color = Color(LineTheme.TEXT_SECONDARY)
-                )
-            }
+            LoadingRow(stringResource(strings.loginWait))
         }
     } else {
         Button(onClick = onLogin, modifier = Modifier.fillMaxWidth()) {
@@ -336,8 +309,8 @@ private fun SignedOutContent(
     }
 
     InfoCard(
-        title = stringResource(strings.securityTitle),
-        body = stringResource(strings.securityDescription)
+        stringResource(strings.securityTitle),
+        stringResource(strings.securityDescription)
     )
 }
 
@@ -364,24 +337,17 @@ private fun SignedInContent(
     }
     Button(
         onClick = onLogout,
+        modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(LineTheme.DANGER),
             contentColor = Color(LineTheme.TEXT_ON_COLOR)
-        ),
-        modifier = Modifier.fillMaxWidth()
+        )
     ) {
         Text(stringResource(strings.logout))
     }
 
     if (state.loading) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CircularProgressIndicator(modifier = Modifier.padding(end = 12.dp))
-            Text(stringResource(strings.loading), color = Color(LineTheme.TEXT_SECONDARY))
-        }
+        LoadingRow(stringResource(strings.loading))
     }
 
     SectionTitle(stringResource(strings.usageSection))
@@ -389,6 +355,18 @@ private fun SignedInContent(
 
     SectionTitle(stringResource(strings.modelsSection))
     ModelsContent(state, strings)
+}
+
+@Composable
+private fun LoadingRow(label: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CircularProgressIndicator(modifier = Modifier.padding(end = 12.dp))
+        Text(label, color = Color(LineTheme.TEXT_SECONDARY))
+    }
 }
 
 @Composable
@@ -412,30 +390,30 @@ private fun IdentityCard(state: AccountScreenState, strings: AccountStrings) {
 private fun UsageContent(state: AccountScreenState, strings: AccountStrings) {
     if (state.usageError) {
         InfoCard(
-            title = stringResource(strings.usageFailedTitle),
-            body = stringResource(strings.requestFailed),
+            stringResource(strings.usageFailedTitle),
+            stringResource(strings.requestFailed),
             error = true
         )
         return
     }
+
     val windows = state.usage?.windows.orEmpty()
     if (windows.isEmpty()) {
-        val title = if (state.providerKind == AccountProviderKind.CODEX) {
-            stringResource(R.string.screen_codex_usage_unavailable)
+        if (state.providerKind == AccountProviderKind.CODEX) {
+            InfoCard(
+                stringResource(R.string.screen_codex_usage_unavailable),
+                stringResource(R.string.screen_codex_usage_unavailable_desc)
+            )
         } else {
-            stringResource(strings.usageFailedTitle)
+            InfoCard(
+                stringResource(strings.usageFailedTitle),
+                stringResource(strings.requestFailed)
+            )
         }
-        val body = if (state.providerKind == AccountProviderKind.CODEX) {
-            stringResource(R.string.screen_codex_usage_unavailable_desc)
-        } else {
-            stringResource(strings.requestFailed)
-        }
-        InfoCard(title = title, body = body)
         return
     }
-    windows.forEach { window ->
-        QuotaCard(state.providerKind, window, strings)
-    }
+
+    windows.forEach { QuotaCard(state.providerKind, it, strings) }
 }
 
 @Composable
@@ -449,6 +427,7 @@ private fun QuotaCard(
         AccountQuotaKind.SECONDARY -> stringResource(R.string.screen_codex_secondary_limit)
         AccountQuotaKind.SUBSCRIPTION -> stringResource(R.string.screen_grok_weekly_limit)
     }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color(LineTheme.SURFACE_ELEVATED))
@@ -458,6 +437,7 @@ private fun QuotaCard(
             verticalArrangement = Arrangement.spacedBy(9.dp)
         ) {
             Text(title, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+
             if (window.hasUsagePercent) {
                 AccountRow(stringResource(strings.used), formatPercent(providerKind, window.usedPercent))
                 AccountRow(stringResource(strings.remaining), formatPercent(providerKind, window.remainingPercent))
@@ -493,19 +473,20 @@ private fun QuotaCard(
 private fun ModelsContent(state: AccountScreenState, strings: AccountStrings) {
     if (state.modelsError) {
         InfoCard(
-            title = stringResource(strings.modelsUnavailable),
-            body = stringResource(strings.requestFailed),
+            stringResource(strings.modelsUnavailable),
+            stringResource(strings.requestFailed),
             error = true
         )
         return
     }
     if (state.models.isEmpty()) {
         InfoCard(
-            title = stringResource(strings.modelsUnavailable),
-            body = stringResource(strings.modelsUnavailableDescription)
+            stringResource(strings.modelsUnavailable),
+            stringResource(strings.modelsUnavailableDescription)
         )
         return
     }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color(LineTheme.SURFACE_ELEVATED))
@@ -519,8 +500,7 @@ private fun ModelsContent(state: AccountScreenState, strings: AccountStrings) {
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
-            val visible = state.models.take(12)
-            visible.forEach { modelId ->
+            state.models.take(12).forEach { modelId ->
                 Text(
                     text = modelId,
                     color = Color(LineTheme.TEXT_SECONDARY),
@@ -529,7 +509,7 @@ private fun ModelsContent(state: AccountScreenState, strings: AccountStrings) {
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            if (state.models.size > visible.size) {
+            if (state.models.size > 12) {
                 Text("…", color = Color(LineTheme.TEXT_TERTIARY), fontSize = 14.sp)
             }
         }
@@ -562,7 +542,7 @@ private fun InfoCard(title: String, body: String, error: Boolean = false) {
 @Composable
 private fun SectionTitle(title: String) {
     Text(
-        text = title.uppercase(Locale.getDefault()),
+        text = title,
         color = Color(LineTheme.TEXT_TERTIARY),
         fontSize = 12.sp,
         fontWeight = FontWeight.Medium,
@@ -574,7 +554,12 @@ private fun SectionTitle(title: String) {
 @Composable
 private fun AccountRow(label: String, value: String) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, modifier = Modifier.weight(1f), color = Color(LineTheme.TEXT_TERTIARY), fontSize = 13.sp)
+        Text(
+            label,
+            modifier = Modifier.weight(1f),
+            color = Color(LineTheme.TEXT_TERTIARY),
+            fontSize = 13.sp
+        )
         Text(
             value,
             color = Color(LineTheme.TEXT),
@@ -588,11 +573,11 @@ private fun AccountRow(label: String, value: String) {
 }
 
 @Composable
-private fun unknownIfBlank(value: String, @StringRes unknownRes: Int): String =
+private fun unknownIfBlank(value: String, unknownRes: Int): String =
     value.ifBlank { stringResource(unknownRes) }
 
 @Composable
-private fun maskId(value: String, @StringRes unknownRes: Int): String {
+private fun maskId(value: String, unknownRes: Int): String {
     if (value.isBlank()) return stringResource(unknownRes)
     return if (value.length <= 8) {
         value.take(4) + "…"
@@ -601,12 +586,13 @@ private fun maskId(value: String, @StringRes unknownRes: Int): String {
     }
 }
 
-private fun formatPercent(kind: AccountProviderKind, value: Double): String =
+private fun formatPercent(kind: AccountProviderKind, value: Double): String {
     if (kind == AccountProviderKind.CODEX) {
-        String.format(Locale.getDefault(), "%.0f%%", value)
-    } else {
-        String.format(Locale.getDefault(), "%.1f%%", value)
+        return "${value.roundToInt()}%"
     }
+    val tenths = (value * 10.0).roundToInt()
+    return "${tenths / 10}.${abs(tenths % 10)}%"
+}
 
 @Composable
 private fun formatCodexWindow(minutes: Long): String = when {
@@ -617,21 +603,26 @@ private fun formatCodexWindow(minutes: Long): String = when {
 
 @Composable
 private fun friendlyGrokPeriod(periodType: String): String = when {
-    periodType.uppercase(Locale.ROOT).contains("WEEKLY") -> stringResource(R.string.screen_grok_period_weekly)
-    periodType.uppercase(Locale.ROOT).contains("MONTHLY") -> stringResource(R.string.screen_grok_period_monthly)
+    periodType.uppercase(Locale.ROOT).contains("WEEKLY") ->
+        stringResource(R.string.screen_grok_period_weekly)
+    periodType.uppercase(Locale.ROOT).contains("MONTHLY") ->
+        stringResource(R.string.screen_grok_period_monthly)
     else -> periodType
 }
 
 @Composable
 private fun formatReset(epochSeconds: Long, strings: AccountStrings): String {
     if (epochSeconds <= 0L) return stringResource(strings.resetUnknown)
+
     val resetMillis = epochSeconds * 1000L
     val remaining = resetMillis - System.currentTimeMillis()
     if (remaining <= 0L) return stringResource(strings.resetNow)
+
     val context = LocalContext.current
-    val format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault())
-    val date = format.format(Date(resetMillis))
-    return date + " · " + context.getString(strings.resetIn, formatDuration(remaining))
+    val resetDate = Date(resetMillis)
+    val date = android.text.format.DateFormat.getDateFormat(context).format(resetDate)
+    val time = android.text.format.DateFormat.getTimeFormat(context).format(resetDate)
+    return "$date $time · " + stringResource(strings.resetIn, formatDuration(remaining))
 }
 
 private fun formatDuration(millis: Long): String {
