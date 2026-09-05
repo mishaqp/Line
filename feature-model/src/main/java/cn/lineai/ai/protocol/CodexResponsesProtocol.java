@@ -88,10 +88,26 @@ public final class CodexResponsesProtocol extends AbstractHttpModelProtocol {
             final int[] usageInputTokens = new int[1];
             final int[] usageOutputTokens = new int[1];
 
-            postJsonSse(endpoint, body, headers, cancellationToken, (eventType, data) -> {
+            SseEventHandler handler = (eventType, data) -> {
                 handleSseEvent(eventType, data, callback, text, reasoning, reasoningSummaryStream,
                         toolCallBuilders, customToolInputs, usageInputTokens, usageOutputTokens);
-            });
+            };
+
+            try {
+                postJsonSse(endpoint, body, headers, cancellationToken, handler);
+            } catch (ModelCompletionException first) {
+                if (!auth.oauth || context == null || !isUnauthorized(first)) {
+                    throw first;
+                }
+                CodexAuthManager authManager = new CodexAuthManager(context);
+                String refreshedToken = authManager.refreshAccessTokenNow();
+                if (refreshedToken == null || refreshedToken.length() == 0) {
+                    throw first;
+                }
+                HashMap<String, String> retryHeaders = requestBuilder.codexHeaders(
+                        refreshedToken, authManager.getAccountId(), true);
+                postJsonSse(endpoint, body, retryHeaders, cancellationToken, handler);
+            }
             reasoningSummaryStream.flush();
 
             return new ModelCompletionResponse(
@@ -106,6 +122,11 @@ public final class CodexResponsesProtocol extends AbstractHttpModelProtocol {
         } catch (Exception e) {
             throw new ModelCompletionException("Codex Responses protocol stream parse failed: " + e.getMessage(), e);
         }
+    }
+
+    private boolean isUnauthorized(ModelCompletionException error) {
+        String message = error == null ? null : error.getMessage();
+        return message != null && message.startsWith("HTTP 401:");
     }
 
     private void handleSseEvent(
