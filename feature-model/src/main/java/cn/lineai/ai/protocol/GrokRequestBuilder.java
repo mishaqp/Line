@@ -23,9 +23,17 @@ final class GrokRequestBuilder {
         body.put("input", ResponsesInputBuilder.inputJson(messages));
         body.put("stream", true);
         body.put("store", false);
-        body.put("parallel_tool_calls", true);
-        body.put("tools", toolsJson(requestOptions == null ? null : requestOptions.getTools()));
-        body.put("tool_choice", "auto");
+
+        // xAI/Grok rejects tool controls on tool-less requests with HTTP 400
+        // invalid-argument. Grok Build omits the tools field entirely when
+        // there are no tools, so only attach the related controls together.
+        JSONArray tools = toolsJson(requestOptions == null ? null : requestOptions.getTools());
+        if (tools.length() > 0) {
+            body.put("tools", tools);
+            body.put("tool_choice", "auto");
+            body.put("parallel_tool_calls", true);
+        }
+
         String instructions = ResponsesInputBuilder.instructions(messages);
         if (instructions.length() > 0) {
             body.put("instructions", instructions);

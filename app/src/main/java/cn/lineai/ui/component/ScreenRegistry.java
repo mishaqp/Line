@@ -6,14 +6,17 @@ import cn.lineai.model.ModelConfig;
 import cn.lineai.model.ModelProtocolType;
 import cn.lineai.mvp.MainUiController;
 import cn.lineai.ui.MainChatView;
+import cn.lineai.ui.model.AccountModelProvider;
+import cn.lineai.ui.model.AccountModelProviders;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Routes a screen id to the {@link ScreenFactory} that builds it.
  *
- * <p>Lookup first handles the account-aware Grok screens, then tries an exact
- * match against the registered screen ids, then prefix-style factories.</p>
+ * <p>Account-backed model editors are handled by the shared Compose screen;
+ * legacy Java factories remain the fallback for API-key, local and other
+ * providers during the incremental migration.</p>
  */
 public final class ScreenRegistry {
     private final Map<String, ScreenFactory> factories = new LinkedHashMap<>();
@@ -37,44 +40,37 @@ public final class ScreenRegistry {
                     () -> controller.onSettingsItemSelected("modelAdd:preset:grok")
             );
         }
-        if ("modelAdd:preset:grok".equals(id)) {
-            return new GrokModelPickerScreenView(
-                    context,
-                    null,
-                    new GrokModelPickerScreenView.Listener() {
-                        @Override
-                        public void onBack() {
-                            view.handleScreenBack();
-                        }
 
-                        @Override
-                        public void onSave(ModelConfig model) {
-                            controller.onModelSaved(model);
-                        }
-                    }
+        if ("modelAdd:preset:codex".equals(id)) {
+            return createAccountModelEditor(
+                    context,
+                    view,
+                    controller,
+                    AccountModelProviders.fromProtocol(ModelProtocolType.CODEX_RESPONSES),
+                    null
             );
         }
+        if ("modelAdd:preset:grok".equals(id)) {
+            return createAccountModelEditor(
+                    context,
+                    view,
+                    controller,
+                    AccountModelProviders.fromProtocol(ModelProtocolType.GROK_RESPONSES),
+                    null
+            );
+        }
+
         if (id != null && id.startsWith("modelEdit:")) {
             String modelId = id.substring("modelEdit:".length());
             ModelConfig model = controller.getModel(modelId);
-            if (model != null && model.getProtocolType() == ModelProtocolType.GROK_RESPONSES) {
-                return new GrokModelPickerScreenView(
-                        context,
-                        model,
-                        new GrokModelPickerScreenView.Listener() {
-                            @Override
-                            public void onBack() {
-                                view.handleScreenBack();
-                            }
-
-                            @Override
-                            public void onSave(ModelConfig updated) {
-                                controller.onModelSaved(updated);
-                            }
-                        }
-                );
+            AccountModelProvider provider = model == null
+                    ? null
+                    : AccountModelProviders.fromProtocol(model.getProtocolType());
+            if (provider != null) {
+                return createAccountModelEditor(context, view, controller, provider, model);
             }
         }
+
         if (id != null) {
             ScreenFactory exact = factories.get(id);
             if (exact != null) {
@@ -87,5 +83,43 @@ public final class ScreenRegistry {
             }
         }
         return null;
+    }
+
+    private View createAccountModelEditor(
+            Context context,
+            MainChatView view,
+            MainUiController controller,
+            AccountModelProvider provider,
+            ModelConfig editingModel
+    ) {
+        if (provider == null) {
+            return null;
+        }
+        return new AccountModelEditorScreenView(
+                context,
+                provider,
+                editingModel,
+                new AccountModelEditorScreenView.Listener() {
+                    @Override
+                    public void onBack() {
+                        view.handleScreenBack();
+                    }
+
+                    @Override
+                    public void onSave(ModelConfig model) {
+                        controller.onModelSaved(model);
+                    }
+
+                    @Override
+                    public void onTest(ModelConfig model) {
+                        controller.onModelTest(model);
+                    }
+
+                    @Override
+                    public void onOpenAccount(String screenId) {
+                        controller.onSettingsItemSelected(screenId);
+                    }
+                }
+        );
     }
 }

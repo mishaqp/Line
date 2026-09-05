@@ -3,6 +3,7 @@ import org.gradle.api.GradleException
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
 }
 
 val releaseVersionName = "1.2.6"
@@ -156,6 +157,7 @@ android {
     }
     buildFeatures {
         aidl = true
+        compose = true
     }
 }
 
@@ -196,16 +198,6 @@ val exportDebugUserCertApk by tasks.registering(Copy::class) {
     rename { "LineCode-user-cert-debug.apk" }
 }
 
-configurations.matching {
-    it.name == "debugRuntimeClasspath" || it.name == "releaseRuntimeClasspath"
-}.configureEach {
-    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
-    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-common")
-    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk7")
-    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk8")
-    exclude(group = "org.jetbrains", module = "annotations")
-}
-
 tasks.matching {
     it.name == "minifyReleaseWithR8" || it.name == "minifyReleaseWithProguard"
 }.configureEach {
@@ -237,6 +229,19 @@ dependencies {
     implementation(project(":ui-theme"))
     implementation(project(":markdown"))
     implementation(project(":tool-ui"))
+
+    val composeBom = platform(libs.compose.bom)
+    implementation(composeBom)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling)
+    implementation(libs.activity.compose)
+    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.coroutines.android)
+
     testImplementation(libs.junit)
     testImplementation(libs.json)
 }
