@@ -5,7 +5,8 @@ import android.content.Context;
 import cn.lineai.R;
 import cn.lineai.data.repository.ExtensionStore;
 import cn.lineai.data.model.ExtensionOverviewState;
-import java.util.Collections;
+import cn.lineai.model.LipPackageRecord;
+import java.util.ArrayList;
 import java.util.List;
 
 final class LinecodeKindDescriptor implements ExtensionKindDescriptor {
@@ -52,12 +53,22 @@ final class LinecodeKindDescriptor implements ExtensionKindDescriptor {
 
     @Override
     public int addActionType() {
-        return ADD_ACTION_NONE;
+        return ADD_ACTION_LIP;
     }
 
     @Override
     public List<ExtensionItem> getInstalledItems(ExtensionOverviewState state) {
-        return Collections.emptyList();
+        List<LipPackageRecord> packages = state == null ? null : state.getLipPackages();
+        if (packages == null || packages.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<ExtensionItem> items = new ArrayList<>(packages.size());
+        for (LipPackageRecord pack : packages) {
+            String version = pack.getVersion().length() == 0 ? "1.0" : pack.getVersion();
+            String desc = "v" + version + " · " + pack.componentCount() + " · " + pack.getId();
+            items.add(new ExtensionItem(pack.getId(), pack.getName(), desc, pack.isEnabled()));
+        }
+        return items;
     }
 
     @Override

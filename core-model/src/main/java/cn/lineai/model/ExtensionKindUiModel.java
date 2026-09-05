@@ -13,6 +13,7 @@ public final class ExtensionKindUiModel {
     public static final int ADD_ACTION_AGENT = 1;
     public static final int ADD_ACTION_MCP = 2;
     public static final int ADD_ACTION_SKILL = 3;
+    public static final int ADD_ACTION_LIP = 4;
 
     private final String kind;
     private final String title;

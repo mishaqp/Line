@@ -1306,6 +1306,16 @@ public final class ScreenFactories {
                 }
 
                 @Override
+                public void onInstallLip(String location, String sourcePath) {
+                    controller.onLipInstalled(location, sourcePath);
+                }
+
+                @Override
+                public void onInstallLipFromUri(String location, String uri, String displayName) {
+                    controller.onLipInstalledFromUri(location, uri, displayName);
+                }
+
+                @Override
                 public void onEnabledChanged(String kind, String id, boolean enabled) {
                     controller.onExtensionEnabledChanged(kind, id, enabled);
                 }

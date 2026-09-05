@@ -500,7 +500,7 @@
     <string name="screen_extension_detail_inline_title_agent">Add Agent</string>
     <string name="screen_extension_detail_inline_title_mcp">Add HTTP/S MCP</string>
     <string name="screen_extension_detail_inline_desc_skills">Create a SKILL.md, or install from a local directory, SKILL.md, or ZIP to the project or global Skills folder.</string>
-    <string name="screen_extension_detail_inline_desc_linecode">LineCode native extensions will be added later.</string>
+    <string name="screen_extension_detail_inline_desc_linecode">Install skills, agents and MCP configurations together.</string>
     <string name="screen_extension_detail_inline_desc_agent">Custom Agents can be toggled on or off. When disabled, they are excluded from the prompt and tool calls.</string>
     <string name="screen_extension_detail_inline_desc_mcp">Custom MCPs can query tools/list. After saving, they are exposed to the AI as extension tools.</string>
 
@@ -632,7 +632,7 @@
     <string name="screen_extension_detail_empty_agent">No Agents added yet.</string>
     <string name="screen_extension_detail_empty_mcp">No MCPs added yet.</string>
     <string name="screen_extension_detail_empty_skills">No Skills discovered. You can create or install a SKILL.md.</string>
-    <string name="screen_extension_detail_empty_linecode">LineCode extensions will be added later.</string>
+    <string name="screen_extension_detail_empty_linecode">No LIP packages installed yet.</string>
     <string name="screen_extension_detail_install_zip">Install ZIP / SKILL.md</string>
     <string name="screen_extension_detail_install_zip_desc">Pick a file and then choose project or global install location</string>
     <string name="screen_extension_detail_create_skill">Create SKILL</string>
@@ -1279,4 +1279,10 @@
     <string name="screen_codex_models_unavailable">Model catalog unavailable</string>
     <string name="screen_codex_models_unavailable_desc">Refresh after signing in again or check the network.</string>
     <string name="screen_codex_request_failed">The Codex account request failed. Try again later.</string>
+    <string name="lip_install_title">Install LIP package</string>
+    <string name="lip_pick_file">Choose .lip or .zip file</string>
+    <string name="lip_pick_file_desc">Install skills, agents and MCP configurations from one package</string>
+    <string name="lip_path_desc">Path to a .lip / .zip package or a folder containing its components</string>
+    <string name="lip_pick_error">Choose a .lip or .zip file</string>
+    <string name="lip_path_required">Enter the package path</string>
 </resources>

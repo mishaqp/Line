@@ -500,7 +500,7 @@
     <string name="screen_extension_detail_inline_title_agent">Добавить Agent</string>
     <string name="screen_extension_detail_inline_title_mcp">Добавить HTTP/S MCP</string>
     <string name="screen_extension_detail_inline_desc_skills">Создать SKILL.md или установить из локального каталога, SKILL.md или ZIP в каталог проекта или глобальный Skills.</string>
-    <string name="screen_extension_detail_inline_desc_linecode">Нативные расширения LineCode будут добавлены позже.</string>
+    <string name="screen_extension_detail_inline_desc_linecode">Установка навыков, агентов и настроек MCP одним пакетом.</string>
     <string name="screen_extension_detail_inline_desc_agent">Пользовательские Agent можно включать и отключать. При отключении они исключаются из подсказок и вызовов инструментов.</string>
     <string name="screen_extension_detail_inline_desc_mcp">Пользовательские MCP могут запросить tools/list. После сохранения они доступны AI как расширения инструментов.</string>
 
@@ -632,7 +632,7 @@
     <string name="screen_extension_detail_empty_agent">Agent ещё не добавлены.</string>
     <string name="screen_extension_detail_empty_mcp">MCP ещё не добавлены.</string>
     <string name="screen_extension_detail_empty_skills">Skills не обнаружены. Можно создать или установить SKILL.md.</string>
-    <string name="screen_extension_detail_empty_linecode">Расширения LineCode будут добавлены позже.</string>
+    <string name="screen_extension_detail_empty_linecode">Пакеты LIP пока не установлены.</string>
     <string name="screen_extension_detail_install_zip">Установить ZIP / SKILL.md</string>
     <string name="screen_extension_detail_install_zip_desc">Выбрать файл, затем выбрать место установки — проект или глобально</string>
     <string name="screen_extension_detail_create_skill">Создать SKILL</string>
@@ -1277,4 +1277,10 @@
     <string name="screen_codex_models_unavailable">Каталог моделей недоступен</string>
     <string name="screen_codex_models_unavailable_desc">Обновите экран после повторного входа или проверьте сеть.</string>
     <string name="screen_codex_request_failed">Запрос к аккаунту Codex не выполнен. Попробуйте позже.</string>
+    <string name="lip_install_title">Установить пакет LIP</string>
+    <string name="lip_pick_file">Выбрать файл .lip или .zip</string>
+    <string name="lip_pick_file_desc">Установить навыки, агентов и настройки MCP из одного пакета</string>
+    <string name="lip_path_desc">Путь к пакету .lip / .zip или папке с его компонентами</string>
+    <string name="lip_pick_error">Выберите файл .lip или .zip</string>
+    <string name="lip_path_required">Введите путь к пакету</string>
 </resources>

@@ -16,6 +16,7 @@ public interface ExtensionKindDescriptor {
     int ADD_ACTION_AGENT = 1;
     int ADD_ACTION_MCP = 2;
     int ADD_ACTION_SKILL = 3;
+    int ADD_ACTION_LIP = 4;
 
     /** 返回此描述符对应的 kind 字符串标识 */
     String kind();

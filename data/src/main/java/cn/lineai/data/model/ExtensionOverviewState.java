@@ -3,6 +3,7 @@ package cn.lineai.data.model;
 import cn.lineai.ipc.IpcProviderConfig;
 import cn.lineai.model.ExtensionAgentConfig;
 import cn.lineai.model.ExtensionMcpConfig;
+import cn.lineai.model.LipPackageRecord;
 import cn.lineai.model.SkillRecord;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,13 +14,14 @@ public final class ExtensionOverviewState {
     private final List<ExtensionMcpConfig> mcps;
     private final List<SkillRecord> skills;
     private final List<IpcProviderConfig> ipcProviders;
+    private final List<LipPackageRecord> lipPackages;
 
     public ExtensionOverviewState(
             List<ExtensionAgentConfig> agents,
             List<ExtensionMcpConfig> mcps,
             List<SkillRecord> skills
     ) {
-        this(agents, mcps, skills, null);
+        this(agents, mcps, skills, null, null);
     }
 
     public ExtensionOverviewState(
@@ -28,10 +30,21 @@ public final class ExtensionOverviewState {
             List<SkillRecord> skills,
             List<IpcProviderConfig> ipcProviders
     ) {
+        this(agents, mcps, skills, ipcProviders, null);
+    }
+
+    public ExtensionOverviewState(
+            List<ExtensionAgentConfig> agents,
+            List<ExtensionMcpConfig> mcps,
+            List<SkillRecord> skills,
+            List<IpcProviderConfig> ipcProviders,
+            List<LipPackageRecord> lipPackages
+    ) {
         this.agents = agents == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(agents));
         this.mcps = mcps == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(mcps));
         this.skills = skills == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(skills));
         this.ipcProviders = ipcProviders == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(ipcProviders));
+        this.lipPackages = lipPackages == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(lipPackages));
     }
 
     public List<ExtensionAgentConfig> getAgents() {
@@ -48,5 +61,9 @@ public final class ExtensionOverviewState {
 
     public List<IpcProviderConfig> getIpcProviders() {
         return ipcProviders;
+    }
+
+    public List<LipPackageRecord> getLipPackages() {
+        return lipPackages;
     }
 }

@@ -32,6 +32,12 @@ public interface ExtensionController {
 
     void onSkillInstalledFromGitHub(String location, String githubUrl) throws Exception;
 
+    default void onLipInstalled(String location, String sourcePath) {
+    }
+
+    default void onLipInstalledFromUri(String location, String uri, String displayName) {
+    }
+
     void onExtensionEnabledChanged(String kind, String id, boolean enabled);
 
     void onExtensionDeleted(String kind, String id);
