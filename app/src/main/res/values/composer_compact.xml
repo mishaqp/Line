@@ -17,4 +17,5 @@
     <string name="composer_reasoning_medium">Medium</string>
     <string name="composer_reasoning_high">High</string>
     <string name="composer_reasoning_max">Max</string>
+    <string name="composer_model_manage">Manage models…</string>
 </resources>
