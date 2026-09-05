@@ -3,6 +3,8 @@ package cn.lineai.ui.component;
 import android.content.Context;
 import android.view.View;
 import cn.lineai.model.ModelConfig;
+import cn.lineai.navigation.LineDestination;
+import cn.lineai.navigation.LineDestinations;
 import cn.lineai.model.ModelProtocolType;
 import cn.lineai.mvp.MainUiController;
 import cn.lineai.ui.MainChatView;
@@ -33,6 +35,16 @@ public final class ScreenRegistry {
     }
 
     public View createScreen(String id, MainChatView view, MainUiController controller, Context context) {
+        return createScreen(LineDestinations.fromScreenId(id), view, controller, context);
+    }
+
+    public View createScreen(
+            LineDestination destination,
+            MainChatView view,
+            MainUiController controller,
+            Context context
+    ) {
+        String id = destination == null ? "" : destination.getScreenId();
         if ("codexAccount".equals(id)) {
             return createAccountScreen(
                     context,
