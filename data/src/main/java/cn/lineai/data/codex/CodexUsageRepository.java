@@ -25,14 +25,14 @@ public final class CodexUsageRepository {
             throw new CodexApiException(401, "Codex account identity is unavailable");
         }
 
-        SimpleHttpClient.Request request = new SimpleHttpClient.Request(USAGE_URL, "GET", null);
-        request.connectTimeoutMs = 20000;
-        request.readTimeoutMs = 30000;
-        request.headers.put("Authorization", "Bearer " + token);
-        request.headers.put("ChatGPT-Account-Id", accountId);
-        request.headers.put("originator", ORIGINATOR);
-        request.headers.put("Accept", "application/json");
-        SimpleHttpClient.Response response = SimpleHttpClient.execute(request);
+        SimpleHttpClient.Response response = execute(token, accountId);
+        if (response.code == 401) {
+            String refreshed = auth.refreshAccessTokenNow();
+            if (refreshed != null && refreshed.length() > 0) {
+                accountId = auth.getAccountId();
+                response = execute(refreshed, accountId);
+            }
+        }
         if (response.code == 401) {
             auth.logout();
             throw new CodexApiException(401, "Codex usage session is unauthorized");
@@ -46,6 +46,20 @@ public final class CodexUsageRepository {
                 auth.getEmail(),
                 parse(response.body)
         );
+    }
+
+    private static SimpleHttpClient.Response execute(String token, String accountId) throws Exception {
+        SimpleHttpClient.Request request = new SimpleHttpClient.Request(USAGE_URL, "GET", null);
+        request.connectTimeoutMs = 20000;
+        request.readTimeoutMs = 30000;
+        request.headers.put("Authorization", "Bearer " + token);
+        if (accountId != null && accountId.length() > 0) {
+            request.headers.put("ChatGPT-Account-Id", accountId);
+        }
+        request.headers.put("originator", ORIGINATOR);
+        request.headers.put("User-Agent", ORIGINATOR + "/" + CodexAuthManager.CODEX_CLIENT_VERSION + " (Android; LineCode)");
+        request.headers.put("Accept", "application/json");
+        return SimpleHttpClient.execute(request);
     }
 
     public static CodexUsageSnapshot parse(String raw) throws Exception {
