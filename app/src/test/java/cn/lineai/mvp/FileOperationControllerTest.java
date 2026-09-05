@@ -12,8 +12,8 @@ public final class FileOperationControllerTest {
 
         fixture.controller.requestDeleteFileNode("/repo/src/Main.java");
 
-        Assert.assertEquals("确认删除", fixture.host.dialogTitle);
-        Assert.assertTrue(fixture.host.dialogMessage.contains("\"Main.java\""));
+        Assert.assertEquals("Подтвердить удаление", fixture.host.dialogTitle);
+        Assert.assertTrue(fixture.host.dialogMessage.contains("«Main.java»"));
         Assert.assertEquals("file:delete:/repo/src/Main.java", fixture.host.dialogActionId);
     }
 
@@ -37,7 +37,7 @@ public final class FileOperationControllerTest {
 
         fixture.controller.showFileNodeActions("/repo", "repo", true, true);
 
-        Assert.assertEquals("工作区根目录", fixture.host.fileActionTitle);
+        Assert.assertEquals("Корень рабочей области", fixture.host.fileActionTitle);
         Assert.assertEquals(2, fixture.host.fileActionOptions.size());
         Assert.assertEquals("file:create_file:/repo", fixture.host.fileActionOptions.get(0).getId());
         Assert.assertEquals("file:create_folder:/repo", fixture.host.fileActionOptions.get(1).getId());
@@ -117,7 +117,7 @@ public final class FileOperationControllerTest {
 
         fixture.controller.deleteFileNode("/repo/file.txt");
 
-        Assert.assertEquals("文件操作失败: boom", fixture.host.notice);
+        Assert.assertEquals("Не удалось выполнить операцию с файлом: boom", fixture.host.notice);
         Assert.assertEquals(0, fixture.host.renderCount);
     }
 

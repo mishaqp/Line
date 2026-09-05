@@ -211,24 +211,24 @@ public final class FileOperationController {
         }
         ArrayList<SheetOption> options = new ArrayList<>();
         if (directory) {
-            options.add(new SheetOption("file:create_file:" + path, "新建文件", path, false));
-            options.add(new SheetOption("file:create_folder:" + path, "新建文件夹", path, false));
+            options.add(new SheetOption("file:create_file:" + path, "Новый файл", path, false));
+            options.add(new SheetOption("file:create_folder:" + path, "Новая папка", path, false));
             if (canPasteInto(true)) {
-                options.add(new SheetOption("file:paste:" + path, "粘贴", clipboardName, false));
+                options.add(new SheetOption("file:paste:" + path, "Вставить", clipboardName, false));
             }
             if (!root) {
-                options.add(new SheetOption("file:copy:" + path, "复制", name, false));
-                options.add(new SheetOption("file:rename:" + path, "重命名", name, false));
-                options.add(new SheetOption("file:delete:" + path, "删除", path, false));
+                options.add(new SheetOption("file:copy:" + path, "Копировать", name, false));
+                options.add(new SheetOption("file:rename:" + path, "Переименовать", name, false));
+                options.add(new SheetOption("file:delete:" + path, "Удалить", path, false));
             }
         } else {
-            options.add(new SheetOption("file:copy:" + path, "复制", name, false));
-            options.add(new SheetOption("file:rename:" + path, "重命名", name, false));
-            options.add(new SheetOption("file:delete:" + path, "删除", path, false));
+            options.add(new SheetOption("file:copy:" + path, "Копировать", name, false));
+            options.add(new SheetOption("file:rename:" + path, "Переименовать", name, false));
+            options.add(new SheetOption("file:delete:" + path, "Удалить", path, false));
         }
         if (!options.isEmpty()) {
             host.showFileActionDialog(
-                    root ? "工作区根目录" : (name == null || name.length() == 0 ? "文件操作" : name),
+                    root ? "Корень рабочей области" : (name == null || name.length() == 0 ? "Действие с файлом" : name),
                     path,
                     options
             );
@@ -236,22 +236,22 @@ public final class FileOperationController {
     }
 
     public void requestCreateFile(String parentPath) {
-        host.showInputDialog("新建文件", parentPath, "", "file:create_file:" + parentPath);
+        host.showInputDialog("Новый файл", parentPath, "", "file:create_file:" + parentPath);
     }
 
     public void requestCreateFolder(String parentPath) {
-        host.showInputDialog("新建文件夹", parentPath, "", "file:create_folder:" + parentPath);
+        host.showInputDialog("Новая папка", parentPath, "", "file:create_folder:" + parentPath);
     }
 
     public void requestRenameFileNode(String path) {
-        host.showInputDialog("重命名", path, host.basename(path), "file:rename:" + path);
+        host.showInputDialog("Переименовать", path, host.basename(path), "file:rename:" + path);
     }
 
     public void requestDeleteFileNode(String path) {
         host.showConfirmationDialog(
-                "确认删除",
-                "确定要删除 \"" + host.basename(path) + "\" 吗？此操作不可撤销。\n\n" + path,
-                "删除",
+                "Подтвердить удаление",
+                "Удалить «" + host.basename(path) + "»?\n\nЭто нельзя отменить.\n\n" + path,
+                "Удалить",
                 true,
                 "file:delete:" + path
         );
@@ -317,7 +317,7 @@ public final class FileOperationController {
                     host.render();
                 });
             } catch (Exception e) {
-                uiDispatcher.post(() -> host.showNotice("文件操作失败: " + e.getMessage()));
+                uiDispatcher.post(() -> host.showNotice("Не удалось выполнить операцию с файлом: " + e.getMessage()));
             }
         });
     }
