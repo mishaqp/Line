@@ -102,7 +102,8 @@ public final class ChatUiStateAssembler {
                 messages,
                 selectedModelId,
                 availableModels,
-                targetLabel
+                targetLabel,
+                aiSettings.getReasoningEffort()
         );
     }
 
