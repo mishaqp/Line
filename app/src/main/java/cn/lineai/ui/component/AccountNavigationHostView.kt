@@ -113,7 +113,7 @@ class AccountNavigationHostView(
                                         )
                                     }
 
-                                    else -> NavEntry(destination) { navigateBack() }
+                                    else -> NavEntry(destination) {}
                                 }
                             }
                         )
