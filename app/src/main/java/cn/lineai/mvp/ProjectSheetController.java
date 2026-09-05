@@ -28,17 +28,13 @@ public final class ProjectSheetController {
 
     interface Host {
         String executionMode();
-
         boolean isTermuxSshHost();
-
         boolean hasExternalStorageAccess();
-
         String storagePermissionMessage();
     }
 
     interface ProjectStore {
         ProjectRecord getSelectedProject(String executionMode);
-
         List<ProjectRecord> getProjects(String executionMode);
     }
 
@@ -87,32 +83,32 @@ public final class ProjectSheetController {
                     projectDisplayDescription(project),
                     project.getId().equals(selectedId),
                     projectDeleteActionId(project),
-                    "删除"
+                    "Удалить"
             ));
         }
         if (!sshMode || termuxSsh) {
             options.add(new SheetOption(
                     "project:open_local_saf",
-                    "打开本地项目",
-                    termuxSsh ? "选择本机目录，并作为 SSH 工作区路径使用" : "通过系统 SAF 选择目录，并保存为本地项目",
+                    "Открыть локальный проект",
+                    termuxSsh ? "Выбрать папку на телефоне как путь SSH-проекта" : "Выбрать папку через SAF и сохранить как локальный проект",
                     false
             ));
         }
         options.add(new SheetOption(
                 "project:create",
-                "创建工作区",
-                sshMode ? "在 SSH ~/.linecode/project 下创建项目" : "在 .linecode/project 下创建托管项目",
+                "Создать рабочую область",
+                sshMode ? "Создать проект в SSH ~/.linecode/project" : "Создать проект в .linecode/project",
                 false
         ));
         if (!sshMode || termuxSsh) {
             options.add(new SheetOption(
                     "storage:manage_all_files",
-                    "管理所有文件权限",
-                    host.hasExternalStorageAccess() ? "已授权，可访问文件存储" : host.storagePermissionMessage(),
+                    "Доступ ко всем файлам",
+                    host.hasExternalStorageAccess() ? "Разрешено, хранилище доступно" : host.storagePermissionMessage(),
                     host.hasExternalStorageAccess()
             ));
         }
-        return new ProjectSheet(sshMode ? "工作区 SSH" : "工作区", options);
+        return new ProjectSheet(sshMode ? "Рабочая область SSH" : "Рабочая область", options);
     }
 
     private String projectDeleteActionId(ProjectRecord project) {
@@ -130,7 +126,7 @@ public final class ProjectSheetController {
         }
         String path = WorkspacePaths.displayPath(project.getPath());
         if (WorkspacePaths.SOURCE_SSH.equals(project.getSource()) && path.length() == 0) {
-            return "SSH 登录目录";
+            return "Каталог входа SSH";
         }
         if (path.length() > 0) {
             return path;
