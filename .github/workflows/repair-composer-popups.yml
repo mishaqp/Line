@@ -14,13 +14,16 @@ jobs:
         with:
           ref: feat/chat-compact
           fetch-depth: 0
-      - name: Restore and patch ComposerView
+      - name: Restore ComposerView and keep model submenu on card
         run: |
           set -euo pipefail
-          git checkout 50ad71fa4865f4c4d360d1fb4f67350a0c1236f1 -- app/src/main/java/cn/lineai/ui/component/ComposerView.java
-          python3 scripts/patch_composer_popups.py
+          python3 scripts/repair_model_submenu.py
           git config user.name "mishaqp"
           git config user.email "84035331+mishaqp@users.noreply.github.com"
           git add app/src/main/java/cn/lineai/ui/component/ComposerView.java
-          git commit -m "fix(ui): show composer popups above the input card"
-          git push origin HEAD:feat/chat-compact
+          if git diff --cached --quiet; then
+            echo no-change
+          else
+            git commit -m "fix(ui): keep model submenu above the composer card"
+            git push origin HEAD:feat/chat-compact
+          fi
