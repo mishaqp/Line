@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_model_editor_title_add">Add model</string>
+    <string name="account_model_editor_title_edit">Edit model</string>
+    <string name="account_model_editor_back">Back</string>
+    <string name="account_model_editor_save">Save</string>
+    <string name="account_model_editor_test">Test</string>
+    <string name="account_model_editor_provider">Provider</string>
+    <string name="account_model_editor_account">Account</string>
+    <string name="account_model_editor_connected">Connected</string>
+    <string name="account_model_editor_signed_out">Not signed in</string>
+    <string name="account_model_editor_open_account">Open account</string>
+    <string name="account_model_editor_model">Model</string>
+    <string name="account_model_editor_model_hint">Choose a model available to this account</string>
+    <string name="account_model_editor_loading_models">Loading models…</string>
+    <string name="account_model_editor_models_failed">Could not load the model catalog. You can retry or enter a model ID manually.</string>
+    <string name="account_model_editor_retry">Retry</string>
+    <string name="account_model_editor_name">Name (optional)</string>
+    <string name="account_model_editor_name_hint">Uses the model ID when empty</string>
+    <string name="account_model_editor_advanced">Advanced settings</string>
+    <string name="account_model_editor_advanced_hide">Hide advanced settings</string>
+    <string name="account_model_editor_custom_id">Enter model ID manually</string>
+    <string name="account_model_editor_custom_id_hint">Model ID</string>
+    <string name="account_model_editor_tool_limit">Tool-call limit</string>
+    <string name="account_model_editor_tool_limit_hint">200 by default; -1 unlimited; 0 disables tool calls</string>
+    <string name="account_model_editor_context">Context size</string>
+    <string name="account_model_editor_context_hint">Auto when empty; accepts values like 128K or 1M</string>
+    <string name="account_model_editor_compression">Dedicated compression model</string>
+    <string name="account_model_editor_compression_auto">Choose compression model automatically</string>
+    <string name="account_model_editor_compression_id">Compression model ID</string>
+    <string name="account_model_editor_issue_model">Choose a model or enter its ID.</string>
+    <string name="account_model_editor_issue_tool_limit">Tool-call limit must be -1 or greater.</string>
+    <string name="account_model_editor_issue_compression">Enter a compression model ID or enable automatic selection.</string>
+</resources>
