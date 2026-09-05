@@ -3,6 +3,8 @@ package cn.lineai.ui.component;
 import android.content.Context;
 import android.view.View;
 import cn.lineai.model.ModelConfig;
+import cn.lineai.model.ModelProviderPreset;
+import cn.lineai.model.ModelProviderPresets;
 import cn.lineai.navigation.LineDestination;
 import cn.lineai.navigation.LineDestinations;
 import cn.lineai.model.ModelProtocolType;
@@ -140,11 +142,6 @@ public final class ScreenRegistry {
                     }
 
                     @Override
-                    public void onOpenExternal(LineDestination destination) {
-                        controller.onSettingsItemSelected(destination.getScreenId());
-                    }
-
-                    @Override
                     public void onSave(ModelConfig model) {
                         controller.onModelSaved(model);
                     }
@@ -157,6 +154,39 @@ public final class ScreenRegistry {
                     @Override
                     public ModelConfig getModel(String id) {
                         return controller.getModel(id);
+                    }
+
+                    @Override
+                    public View createLegacyEditor(
+                            Context editorContext,
+                            LineDestination destination,
+                            Runnable onBack
+                    ) {
+                        String id = destination.getScreenId();
+                        ModelProviderPreset preset = null;
+                        boolean local = "modelAdd:local".equals(id);
+                        ModelConfig editingModel = null;
+
+                        if (id.startsWith("modelAdd:preset:")) {
+                            preset = ModelProviderPresets.find(
+                                    id.substring("modelAdd:preset:".length())
+                            );
+                        } else if (id.startsWith("modelEdit:")) {
+                            editingModel = controller.getModel(
+                                    id.substring("modelEdit:".length())
+                            );
+                            local = editingModel != null
+                                    && editingModel.getProtocolType() == ModelProtocolType.LOCAL_GGUF;
+                        }
+
+                        return ScreenFactories.newModelAddScreen(
+                                editorContext,
+                                controller,
+                                preset,
+                                local,
+                                editingModel,
+                                onBack
+                        );
                     }
                 }
         );
