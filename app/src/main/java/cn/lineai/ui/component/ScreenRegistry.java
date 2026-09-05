@@ -11,6 +11,7 @@ import cn.lineai.ui.MainChatView;
 import cn.lineai.ui.model.AccountModelProvider;
 import cn.lineai.ui.model.AccountModelProviders;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,6 +46,9 @@ public final class ScreenRegistry {
             Context context
     ) {
         String id = destination == null ? "" : destination.getScreenId();
+        if ("models".equals(id) || "modelAddOptions".equals(id)) {
+            return createModelNavigationHost(context, view, controller, destination);
+        }
         if ("codexAccount".equals(id)) {
             return createAccountScreen(
                     context,
@@ -106,6 +110,56 @@ public final class ScreenRegistry {
             }
         }
         return null;
+    }
+
+    private View createModelNavigationHost(
+            Context context,
+            MainChatView view,
+            MainUiController controller,
+            LineDestination startDestination
+    ) {
+        return new ModelNavigationHostView(
+                context,
+                controller.getModels(),
+                controller.getSelectedModelId(),
+                startDestination,
+                new ModelNavigationHostView.Listener() {
+                    @Override
+                    public void onExit() {
+                        view.handleScreenBack();
+                    }
+
+                    @Override
+                    public void onSelectModel(String id) {
+                        controller.onModelSelected(id);
+                    }
+
+                    @Override
+                    public void onDeleteModels(List<String> ids) {
+                        controller.onModelsDeleted(ids);
+                    }
+
+                    @Override
+                    public void onOpenExternal(LineDestination destination) {
+                        controller.onSettingsItemSelected(destination.getScreenId());
+                    }
+
+                    @Override
+                    public void onSave(ModelConfig model) {
+                        controller.onModelSaved(model);
+                    }
+
+                    @Override
+                    public void onTest(ModelConfig model) {
+                        controller.onModelTest(model);
+                    }
+
+                    @Override
+                    public ModelConfig getModel(String id) {
+                        return controller.getModel(id);
+                    }
+                }
+        );
     }
 
     private View createAccountScreen(
