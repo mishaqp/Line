@@ -40,6 +40,10 @@ public final class RootProbeTest {
                 ExecutionTargetLabel.format("local", "/sdcard/Line", null));
         Assert.assertEquals("SSH",
                 ExecutionTargetLabel.format("ssh", "", null));
+        Assert.assertEquals("Root · /data",
+                ExecutionTargetLabel.format("root", "/storage/emulated/0", RootProbe.Status.READY));
+        Assert.assertEquals("Root · /data",
+                ExecutionTargetLabel.format("root", "/sdcard", RootProbe.Status.READY));
     }
 
     @Test
