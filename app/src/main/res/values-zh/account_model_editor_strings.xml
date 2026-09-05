@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_model_editor_title_add">添加模型</string>
+    <string name="account_model_editor_title_edit">编辑模型</string>
+    <string name="account_model_editor_back">返回</string>
+    <string name="account_model_editor_save">保存</string>
+    <string name="account_model_editor_test">测试</string>
+    <string name="account_model_editor_provider">提供商</string>
+    <string name="account_model_editor_account">账户</string>
+    <string name="account_model_editor_connected">已连接</string>
+    <string name="account_model_editor_signed_out">未登录</string>
+    <string name="account_model_editor_open_account">打开账户</string>
+    <string name="account_model_editor_model">模型</string>
+    <string name="account_model_editor_model_hint">选择此账户可用的模型</string>
+    <string name="account_model_editor_loading_models">正在加载模型…</string>
+    <string name="account_model_editor_models_failed">无法加载模型列表。可以重试或手动输入模型 ID。</string>
+    <string name="account_model_editor_retry">重试</string>
+    <string name="account_model_editor_name">名称（可选）</string>
+    <string name="account_model_editor_name_hint">留空时使用模型 ID</string>
+    <string name="account_model_editor_advanced">高级设置</string>
+    <string name="account_model_editor_advanced_hide">隐藏高级设置</string>
+    <string name="account_model_editor_custom_id">手动输入模型 ID</string>
+    <string name="account_model_editor_custom_id_hint">模型 ID</string>
+    <string name="account_model_editor_tool_limit">工具调用上限</string>
+    <string name="account_model_editor_tool_limit_hint">默认 200；-1 表示无限制；0 表示禁用工具调用</string>
+    <string name="account_model_editor_context">上下文大小</string>
+    <string name="account_model_editor_context_hint">留空为自动；支持 128K 或 1M</string>
+    <string name="account_model_editor_compression">专用压缩模型</string>
+    <string name="account_model_editor_compression_auto">自动选择压缩模型</string>
+    <string name="account_model_editor_compression_id">压缩模型 ID</string>
+    <string name="account_model_editor_issue_model">请选择模型或输入模型 ID。</string>
+    <string name="account_model_editor_issue_tool_limit">工具调用上限必须为 -1 或更大。</string>
+    <string name="account_model_editor_issue_compression">请输入压缩模型 ID，或启用自动选择。</string>
+</resources>
