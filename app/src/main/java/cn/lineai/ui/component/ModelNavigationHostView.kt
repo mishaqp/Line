@@ -148,10 +148,9 @@ class ModelNavigationHostView(
                                     }
 
                                     LineDestination.ModelAdd,
-                                    LineDestination.ModelAddLocal -> NavEntry(
-                                        destination,
-                                        content = legacyEditor(destination)
-                                    )
+                                    LineDestination.ModelAddLocal -> NavEntry(destination) {
+                                        legacyEditor(destination).invoke()
+                                    }
 
                                     is LineDestination.ModelAddPreset -> NavEntry(destination) {
                                         val provider = providerFor(destination.providerId)
