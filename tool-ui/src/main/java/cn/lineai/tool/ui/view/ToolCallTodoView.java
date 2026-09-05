@@ -28,6 +28,7 @@ public final class ToolCallTodoView extends BaseToolCallView implements ToolCall
     private final int minRowHeight;
     private List<TodoItem> lastItems;
     private String lastSignature = "";
+    private boolean expanded;
 
     public ToolCallTodoView(Context context) {
         super(context);
@@ -54,15 +55,39 @@ public final class ToolCallTodoView extends BaseToolCallView implements ToolCall
             addEmptyState();
             return;
         }
-        LinearLayout list = new LinearLayout(getContext());
-        list.setOrientation(VERTICAL);
-        LineTheme.padding(list, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
+        int done = 0;
         for (TodoItem item : items) {
-            LinearLayout row = buildRow(item);
-            row.setMinimumHeight(minRowHeight);
-            list.addView(row, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+            if (item.isCompleted()) {
+                done++;
+            }
         }
-        addView(list, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        LinearLayout box = new LinearLayout(getContext());
+        box.setOrientation(VERTICAL);
+        LineTheme.padding(box, LineTheme.MD, LineTheme.SM, LineTheme.MD, LineTheme.SM);
+        box.addView(buildChip(done, items.size()),
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        if (expanded) {
+            for (TodoItem item : items) {
+                LinearLayout row = buildRow(item);
+                row.setMinimumHeight(minRowHeight);
+                box.addView(row, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+            }
+        }
+        addView(box, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+    }
+
+    private TextView buildChip(int done, int total) {
+        TextView chip = LineTheme.text(getContext(),
+                getContext().getString(R.string.tool_call_todo_chip, done, total),
+                LineTheme.FONT_SM,
+                LineTheme.TEXT_SECONDARY,
+                Typeface.NORMAL);
+        chip.setClickable(true);
+        chip.setOnClickListener(v -> {
+            expanded = !expanded;
+            rebuild(lastItems);
+        });
+        return chip;
     }
 
     private void addEmptyState() {
