@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_mode_chat">Чат</string>
+    <string name="header_mode_plan">План</string>
+    <string name="header_mode_agent">Агент</string>
+    <string name="header_mode_control">Управление</string>
+    <string name="composer_plus_file">Файл</string>
+    <string name="composer_plus_image">Фото</string>
+    <string name="composer_plus_compact">Сжать историю</string>
+    <string name="composer_expand_title">Сообщение</string>
+    <string name="composer_expand_save">Сохранить</string>
+    <string name="composer_expand_desc">Развернуть ввод</string>
+    <string name="composer_reasoning_title">Глубина мышления</string>
+    <string name="composer_reasoning_off">Выкл</string>
+    <string name="composer_reasoning_auto">Авто</string>
+    <string name="composer_reasoning_low">Низкая</string>
+    <string name="composer_reasoning_medium">Средняя</string>
+    <string name="composer_reasoning_high">Высокая</string>
+    <string name="composer_reasoning_max">Макс</string>
+</resources>
