@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_mode_chat">聊天</string>
+    <string name="header_mode_plan">计划</string>
+    <string name="header_mode_agent">代理</string>
+    <string name="header_mode_control">控制</string>
+    <string name="composer_plus_file">添加文件</string>
+    <string name="composer_plus_image">图片</string>
+    <string name="composer_plus_compact">压缩历史</string>
+    <string name="composer_expand_title">消息</string>
+    <string name="composer_expand_save">保存</string>
+    <string name="composer_expand_desc">展开输入</string>
+    <string name="composer_reasoning_title">思考深度</string>
+    <string name="composer_reasoning_off">关闭</string>
+    <string name="composer_reasoning_auto">自动</string>
+    <string name="composer_reasoning_low">低</string>
+    <string name="composer_reasoning_medium">中</string>
+    <string name="composer_reasoning_high">高</string>
+    <string name="composer_reasoning_max">最大</string>
+    <string name="composer_model_manage">管理模型…</string>
+</resources>
