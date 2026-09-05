@@ -1,6 +1,8 @@
 package cn.lineai.navigation
 
+import cn.lineai.ui.model.SettingsCatalog
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -27,6 +29,31 @@ class LineDestinationTest {
         assertTrue(LineDestinations.fromScreenId("codexAccount") is LineDestination.CodexAccount)
         assertTrue(LineDestinations.fromScreenId("grokAccount") is LineDestination.GrokAccount)
         assertTrue(LineDestinations.fromScreenId("modelEdit:m1") is LineDestination.ModelEdit)
+        assertTrue(LineDestinations.fromScreenId("llm") is LineDestination.Llm)
+        assertTrue(LineDestinations.fromScreenId("mcp") is LineDestination.Mcp)
+        assertTrue(LineDestinations.fromScreenId("toolSettings") is LineDestination.ToolSettings)
+        assertTrue(LineDestinations.fromScreenId("extensions") is LineDestination.Extensions)
+        assertTrue(LineDestinations.fromScreenId("advancedFeatures") is LineDestination.AdvancedFeatures)
+        assertTrue(LineDestinations.fromScreenId("input") is LineDestination.Input)
+        assertTrue(LineDestinations.fromScreenId("theme") is LineDestination.Theme)
+        assertTrue(LineDestinations.fromScreenId("output") is LineDestination.Output)
+        assertTrue(LineDestinations.fromScreenId("security") is LineDestination.Security)
+        assertTrue(LineDestinations.fromScreenId("storage") is LineDestination.Storage)
+        assertTrue(LineDestinations.fromScreenId("memory") is LineDestination.Memory)
+        assertTrue(LineDestinations.fromScreenId("data") is LineDestination.Data)
+        assertTrue(LineDestinations.fromScreenId("errorLogs") is LineDestination.ErrorLogs)
+        assertTrue(LineDestinations.fromScreenId("keepAlive") is LineDestination.KeepAlive)
+        assertTrue(LineDestinations.fromScreenId("about") is LineDestination.About)
+    }
+
+    @Test
+    fun settingsDestinationsRoundTripLegacyScreenIds() {
+        SettingsCatalog.sections().flatMap { it.items }.forEach { item ->
+            val decoded = LineDestinations.fromScreenId(item.destination.screenId)
+            assertEquals(item.destination, decoded)
+            assertEquals(item.destination.screenId, decoded.screenId)
+            assertFalse(decoded is LineDestination.Legacy)
+        }
     }
 
     @Test
@@ -47,5 +74,40 @@ class LineDestinationTest {
             LineDestination.ModelAddOptions,
             LineDestinations.parentOf(LineDestination.ModelAddPreset("codex"))
         )
+        assertEquals(
+            LineDestination.Extensions,
+            LineDestinations.parentOf(LineDestination.Extension("skills"))
+        )
+    }
+
+    @Test
+    fun everyMainSettingsDestinationParentsToSettings() {
+        val children = listOf(
+            LineDestination.Models,
+            LineDestination.CodexAccount,
+            LineDestination.GrokAccount,
+            LineDestination.Llm,
+            LineDestination.Mcp,
+            LineDestination.ToolSettings,
+            LineDestination.Extensions,
+            LineDestination.AdvancedFeatures,
+            LineDestination.Input,
+            LineDestination.Theme,
+            LineDestination.Output,
+            LineDestination.Security,
+            LineDestination.Storage,
+            LineDestination.Memory,
+            LineDestination.Data,
+            LineDestination.ErrorLogs,
+            LineDestination.KeepAlive,
+            LineDestination.About
+        )
+        children.forEach { destination ->
+            assertEquals(
+                destination.screenId,
+                LineDestination.Settings,
+                LineDestinations.parentOf(destination)
+            )
+        }
     }
 }
