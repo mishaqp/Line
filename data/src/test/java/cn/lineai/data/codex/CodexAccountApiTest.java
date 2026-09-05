@@ -3,6 +3,7 @@ package cn.lineai.data.codex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -58,5 +59,21 @@ public final class CodexAccountApiTest {
         List<String> ids = CodexModelsRepository.parseModelIds(
                 new JSONObject().put("models", models));
         assertEquals(Arrays.asList("gpt-5-codex", "gpt-5.1-codex"), ids);
+    }
+
+    @Test
+    public void authorizationCodeExchangeUsesFormEncoding() {
+        String body = CodexAuthManager.buildAuthorizationCodeBody("a+b /", "v?=x");
+        assertTrue(body.contains("grant_type=authorization_code"));
+        assertTrue(body.contains("code=a%2Bb+%2F"));
+        assertTrue(body.contains("redirect_uri=http%3A%2F%2Flocalhost%3A1455%2Fauth%2Fcallback"));
+        assertTrue(body.contains("client_id=app_EMoamEEZ73f0CkXaXp7hrann"));
+        assertTrue(body.contains("code_verifier=v%3F%3Dx"));
+    }
+
+    @Test
+    public void oauthScopesIncludeCurrentConnectorPermissions() {
+        assertTrue(CodexAuthManager.SCOPES.contains("api.connectors.read"));
+        assertTrue(CodexAuthManager.SCOPES.contains("api.connectors.invoke"));
     }
 }

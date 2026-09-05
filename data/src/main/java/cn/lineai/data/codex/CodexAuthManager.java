@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -26,11 +27,12 @@ public final class CodexAuthManager {
     public static final String REDIRECT_URI = "http://localhost:1455/auth/callback";
     public static final String CALLBACK_PATH = "/auth/callback";
     public static final String CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann";
-    public static final String SCOPES = "openid profile email offline_access";
-    public static final String CODEX_CLIENT_VERSION = "0.144.5";
+    public static final String SCOPES = "openid profile email offline_access api.connectors.read api.connectors.invoke";
+    public static final String CODEX_CLIENT_VERSION = "0.153.4";
 
     private static final int CALLBACK_PORT = 1455;
-    private static final long REFRESH_WINDOW_MILLIS = 4L * 60L * 60L * 1000L;
+    private static final long REFRESH_WINDOW_MILLIS = 5L * 60L * 1000L;
+    private static final Object TOKEN_REFRESH_LOCK = new Object();
 
     public interface LoginCallback {
         void onComplete(boolean success, String message);
@@ -118,33 +120,47 @@ public final class CodexAuthManager {
     }
 
     public String getValidAccessToken() {
-        String accessToken = store.getAccessToken();
-        if (accessToken.length() == 0) {
-            return null;
-        }
-        long expiresAt = store.getExpiresAtMillis();
-        long now = System.currentTimeMillis();
-        if (expiresAt <= 0L || expiresAt - now > REFRESH_WINDOW_MILLIS) {
-            return accessToken;
-        }
-        String refreshToken = store.getRefreshToken();
-        if (refreshToken.length() == 0) {
-            return now < expiresAt ? accessToken : null;
-        }
-        try {
-            String refreshed = refreshAccessToken(refreshToken);
-            if (refreshed != null && refreshed.length() > 0) {
-                return refreshed;
+        return getAccessToken(false);
+    }
+
+    /** Force one OAuth refresh, used after an authenticated backend request returns 401. */
+    public String refreshAccessTokenNow() {
+        return getAccessToken(true);
+    }
+
+    private String getAccessToken(boolean forceRefresh) {
+        synchronized (TOKEN_REFRESH_LOCK) {
+            String accessToken = store.getAccessToken();
+            if (accessToken.length() == 0) {
+                return null;
             }
-        } catch (Exception ignored) {
-            // Keep a still-live token usable if the network is temporarily
-            // unavailable. An expired token is cleared below.
+            long expiresAt = store.getExpiresAtMillis();
+            long now = System.currentTimeMillis();
+            if (!forceRefresh && (expiresAt <= 0L || expiresAt - now > REFRESH_WINDOW_MILLIS)) {
+                return accessToken;
+            }
+            String refreshToken = store.getRefreshToken();
+            if (refreshToken.length() == 0) {
+                if (forceRefresh) {
+                    return null;
+                }
+                return expiresAt <= 0L || now < expiresAt ? accessToken : null;
+            }
+            try {
+                String refreshed = refreshAccessToken(refreshToken);
+                if (refreshed != null && refreshed.length() > 0) {
+                    return refreshed;
+                }
+            } catch (Exception ignored) {
+                // Keep a still-live token usable if the network is temporarily
+                // unavailable. An expired token is cleared below.
+            }
+            if (expiresAt > 0L && now >= expiresAt) {
+                store.clear();
+                return null;
+            }
+            return forceRefresh ? null : accessToken;
         }
-        if (expiresAt > 0L && now >= expiresAt) {
-            store.clear();
-            return null;
-        }
-        return accessToken;
     }
 
     private String refreshAccessToken(String refreshToken) throws Exception {
@@ -162,7 +178,7 @@ public final class CodexAuthManager {
         request.headers.put("Content-Type", "application/json");
         request.headers.put("Accept", "application/json");
         SimpleHttpClient.Response response = SimpleHttpClient.execute(request);
-        if (response.code == 401) {
+        if (response.code == 400 || response.code == 401) {
             store.clear();
             return null;
         }
@@ -215,20 +231,14 @@ public final class CodexAuthManager {
     }
 
     private void exchangeAuthorizationCode(String code, String verifier) throws Exception {
-        JSONObject body = new JSONObject();
-        body.put("grant_type", "authorization_code");
-        body.put("client_id", CLIENT_ID);
-        body.put("code", code);
-        body.put("redirect_uri", REDIRECT_URI);
-        body.put("code_verifier", verifier == null ? "" : verifier);
         SimpleHttpClient.Request request = new SimpleHttpClient.Request(
                 TOKEN_URL,
                 "POST",
-                body.toString()
+                buildAuthorizationCodeBody(code, verifier)
         );
         request.connectTimeoutMs = 20000;
         request.readTimeoutMs = 30000;
-        request.headers.put("Content-Type", "application/json");
+        request.headers.put("Content-Type", "application/x-www-form-urlencoded");
         request.headers.put("Accept", "application/json");
         SimpleHttpClient.Response response = SimpleHttpClient.execute(request);
         if (response.code < 200 || response.code >= 300) {
@@ -237,6 +247,22 @@ public final class CodexAuthManager {
         JSONObject json = new JSONObject(response.body);
         store.saveTokenResponse(json);
         updateIdentityFromIdToken(json.optString("id_token", ""));
+    }
+
+    static String buildAuthorizationCodeBody(String code, String verifier) {
+        return "grant_type=authorization_code"
+                + "&code=" + formEncode(code)
+                + "&redirect_uri=" + formEncode(REDIRECT_URI)
+                + "&client_id=" + formEncode(CLIENT_ID)
+                + "&code_verifier=" + formEncode(verifier == null ? "" : verifier);
+    }
+
+    private static String formEncode(String value) {
+        try {
+            return URLEncoder.encode(value == null ? "" : value, StandardCharsets.UTF_8.name());
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to encode OAuth form", e);
+        }
     }
 
     private void updateIdentityFromIdToken(String idToken) throws Exception {
