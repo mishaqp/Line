@@ -25,7 +25,6 @@ import java.util.List;
  */
 public final class RootFileExecutor {
 
-    /** 单次读取/写入的上限，防止把超大文件整体拉进内存。 */
     private static final long MAX_TRANSFER_BYTES = 8L * 1024L * 1024L;
 
     private final RootCommandRunner runner;
@@ -40,9 +39,6 @@ public final class RootFileExecutor {
         this.timeoutMs = Math.max(1000L, timeoutMs);
     }
 
-    // ── 可用性 ──
-
-    /** root 是否可用；不可用时抛出带说明的异常，由各工具转成 ToolResult 错误。 */
     public void requireRoot() throws RootFsException {
         if (!(runner instanceof RootShellExecutor) || ((RootShellExecutor) runner).isRootAvailable(timeoutMs)) {
             return;
@@ -51,9 +47,6 @@ public final class RootFileExecutor {
                 + "Grant root permission to this app in KernelSU/Magisk, then retry.");
     }
 
-    // ── 路径 ──
-
-    /** 把工作区相对路径解析为绝对路径（不做 canonical 校验：root 模式下允许访问整个文件系统）。 */
     public static String absolutePath(String homePath, String inputPath) throws RootFsException {
         String value = inputPath == null ? "" : inputPath.trim();
         if (value.length() == 0) {
@@ -61,25 +54,22 @@ public final class RootFileExecutor {
             if (home.trim().length() == 0) {
                 throw new RootFsException("path is empty and no workspace path is set");
             }
-            return home;
+            return RootPaths.toRootVisible(home);
         }
         if (value.startsWith("file://")) {
             value = value.substring("file://".length());
         }
         if (value.startsWith("/")) {
-            return value;
+            return RootPaths.toRootVisible(value);
         }
         String home = homePath == null ? "" : homePath.trim();
         if (home.length() == 0) {
             throw new RootFsException("relative path given but no workspace path is set: " + inputPath);
         }
         String base = home.endsWith("/") ? home.substring(0, home.length() - 1) : home;
-        return base + "/" + value;
+        return RootPaths.toRootVisible(base + "/" + value);
     }
 
-    // ── 元数据 ──
-
-    /** 一次命令查询存在性 / 是否目录 / 字节大小。 */
     public Meta stat(String path) throws RootFsException {
         String quoted = RootCommandRunner.quote(path);
         String script = "if [ -e " + quoted + " ]; then printf 'exists=1\\n'; else printf 'exists=0\\n'; fi; "
@@ -101,9 +91,6 @@ public final class RootFileExecutor {
         return new Meta(exists, directory, size);
     }
 
-    // ── 读取 ──
-
-    /** 读取 [startByte, endByte) 区间；字节数为 0 时返回空串。 */
     public String readRange(String path, long startByte, long length) throws RootFsException {
         if (length <= 0) {
             return "";
@@ -118,14 +105,10 @@ public final class RootFileExecutor {
         return exec(script).getOutput();
     }
 
-    /** 读取整个文件（受 {@link #MAX_TRANSFER_BYTES} 限制）。 */
     public String readAll(String path) throws RootFsException {
         return readRange(path, 0L, MAX_TRANSFER_BYTES);
     }
 
-    // ── 写入 ──
-
-    /** 以 root 身份写入文本/二进制内容，自动创建父目录，并把属主交还给调用方 uid。 */
     public WriteResult write(String path, byte[] content) throws RootFsException {
         if (content == null) {
             content = new byte[0];
@@ -144,7 +127,6 @@ public final class RootFileExecutor {
         if (parent.length() > 0) {
             script.append("mkdir -p ").append(RootCommandRunner.quote(parent)).append(" || exit 3; ");
         }
-        // base64 通过 stdin 传入：放进 argv 会超出内核 ARG_MAX，导致大文件写入直接失败。
         script.append("base64 -d > ").append(RootCommandRunner.quote(path)).append(" || exit 4; ");
         script.append("chown ").append(currentUid()).append(':').append(currentUid()).append(' ')
                 .append(RootCommandRunner.quote(path)).append(" 2>/dev/null; exit 0");
@@ -155,8 +137,6 @@ public final class RootFileExecutor {
         return new WriteResult(existed, content.length);
     }
 
-    // ── 删除 ──
-
     public void delete(String path) throws RootFsException {
         RootCommandRunner.Result result = exec("rm -rf " + RootCommandRunner.quote(path));
         if (!result.isSuccess()) {
@@ -164,9 +144,6 @@ public final class RootFileExecutor {
         }
     }
 
-    // ── 目录列举 ──
-
-    /** 列出目录的直接子项（目录在前、名称不区分大小写排序）。 */
     public List<Entry> listChildren(String path) throws RootFsException {
         String script = "find " + RootCommandRunner.quote(path) + " -mindepth 1 -maxdepth 1 2>/dev/null";
         List<String> paths = new ArrayList<>();
@@ -187,7 +164,6 @@ public final class RootFileExecutor {
         return entries;
     }
 
-    /** 递归收集文件（最多 {@code limit} 条），用于 glob 的候选集。 */
     public List<String> collectFiles(String root, int limit) throws RootFsException {
         String script = "find " + RootCommandRunner.quote(root) + " -type f 2>/dev/null";
         List<String> files = new ArrayList<>();
@@ -204,7 +180,6 @@ public final class RootFileExecutor {
         return files;
     }
 
-    /** 递归收集 [DIR] 形式的目录树条目，格式 {@code [DIR]  relative/} / {@code [FILE] relative}。 */
     public List<String> collectTree(String root, int limit) throws RootFsException {
         String script = "find " + RootCommandRunner.quote(root) + " -mindepth 1 2>/dev/null";
         List<String> all = new ArrayList<>();
@@ -232,8 +207,6 @@ public final class RootFileExecutor {
         return rendered;
     }
 
-    // ── 内部辅助 ──
-
     private RootCommandRunner.Result exec(String script) throws RootFsException {
         return exec(script, null);
     }
@@ -251,7 +224,6 @@ public final class RootFileExecutor {
         }
     }
 
-    /** 用一条 {@code if [ -d p ]; ...} 脚本批量判定标志位，返回命中该标志的路径。 */
     private List<String> testFlags(List<String> paths, String flag) throws RootFsException {
         StringBuilder script = new StringBuilder();
         for (String path : paths) {
@@ -321,7 +293,6 @@ public final class RootFileExecutor {
         return left.getName().compareToIgnoreCase(right.getName());
     };
 
-    /** 一次 stat 的结果。 */
     public static final class Meta {
         private final boolean exists;
         private final boolean directory;
@@ -333,24 +304,12 @@ public final class RootFileExecutor {
             this.size = size;
         }
 
-        public boolean exists() {
-            return exists;
-        }
-
-        public boolean isDirectory() {
-            return directory;
-        }
-
-        public boolean isFile() {
-            return exists && !directory;
-        }
-
-        public long size() {
-            return size;
-        }
+        public boolean exists() { return exists; }
+        public boolean isDirectory() { return directory; }
+        public boolean isFile() { return exists && !directory; }
+        public long size() { return size; }
     }
 
-    /** 目录条目。 */
     public static final class Entry {
         private final String name;
         private final String path;
@@ -362,20 +321,11 @@ public final class RootFileExecutor {
             this.directory = directory;
         }
 
-        public String getName() {
-            return name;
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        public boolean isDirectory() {
-            return directory;
-        }
+        public String getName() { return name; }
+        public String getPath() { return path; }
+        public boolean isDirectory() { return directory; }
     }
 
-    /** 写入结果。 */
     public static final class WriteResult {
         private final boolean existed;
         private final int bytes;
@@ -385,28 +335,20 @@ public final class RootFileExecutor {
             this.bytes = bytes;
         }
 
-        public boolean existed() {
-            return existed;
-        }
-
-        public int bytes() {
-            return bytes;
-        }
+        public boolean existed() { return existed; }
+        public int bytes() { return bytes; }
     }
 
-    /** root 文件操作失败（含 root 不可用、超时、命令非 0 退出）。 */
     public static final class RootFsException extends Exception {
         public RootFsException(String message) {
             super(message);
         }
     }
 
-    /** 便捷入口：把字符串按 UTF-8 编码。 */
     public static byte[] utf8(String value) {
         return (value == null ? "" : value).getBytes(StandardCharsets.UTF_8);
     }
 
-    /** 便捷入口：{@link File} 无关的路径拼接。 */
     public static String join(String parent, String name) {
         if (parent == null || parent.length() == 0) {
             return name;
@@ -414,10 +356,6 @@ public final class RootFileExecutor {
         return parent.endsWith("/") ? parent + name : parent + "/" + name;
     }
 
-    /**
-     * root 模式下的展示路径：与 {@code FileToolPathPolicy.displayPath} 语义一致，
-     * 但在工作区路径为空时不抛异常（root 模式允许直接操作绝对路径）。
-     */
     public static String displayPath(String homePath, String path) {
         String value = path == null ? "" : path.trim().replace('\\', '/');
         while (value.length() > 1 && value.endsWith("/")) {
