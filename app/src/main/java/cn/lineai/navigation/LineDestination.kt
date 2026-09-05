@@ -35,6 +35,10 @@ sealed interface LineDestination : NavKey {
         override val screenId: String = "llm"
     }
 
+    data object PromptTemplates : LineDestination {
+        override val screenId: String = "promptTemplates"
+    }
+
     data object Mcp : LineDestination {
         override val screenId: String = "mcp"
     }
@@ -156,6 +160,7 @@ object LineDestinations {
             id == "codexAccount" -> LineDestination.CodexAccount
             id == "grokAccount" -> LineDestination.GrokAccount
             id == "llm" -> LineDestination.Llm
+            id == "promptTemplates" -> LineDestination.PromptTemplates
             id == "mcp" -> LineDestination.Mcp
             id == "toolSettings" -> LineDestination.ToolSettings
             id == "extensions" -> LineDestination.Extensions
@@ -215,6 +220,8 @@ object LineDestinations {
             LineDestination.ErrorLogs,
             LineDestination.KeepAlive,
             LineDestination.About -> LineDestination.Settings
+
+            LineDestination.PromptTemplates -> LineDestination.Llm
 
             LineDestination.ModelAddOptions,
             is LineDestination.ModelEdit -> LineDestination.Models
