@@ -157,6 +157,16 @@ public final class ScreenRegistry {
                     }
 
                     @Override
+                    public List<ModelConfig> models() {
+                        return controller.getModels();
+                    }
+
+                    @Override
+                    public String selectedModelId() {
+                        return controller.getSelectedModelId();
+                    }
+
+                    @Override
                     public View createLegacyEditor(
                             Context editorContext,
                             LineDestination destination,
