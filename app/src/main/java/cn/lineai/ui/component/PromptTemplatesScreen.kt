@@ -50,6 +50,8 @@ internal fun PromptTemplatesScreenContent(
     onAction: (PromptTemplatesUiAction) -> Unit
 ) {
     val context = LocalContext.current
+    val savedMessage = stringResource(R.string.screen_prompt_templates_toast_saved)
+    val resetMessage = stringResource(R.string.screen_prompt_templates_toast_reset)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -84,19 +86,11 @@ internal fun PromptTemplatesScreenContent(
                         },
                         onSave = {
                             onAction(PromptTemplatesUiAction.Save(template.id))
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.screen_prompt_templates_toast_saved),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
                         },
                         onReset = {
                             onAction(PromptTemplatesUiAction.Reset(template.id))
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.screen_prompt_templates_toast_reset),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(context, resetMessage, Toast.LENGTH_SHORT).show()
                         }
                     )
                 }
