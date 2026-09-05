@@ -31,13 +31,13 @@ data class AccountScreenState(
 
 /**
  * Lifecycle-aware state holder shared by the Codex and Grok account screens.
- * Provider-specific OAuth and HTTP details stay behind AccountModelProvider.
+ * Android Context stays behind AccountRepository instead of leaking into the
+ * ViewModel.
  */
 class AccountScreenViewModel(
-    context: Context,
-    val provider: AccountModelProvider
+    private val repository: AccountRepository
 ) : ViewModel() {
-    private val appContext = context.applicationContext ?: context
+    private val provider = repository.provider
     private var generation = 0
 
     private val _state = MutableStateFlow(
@@ -54,7 +54,7 @@ class AccountScreenViewModel(
 
     fun refresh() {
         val currentGeneration = ++generation
-        val identity = provider.identity(appContext)
+        val identity = repository.identity()
         if (!identity.authenticated) {
             _state.update {
                 AccountScreenState(
@@ -83,8 +83,8 @@ class AccountScreenViewModel(
         }
 
         viewModelScope.launch {
-            val usageDeferred = async { runCatching { provider.fetchUsage(appContext) } }
-            val modelsDeferred = async { runCatching { provider.fetchModelIds(appContext).distinct() } }
+            val usageDeferred = async { runCatching { repository.fetchUsage() } }
+            val modelsDeferred = async { runCatching { repository.fetchModelIds().distinct() } }
             val usageResult = usageDeferred.await()
             val modelsResult = modelsDeferred.await()
 
@@ -92,10 +92,10 @@ class AccountScreenViewModel(
                 return@launch
             }
 
-            val unauthorized = usageResult.exceptionOrNull()?.let(provider::isUnauthorized) == true ||
-                modelsResult.exceptionOrNull()?.let(provider::isUnauthorized) == true
+            val unauthorized = usageResult.exceptionOrNull()?.let(repository::isUnauthorized) == true ||
+                modelsResult.exceptionOrNull()?.let(repository::isUnauthorized) == true
             if (unauthorized) {
-                provider.logout(appContext)
+                repository.logout()
                 _state.value = AccountScreenState(
                     providerKind = provider.kind,
                     providerLabel = provider.label,
@@ -104,7 +104,7 @@ class AccountScreenViewModel(
                 return@launch
             }
 
-            val refreshedIdentity = provider.identity(appContext)
+            val refreshedIdentity = repository.identity()
             if (!refreshedIdentity.authenticated) {
                 _state.value = AccountScreenState(
                     providerKind = provider.kind,
@@ -144,7 +144,7 @@ class AccountScreenViewModel(
                 deviceCode = ""
             )
         }
-        provider.startLogin(appContext, object : AccountLoginCallback {
+        repository.startLogin(object : AccountLoginCallback {
             override fun onDeviceCode(userCode: String, verificationUri: String) {
                 _state.update {
                     it.copy(
@@ -174,7 +174,7 @@ class AccountScreenViewModel(
 
     fun logout() {
         ++generation
-        provider.logout(appContext)
+        repository.logout()
         _state.value = AccountScreenState(
             providerKind = provider.kind,
             providerLabel = provider.label
@@ -186,11 +186,14 @@ class AccountScreenViewModel(
         fun factory(
             context: Context,
             provider: AccountModelProvider
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return AccountScreenViewModel(context, provider) as T
+        ): ViewModelProvider.Factory = factory(AndroidAccountRepository(context, provider))
+
+        internal fun factory(repository: AccountRepository): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return AccountScreenViewModel(repository) as T
+                }
             }
-        }
     }
 }
