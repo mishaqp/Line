@@ -4,25 +4,31 @@ import android.content.Context
 import android.view.View
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
 import cn.lineai.model.ModelConfig
 import cn.lineai.model.ModelProtocolType
 import cn.lineai.navigation.LineDestination
 import cn.lineai.ui.model.AccountModelProviders
+import cn.lineai.ui.model.ModelManagementRepository
+import cn.lineai.ui.model.ModelManagementUiAction
+import cn.lineai.ui.model.ModelManagementViewModel
 
 /**
  * Navigation 3 owner for the complete model-management flow.
  *
- * Model list, provider chooser and non-account editors remain Java Views during
- * this migration step, but all navigation and back behavior is owned by one
- * typed back stack.
+ * Model list and provider chooser are native Compose. Non-account editors
+ * remain Java Views during this migration step, with navigation owned by
+ * one typed back stack.
  */
 class ModelNavigationHostView(
     context: Context,
@@ -39,6 +45,8 @@ class ModelNavigationHostView(
         fun onSave(model: ModelConfig)
         fun onTest(model: ModelConfig)
         fun getModel(id: String): ModelConfig?
+        fun models(): List<ModelConfig>
+        fun selectedModelId(): String
         fun createLegacyEditor(
             context: Context,
             destination: LineDestination,
@@ -53,6 +61,27 @@ class ModelNavigationHostView(
                 setContent {
                     AccountScreenTheme {
                         val backStack = remember { mutableStateListOf(startDestination) }
+                        val repository = remember {
+                            object : ModelManagementRepository {
+                                override fun models(): List<ModelConfig> {
+                                    val live = listener.models()
+                                    return if (live.isNullOrEmpty() && models.isNotEmpty()) models else live
+                                }
+
+                                override fun selectedModelId(): String {
+                                    val live = listener.selectedModelId()
+                                    return live.ifEmpty { selectedModelId }
+                                }
+
+                                override fun selectModel(id: String) = listener.onSelectModel(id)
+
+                                override fun deleteModels(ids: List<String>) = listener.onDeleteModels(ids)
+                            }
+                        }
+                        val management: ModelManagementViewModel = viewModel(
+                            key = "model-management",
+                            factory = ModelManagementViewModel.factory(repository)
+                        )
 
                         fun navigateBack() {
                             if (backStack.size > 1) {
@@ -65,6 +94,19 @@ class ModelNavigationHostView(
                         fun openEditor(modelId: String) {
                             if (listener.getModel(modelId) != null) {
                                 backStack.add(LineDestination.ModelEdit(modelId))
+                            }
+                        }
+
+                        fun handleAction(action: ModelManagementUiAction) {
+                            if (action == ModelManagementUiAction.Back) {
+                                navigateBack()
+                                return
+                            }
+                            val destination = management.onAction(action) ?: return
+                            if (destination is LineDestination.ModelEdit) {
+                                openEditor(destination.modelId)
+                            } else {
+                                backStack.add(destination)
                             }
                         }
 
@@ -88,62 +130,19 @@ class ModelNavigationHostView(
                             entryProvider = { destination ->
                                 when (destination) {
                                     LineDestination.Models -> NavEntry(destination) {
-                                        AndroidView(
-                                            modifier = Modifier.fillMaxSize(),
-                                            factory = { viewContext ->
-                                                ModelListScreenView(
-                                                    viewContext,
-                                                    models,
-                                                    selectedModelId,
-                                                    object : ModelListScreenView.Listener {
-                                                        override fun onBack() = navigateBack()
-
-                                                        override fun onAddModel() {
-                                                            backStack.add(LineDestination.ModelAddOptions)
-                                                        }
-
-                                                        override fun onSelectModel(id: String) {
-                                                            listener.onSelectModel(id)
-                                                        }
-
-                                                        override fun onEditModel(id: String) {
-                                                            openEditor(id)
-                                                        }
-
-                                                        override fun onDeleteModels(ids: List<String>) {
-                                                            listener.onDeleteModels(ids)
-                                                        }
-                                                    }
-                                                )
-                                            }
+                                        LaunchedEffect(destination) {
+                                            management.refresh()
+                                        }
+                                        ModelListScreenContent(
+                                            state = management.state.collectAsStateWithLifecycle().value,
+                                            onAction = ::handleAction
                                         )
                                     }
 
                                     LineDestination.ModelAddOptions -> NavEntry(destination) {
-                                        AndroidView(
-                                            modifier = Modifier.fillMaxSize(),
-                                            factory = { viewContext ->
-                                                ModelAddOptionsScreenView(
-                                                    viewContext,
-                                                    object : ModelAddOptionsScreenView.Listener {
-                                                        override fun onBack() = navigateBack()
-
-                                                        override fun onCustom() {
-                                                            backStack.add(LineDestination.ModelAdd)
-                                                        }
-
-                                                        override fun onLocal() {
-                                                            backStack.add(LineDestination.ModelAddLocal)
-                                                        }
-
-                                                        override fun onProvider(id: String) {
-                                                            backStack.add(
-                                                                LineDestination.ModelAddPreset(id)
-                                                            )
-                                                        }
-                                                    }
-                                                )
-                                            }
+                                        ModelAddOptionsScreenContent(
+                                            state = management.state.collectAsStateWithLifecycle().value,
+                                            onAction = ::handleAction
                                         )
                                     }
 
