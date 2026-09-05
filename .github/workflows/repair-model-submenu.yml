@@ -11,42 +11,14 @@ jobs:
         with:
           ref: feat/chat-compact
           fetch-depth: 0
-      - name: Restore ComposerView and patch submenu
+      - name: Patch ComposerView
+        run: python3 scripts/repair_model_submenu.py
+      - name: Commit
         run: |
-          python3 <<'PY'
-          from pathlib import Path
-          import subprocess
-          path = Path('app/src/main/java/cn/lineai/ui/component/ComposerView.java')
-          raw = subprocess.check_output(['git','show','a0bdfd276f7422bc294d44c605dbabe0d32b5fbe:app/src/main/java/cn/lineai/ui/component/ComposerView.java'])
-          text = raw.decode()
-          if 'private PopupWindow modelSubPopup;' not in text.split('private SlashCommandPopup')[0]:
-              text = text.replace(
-                  '    private PopupWindow modelPopup;\n    private SlashCommandPopup',
-                  '    private PopupWindow modelPopup;\n    private PopupWindow modelSubPopup;\n    private SlashCommandPopup',
-                  1)
-          text = text.replace(
-              '''        popup.setClippingEnabled(true);\n        popup.setElevation(LineTheme.dp(context, 10));\n        popup.showAtLocation(this, Gravity.NO_GRAVITY, x, y);''',
-              '''        popup.setClippingEnabled(true);\n        popup.setElevation(LineTheme.dp(context, 10));\n        if (popup.isShowing()) {\n            popup.update(x, y, popupWidth, Math.max(popupHeight, 1));\n        } else {\n            popup.showAtLocation(this, Gravity.NO_GRAVITY, x, y);\n        }''',
-              1)
-          text = text.replace(
-              '''    private void showReasoningPopup(View anchor) {\n        if (streaming) return;\n        dismissSlashPopup();''',
-              '''    private void showReasoningPopup(View anchor) {\n        if (streaming) return;\n        dismissComposerPopups();''',
-              1)
-          text = text.replace(
-              '''    private void showPlusPopup(View anchor) {\n        if (streaming) return;\n        dismissSlashPopup();''',
-              '''    private void showPlusPopup(View anchor) {\n        if (streaming) return;\n        dismissComposerPopups();''',
-              1)
-          start = text.find('    private PopupWindow modelSubPopup;\n    \n    private void showModelPopup')
-          if start < 0:
-              start = text.find('    private void showModelPopup(View anchor)')
-              # include previous field if present
-              alt = text.rfind('    private PopupWindow modelSubPopup;', 0, start)
-              if alt >= 0:
-                  start = alt
-          end = text.find('    private LinearLayout modelOptionRow(')
-          if start < 0 or end < 0:
-              raise SystemExit('markers missing %s %s' % (start, end))
-          new = Path('/tmp/block.java').read_text() if Path('/tmp/block.java').exists() else None
-          PY
-          printf '%s' 'block missing'
-          exit 1
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/src/main/java/cn/lineai/ui/component/ComposerView.java
+          if git diff --cached --quiet; then echo no-change; else
+            git commit -m "fix(ui): keep model submenu above the composer card"
+            git push origin HEAD:feat/chat-compact
+          fi
