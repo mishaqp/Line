@@ -30,6 +30,7 @@ class LineDestinationTest {
         assertTrue(LineDestinations.fromScreenId("grokAccount") is LineDestination.GrokAccount)
         assertTrue(LineDestinations.fromScreenId("modelEdit:m1") is LineDestination.ModelEdit)
         assertTrue(LineDestinations.fromScreenId("llm") is LineDestination.Llm)
+        assertTrue(LineDestinations.fromScreenId("promptTemplates") is LineDestination.PromptTemplates)
         assertTrue(LineDestinations.fromScreenId("mcp") is LineDestination.Mcp)
         assertTrue(LineDestinations.fromScreenId("toolSettings") is LineDestination.ToolSettings)
         assertTrue(LineDestinations.fromScreenId("extensions") is LineDestination.Extensions)
@@ -77,6 +78,10 @@ class LineDestinationTest {
         assertEquals(
             LineDestination.Extensions,
             LineDestinations.parentOf(LineDestination.Extension("skills"))
+        )
+        assertEquals(
+            LineDestination.Llm,
+            LineDestinations.parentOf(LineDestination.PromptTemplates)
         )
     }
 

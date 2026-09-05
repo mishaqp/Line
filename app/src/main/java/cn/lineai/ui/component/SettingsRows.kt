@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -109,8 +110,6 @@ internal fun SettingsChoiceRow(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val titleColor = if (selected) LineTheme.ACCENT else LineTheme.TEXT
-    val iconColor = if (selected) LineTheme.ACCENT else LineTheme.TEXT_SECONDARY
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -119,11 +118,16 @@ internal fun SettingsChoiceRow(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(glyph, color = Color(iconColor), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(
+            text = glyph,
+            color = Color(if (selected) LineTheme.ACCENT else LineTheme.TEXT_SECONDARY),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
         SettingsRowCopy(
             titleRes = titleRes,
             descRes = descRes,
-            titleColor = titleColor,
+            titleColor = if (selected) LineTheme.ACCENT else LineTheme.TEXT,
             titleWeight = if (selected) FontWeight.Medium else FontWeight.Normal
         )
     }
@@ -145,7 +149,7 @@ internal fun SettingsToggleRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            glyph,
+            text = glyph,
             color = Color(LineTheme.TEXT_SECONDARY),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
@@ -184,7 +188,7 @@ internal fun SettingsNavRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            glyph,
+            text = glyph,
             color = Color(LineTheme.TEXT_SECONDARY),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
@@ -201,7 +205,7 @@ internal fun SettingsNavRow(
 }
 
 @Composable
-private fun SettingsRowCopy(
+private fun RowScope.SettingsRowCopy(
     titleRes: Int,
     descRes: Int,
     titleColor: Int,
@@ -209,19 +213,8 @@ private fun SettingsRowCopy(
 ) {
     Column(
         modifier = Modifier
-            .padding(horizontal = 12.dp)
-            .then(Modifier.fillMaxWidth())
-            .let { it }
-    ) {}
-    Column(
-        modifier = Modifier
+            .weight(1f)
             .padding(start = 12.dp, end = 8.dp)
-            .fillMaxWidth()
-            .let { modifier ->
-                Modifier
-                    .weight(1f)
-                    .then(Modifier.padding(start = 12.dp, end = 8.dp))
-            }
     ) {
         Text(
             text = stringResource(titleRes),
