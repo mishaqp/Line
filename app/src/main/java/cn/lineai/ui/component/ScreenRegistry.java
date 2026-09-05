@@ -51,7 +51,7 @@ public final class ScreenRegistry {
                     view,
                     controller,
                     AccountModelProviders.fromProtocol(ModelProtocolType.CODEX_RESPONSES),
-                    "modelAdd:preset:codex"
+                    "codexAccount"
             );
         }
         if ("grokAccount".equals(id)) {
@@ -60,7 +60,7 @@ public final class ScreenRegistry {
                     view,
                     controller,
                     AccountModelProviders.fromProtocol(ModelProtocolType.GROK_RESPONSES),
-                    "modelAdd:preset:grok"
+                    "grokAccount"
             );
         }
 
@@ -113,23 +113,30 @@ public final class ScreenRegistry {
             MainChatView view,
             MainUiController controller,
             AccountModelProvider provider,
-            String addModelScreenId
+            String startScreenId
     ) {
         if (provider == null) {
             return null;
         }
-        return new AccountScreenView(
+        return new AccountNavigationHostView(
                 context,
                 provider,
-                new AccountScreenView.Listener() {
+                null,
+                LineDestinations.fromScreenId(startScreenId),
+                new AccountNavigationHostView.Listener() {
                     @Override
-                    public void onBack() {
+                    public void onExit() {
                         view.handleScreenBack();
                     }
 
                     @Override
-                    public void onAddModel() {
-                        controller.onSettingsItemSelected(addModelScreenId);
+                    public void onSave(ModelConfig model) {
+                        controller.onModelSaved(model);
+                    }
+
+                    @Override
+                    public void onTest(ModelConfig model) {
+                        controller.onModelTest(model);
                     }
                 }
         );
@@ -145,13 +152,21 @@ public final class ScreenRegistry {
         if (provider == null) {
             return null;
         }
-        return new AccountModelEditorScreenView(
+        String providerId = provider.getProtocolType() == ModelProtocolType.CODEX_RESPONSES
+                ? "codex"
+                : "grok";
+        String startScreenId = editingModel == null
+                ? "modelAdd:preset:" + providerId
+                : "modelEdit:" + editingModel.getId();
+
+        return new AccountNavigationHostView(
                 context,
                 provider,
                 editingModel,
-                new AccountModelEditorScreenView.Listener() {
+                LineDestinations.fromScreenId(startScreenId),
+                new AccountNavigationHostView.Listener() {
                     @Override
-                    public void onBack() {
+                    public void onExit() {
                         view.handleScreenBack();
                     }
 
@@ -164,12 +179,8 @@ public final class ScreenRegistry {
                     public void onTest(ModelConfig model) {
                         controller.onModelTest(model);
                     }
-
-                    @Override
-                    public void onOpenAccount(String screenId) {
-                        controller.onSettingsItemSelected(screenId);
-                    }
                 }
         );
     }
+
 }
