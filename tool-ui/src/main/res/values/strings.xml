@@ -17,6 +17,7 @@
     <string name="tool_call_agent_done">Task completed</string>
     <string name="tool_call_pipeline_running">Building Agent pipeline…</string>
     <string name="tool_call_todo_empty">No TODO items yet. Use the todo_update tool to maintain the list.</string>
+    <string name="tool_call_todo_chip">Tasks %1$d/%2$d</string>
     <string name="tool_call_input">Input</string>
     <string name="tool_call_progress">Progress</string>
     <string name="tool_call_output">Output</string>
