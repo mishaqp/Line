@@ -22,6 +22,7 @@ public final class ChatUiState {
     private final String conversationId;
     private final List<ChatMessage> messages;
     private final List<ModelConfig> availableModels;
+    private final String executionTargetLabel;
 
     public ChatUiState(
             String projectLabel, String projectPath, String modelLabel, String contextLabel,
@@ -96,6 +97,21 @@ public final class ChatUiState {
             String chatMode, String conversationId, List<ChatMessage> messages,
             String selectedModelId, List<ModelConfig> availableModels
     ) {
+        this(projectLabel, projectPath, modelLabel, contextLabel, contextPercent, streaming,
+                hasConfiguredModel, thinkingScrollEnabled, thinkingAutoExpandEnabled, codeWrapEnabled,
+                browserMode, enterKeyBehavior, chatMode, conversationId, messages, selectedModelId,
+                availableModels, "");
+    }
+
+    public ChatUiState(
+            String projectLabel, String projectPath, String modelLabel, String contextLabel,
+            int contextPercent, boolean streaming, boolean hasConfiguredModel,
+            boolean thinkingScrollEnabled, boolean thinkingAutoExpandEnabled,
+            boolean codeWrapEnabled, String browserMode, String enterKeyBehavior,
+            String chatMode, String conversationId, List<ChatMessage> messages,
+            String selectedModelId, List<ModelConfig> availableModels,
+            String executionTargetLabel
+    ) {
         this.projectLabel = projectLabel;
         this.projectPath = projectPath == null ? "" : projectPath;
         this.modelLabel = modelLabel;
@@ -117,6 +133,7 @@ public final class ChatUiState {
         this.availableModels = availableModels == null
                 ? Collections.emptyList()
                 : Collections.unmodifiableList(new ArrayList<>(availableModels));
+        this.executionTargetLabel = executionTargetLabel == null ? "" : executionTargetLabel;
     }
 
     public String getProjectLabel() { return projectLabel; }
@@ -136,4 +153,5 @@ public final class ChatUiState {
     public String getChatMode() { return chatMode; }
     public String getConversationId() { return conversationId; }
     public List<ChatMessage> getMessages() { return messages; }
+    public String getExecutionTargetLabel() { return executionTargetLabel; }
 }

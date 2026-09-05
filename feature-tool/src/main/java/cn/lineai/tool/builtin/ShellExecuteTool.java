@@ -73,7 +73,7 @@ public final class ShellExecuteTool extends BaseTool {
     public String promptSupplement(String executionMode, boolean isSsh) {
         if (ToolSettingsStore.EXECUTION_ROOT.equals(executionMode)) {
             return "shell_execute runs on this device as root via su; it can manage packages, settings and any path. "
-                    + "It runs in the current workspace directory by default; set cwd explicitly to switch temporarily. "
+                    + "It starts in /data by default because /sdcard is often invisible to su; set cwd to switch. "
                     + "Never leave a command waiting for interactive input.";
         }
         if (isSsh) {
@@ -126,11 +126,8 @@ public final class ShellExecuteTool extends BaseTool {
         return executeViaSsh(inputCommand, cwd, timeoutMs, context);
     }
 
-    /**
-     * Root 执行目标：{@code su -c} 直接在本机以 root 身份执行。
-     * stdin 由 {@link RootShellExecutor} 关闭/写入，避免 su 等待输入而挂起。
-     */
     private ToolResult executeViaRoot(String command, String cwd, long timeoutMs, ToolContext context) {
+        cwd = RootPaths.shellCwd(cwd);
         RootSupport.Availability availability = RootSupport.availability();
         if (!availability.isRootAvailable(timeoutMs)) {
             return error(context.getString(R.string.tool_root_unavailable));
@@ -178,13 +175,6 @@ public final class ShellExecuteTool extends BaseTool {
                 || ToolSettingsStore.EXECUTION_LOCAL.equals(settings.getExecutionMode());
     }
 
-    /**
-     * Local execution mode runs the command on the device shell. When the plain
-     * app-shell attempt cannot find the command (127/126) and a su binary is
-     * available, the command is retried under root so that rooted devices can
-     * run commands outside the app's sandbox (nothing here bypasses Android
-     * permission boundaries by itself - su must be granted by the device).
-     */
     private ToolResult executeViaLocalShell(String command, String cwd, long timeoutMs, ToolContext context) {
         ProcessOutcome plain = runLocalProcess(command, cwd, timeoutMs, context, false);
         if (plain.exitCode != 127 && plain.exitCode != 126) {
@@ -192,7 +182,6 @@ public final class ShellExecuteTool extends BaseTool {
         }
         ProcessOutcome su = runLocalProcess(command, cwd, timeoutMs, context, true);
         if (su.exitCode == 127 || su.exitCode == 126) {
-            // su is not usable; report the original attempt's failure.
             return localOutcome(plain, timeoutMs, context);
         }
         return localOutcome(su, timeoutMs, context);
@@ -202,7 +191,7 @@ public final class ShellExecuteTool extends BaseTool {
         ProcessBuilder builder;
         if (useSu) {
             String wrapped = cwd.length() > 0
-                    ? "cd " + shellQuote(cwd) + " && " + command
+                    ? "cd " + shellQuote(RootPaths.shellCwd(cwd)) + " && " + command
                     : command;
             builder = new ProcessBuilder("su", "-c", wrapped);
         } else {
@@ -228,8 +217,6 @@ public final class ShellExecuteTool extends BaseTool {
             context.reportToolProgress(getName(), "", false);
         }
         builder.redirectErrorStream(true);
-        // Never leave the child stdin pipe open: an interactive su without a
-        // terminal would otherwise wait forever for a password.
         builder.redirectInput(ProcessBuilder.Redirect.from(new File("/dev/null")));
         try {
             Process process = builder.start();
@@ -328,7 +315,6 @@ public final class ShellExecuteTool extends BaseTool {
         final int exitCode;
         final String output;
         final boolean timedOut;
-
         ProcessOutcome(int exitCode, String output, boolean timedOut) {
             this.exitCode = exitCode;
             this.output = output == null ? "" : output;
@@ -364,14 +350,8 @@ public final class ShellExecuteTool extends BaseTool {
                         context.reportToolProgress(getName(), content, false);
                     }
                 }
-
-                @Override
-                public void onError(String error) {
-                }
-
-                @Override
-                public void onComplete(int exitCode) {
-                }
+                @Override public void onError(String error) {}
+                @Override public void onComplete(int exitCode) {}
             });
             String output = streamedOutput.toString().trim();
             if (!result.isSuccess()) {

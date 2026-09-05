@@ -169,13 +169,16 @@ public final class ToolSettingsRepository implements ToolSettingsStore {
 
     @Override
     public synchronized String getExecutionMode() {
-        return normalizeExecutionMode(settingsRepository.getString(KEY_MCP_EXECUTION_MODE, EXECUTION_LOCAL));
+        String mode = normalizeExecutionMode(settingsRepository.getString(KEY_MCP_EXECUTION_MODE, EXECUTION_LOCAL));
+        cn.lineai.tool.ExecutionTargetLabel.remember(mode);
+        return mode;
     }
 
     @Override
     public synchronized void setExecutionMode(String mode) {
-        settingsRepository.setString(KEY_MCP_EXECUTION_MODE, normalizeExecutionMode(mode));
-        // 切换执行目标后，root 健康检查缓存必须作废，否则会沿用上一个目标的探测结果。
+        String normalized = normalizeExecutionMode(mode);
+        settingsRepository.setString(KEY_MCP_EXECUTION_MODE, normalized);
+        cn.lineai.tool.ExecutionTargetLabel.remember(normalized);
         cn.lineai.tool.builtin.RootSupport.invalidateAvailability();
     }
 
