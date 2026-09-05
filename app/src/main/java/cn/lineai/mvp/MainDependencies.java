@@ -95,6 +95,8 @@ public final class MainDependencies {
     final LearningContextService learningContextService;
     final ToolSettingsStore toolSettingsRepository;
     final ExtensionStore extensionRepository;
+    final cn.lineai.data.service.SkillFileManager skillFileManager;
+    final cn.lineai.data.lip.LipInstaller lipInstaller;
     final IpcProviderStore ipcProviderRepository;
     final IpcProviderScanner ipcProviderScanner;
     final IpcProviderManager ipcProviderManager;
@@ -168,7 +170,7 @@ public final class MainDependencies {
         WebSearchConfigRepository webSearchConfigRepository = new WebSearchConfigRepository(settingsRepository);
         ToolSettingsRepository toolSettingsRepo = new ToolSettingsRepository(resourceProvider, settingsRepository, webSearchConfigRepository, phoneControlRepository, categoryResolver);
         toolSettingsRepository = toolSettingsRepo;
-        cn.lineai.data.service.SkillFileManager skillFileManager = new cn.lineai.data.service.SkillFileManager(workspacePaths, appContext, resourceProvider);
+        skillFileManager = new cn.lineai.data.service.SkillFileManager(workspacePaths, appContext, resourceProvider);
         extensionRepository = new ExtensionRepository(database, resourceProvider, skillFileManager, new cn.lineai.ai.SkillPromptProvider() {
             @Override
             public String buildExtensionPrompt(String skillName, String skillContent, String workDirectory) {
@@ -181,6 +183,9 @@ public final class MainDependencies {
                 return sb.toString();
             }
         });
+        lipInstaller = new cn.lineai.data.lip.LipInstaller(extensionRepository,
+                new cn.lineai.data.lip.LipPackageIndex(workspacePaths.getLinecodeRoot()),
+                new java.io.File(appContext.getCacheDir(), "lip-extract"));
         ipcProviderRepository = new IpcProviderRepository(database);
         ipcProviderScanner = new IpcProviderScanner();
         ipcProviderManager = new IpcProviderManager(context);

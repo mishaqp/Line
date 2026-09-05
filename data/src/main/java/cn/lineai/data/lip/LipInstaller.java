@@ -39,30 +39,47 @@ public final class LipInstaller {
     }
 
     public LipPackageRecord installFile(String homePath, String location, File source) throws Exception {
+        return installFile(homePath, location, source, source == null ? "" : source.getName());
+    }
+
+    public synchronized LipPackageRecord installFile(String homePath, String location, File source, String displayName) throws Exception {
         if (source == null || !source.exists()) {
             throw new IllegalArgumentException("LIP file not found.");
         }
+        if (source.isDirectory()) {
+            return installExtracted(homePath, location, source, displayName);
+        }
         File extracted = extract(source);
         try {
-            return installExtracted(homePath, location, extracted, source.getName());
+            return installExtracted(homePath, location, unwrapSingleDirectory(extracted), displayName);
         } finally {
             deleteRecursive(extracted);
         }
     }
 
-    public LipPackageRecord installExtracted(
+    public synchronized LipPackageRecord installExtracted(
             String homePath,
             String location,
             File extracted,
             String fallbackName
     ) throws Exception {
-        LipManifest manifest = LipManifestParser.parseExtracted(extracted);
+        LipManifest manifest = LipManifestParser.parseExtracted(extracted, fallbackName);
         if (manifest.isEmpty()) {
             throw new IllegalArgumentException("LIP package has no skills, agents or MCP configs.");
         }
         String packageId = manifest.getId().length() == 0
                 ? LipManifestParser.sanitizeId(fallbackName)
                 : manifest.getId();
+        // Validate every component before replacing an installed package.
+        for (LipManifest.SkillEntry entry : manifest.getSkills()) {
+            File skill = resolve(extracted, entry.getPath());
+            if (!(skill.isDirectory() && new File(skill, "SKILL.md").isFile())
+                    && !(skill.isFile() && "SKILL.md".equalsIgnoreCase(skill.getName()))) {
+                throw new IllegalArgumentException("Skill missing SKILL.md: " + entry.getPath());
+            }
+        }
+        for (String path : manifest.getAgentPaths()) readAgent(resolve(extracted, path));
+        for (String path : manifest.getMcpPaths()) readMcp(resolve(extracted, path));
         LipPackageRecord existing = index.find(packageId);
         if (existing != null) {
             deletePackage(existing, false);
@@ -114,7 +131,7 @@ public final class LipInstaller {
         return record;
     }
 
-    public void setEnabled(String id, boolean enabled) {
+    public synchronized void setEnabled(String id, boolean enabled) {
         LipPackageRecord record = index.find(id);
         if (record == null) {
             return;
@@ -131,7 +148,7 @@ public final class LipInstaller {
         index.upsert(record.withEnabled(enabled));
     }
 
-    public void delete(String id) {
+    public synchronized void delete(String id) {
         LipPackageRecord record = index.find(id);
         if (record == null) {
             return;
@@ -169,15 +186,20 @@ public final class LipInstaller {
             copyFile(source, new File(target, "SKILL.md"));
             return target;
         }
-        unzip(source, target);
-        File nested = unwrapSingleDirectory(target);
-        return nested;
+        try {
+            unzip(source, target);
+            return target;
+        } catch (Exception e) {
+            deleteRecursive(target);
+            throw e;
+        }
     }
 
     private static File unwrapSingleDirectory(File target) {
         File manifest = new File(target, "manifest.json");
         if (manifest.isFile() || new File(target, "SKILL.md").isFile()
-                || new File(target, "skills").isDirectory()) {
+                || new File(target, "skills").isDirectory()
+                || new File(target, "agents").isDirectory() || new File(target, "mcps").isDirectory()) {
             return target;
         }
         File[] children = target.listFiles();

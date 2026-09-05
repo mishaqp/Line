@@ -19,14 +19,18 @@ public final class LipManifestParser {
     }
 
     public static LipManifest parseExtracted(File root) throws Exception {
+        return parseExtracted(root, root == null ? "" : root.getName());
+    }
+
+    public static LipManifest parseExtracted(File root, String fallbackName) throws Exception {
         if (root == null || !root.isDirectory()) {
             throw new IllegalArgumentException("LIP root is not a directory.");
         }
         File manifestFile = new File(root, "manifest.json");
         if (manifestFile.isFile()) {
-            return parseJson(readUtf8(manifestFile), root.getName());
+            return parseJson(readUtf8(manifestFile), fallbackName);
         }
-        return infer(root);
+        return infer(root, fallbackName);
     }
 
     public static LipManifest parseJson(String raw, String fallbackId) throws Exception {
@@ -49,7 +53,7 @@ public final class LipManifestParser {
                     ));
                 } else if (item != null) {
                     skills.add(new LipManifest.SkillEntry(
-                            normalizePath(String.valueOf(item)), "", SkillRecord.LOCATION_APP));
+                            normalizePath(String.valueOf(item)), "", ""));
                 }
             }
         }
@@ -64,13 +68,13 @@ public final class LipManifestParser {
         );
     }
 
-    static LipManifest infer(File root) {
+    static LipManifest infer(File root, String fallbackName) {
         ArrayList<LipManifest.SkillEntry> skills = new ArrayList<>();
         ArrayList<String> agents = new ArrayList<>();
         ArrayList<String> mcps = new ArrayList<>();
         File skillMd = new File(root, "SKILL.md");
         if (skillMd.isFile()) {
-            skills.add(new LipManifest.SkillEntry(".", root.getName(), SkillRecord.LOCATION_APP));
+            skills.add(new LipManifest.SkillEntry(".", sanitizeId(fallbackName), ""));
         }
         collectSkills(new File(root, "skills"), "skills", skills);
         collectJsonFiles(new File(root, "agents"), "agents", agents);
@@ -78,7 +82,7 @@ public final class LipManifestParser {
         if (skills.isEmpty() && agents.isEmpty() && mcps.isEmpty()) {
             collectSkills(root, "", skills);
         }
-        String id = sanitizeId(root.getName());
+        String id = sanitizeId(fallbackName);
         return new LipManifest(id, id, "1.0", "", skills, agents, mcps);
     }
 
@@ -91,7 +95,7 @@ public final class LipManifestParser {
             return;
         }
         if (new File(dir, "SKILL.md").isFile() && prefix.length() > 0) {
-            out.add(new LipManifest.SkillEntry(prefix, dir.getName(), SkillRecord.LOCATION_APP));
+            out.add(new LipManifest.SkillEntry(prefix, dir.getName(), ""));
             return;
         }
         for (File child : children) {
@@ -100,7 +104,7 @@ public final class LipManifestParser {
             }
             String next = prefix.length() == 0 ? child.getName() : prefix + "/" + child.getName();
             if (new File(child, "SKILL.md").isFile()) {
-                out.add(new LipManifest.SkillEntry(next, child.getName(), SkillRecord.LOCATION_APP));
+                out.add(new LipManifest.SkillEntry(next, child.getName(), ""));
             }
         }
     }
@@ -192,7 +196,7 @@ public final class LipManifestParser {
         if (SkillRecord.LOCATION_PROJECT.equals(value) || SkillRecord.LOCATION_APP.equals(value)) {
             return value;
         }
-        return SkillRecord.LOCATION_APP;
+        return "";
     }
 
     private static String firstNonEmpty(String left, String right) {

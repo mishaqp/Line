@@ -370,6 +370,8 @@ final class MainControllerInitializer {
                 extensionRepository,
                 ipcProviderRepository,
                 toolRegistry,
+                dependencies.lipInstaller,
+                dependencies.skillFileManager,
                 backgroundTasks,
                 mainThread,
                 new ExtensionManagementController.Host() {

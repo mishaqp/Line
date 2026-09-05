@@ -44,6 +44,10 @@ public final class ExtensionDetailScreenView extends ScreenScaffoldView {
 
         void onInstallSkillFromGitHub(String location, String githubUrl);
 
+        void onInstallLip(String location, String sourcePath);
+
+        void onInstallLipFromUri(String location, String uri, String displayName);
+
         void onEnabledChanged(String kind, String id, boolean enabled);
 
         void onDelete(String kind, String id);
@@ -109,6 +113,9 @@ public final class ExtensionDetailScreenView extends ScreenScaffoldView {
                     return;
                 case ExtensionKindUiModel.ADD_ACTION_MCP:
                     listener.onAddMcp();
+                    return;
+                case ExtensionKindUiModel.ADD_ACTION_LIP:
+                    showLipActions();
                     return;
                 case ExtensionKindUiModel.ADD_ACTION_SKILL:
                     showSkillActions();
@@ -297,6 +304,79 @@ public final class ExtensionDetailScreenView extends ScreenScaffoldView {
         }
         addBottomInset(panel);
         showBottomDialog(dialog, panel);
+    }
+
+    private void showLipActions() {
+        Dialog dialog = createBottomDialog();
+        LinearLayout panel = createBottomPanel();
+        addHandle(panel);
+        addSheetTitle(panel, getContext().getString(R.string.lip_install_title));
+        addActionRow(panel, getContext().getString(R.string.lip_pick_file),
+                getContext().getString(R.string.lip_pick_file_desc), () -> {
+                    dialog.dismiss();
+                    chooseLipDocument();
+                });
+        addActionRow(panel, getContext().getString(R.string.screen_extension_detail_install_path),
+                getContext().getString(R.string.lip_path_desc), () -> {
+                    dialog.dismiss();
+                    showLipPathDialog();
+                });
+        addBottomInset(panel);
+        showBottomDialog(dialog, panel);
+    }
+
+    private void chooseLipDocument() {
+        Context context = getContext();
+        if (!(context instanceof MainChatView.WorkspaceHost)) {
+            showLipPathDialog();
+            return;
+        }
+        ((MainChatView.WorkspaceHost) context).openDocumentPicker("*/*",
+                new String[] {"package.lip"}, new MainChatView.DocumentPickCallback() {
+            @Override
+            public void onDocumentPicked(String uri, String displayName) {
+                String lower = (displayName == null ? "" : displayName).toLowerCase(java.util.Locale.ROOT);
+                if (!lower.endsWith(".lip") && !lower.endsWith(".zip")) {
+                    Toast.makeText(getContext(), getContext().getString(R.string.lip_pick_error),
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+                Dialog dialog = createDialog();
+                LinearLayout panel = panel(getContext().getString(R.string.lip_install_title));
+                RadioGroup scope = locationGroup();
+                panel.addView(scope, top());
+                panel.addView(actionButton(getContext().getString(R.string.common_install), () -> {
+                    listener.onInstallLipFromUri(checkedLocation(scope), uri, displayName);
+                    dialog.dismiss();
+                }), top());
+                showPanel(dialog, panel);
+            }
+
+            @Override
+            public void onDocumentPickCancelled() {}
+        });
+    }
+
+    private void showLipPathDialog() {
+        Dialog dialog = createDialog();
+        LinearLayout panel = panel(getContext().getString(R.string.lip_install_title));
+        FormTextFieldView path = new FormTextFieldView(getContext(),
+                getContext().getString(R.string.screen_extension_detail_field_source_path), "",
+                Environment.getExternalStorageDirectory().getPath() + "/Download/package.lip",
+                getContext().getString(R.string.lip_path_desc), false, false);
+        RadioGroup scope = locationGroup();
+        panel.addView(path);
+        panel.addView(scope, top());
+        panel.addView(actionButton(getContext().getString(R.string.common_install), () -> {
+            if (value(path).isEmpty()) {
+                Toast.makeText(getContext(), getContext().getString(R.string.lip_path_required),
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+            listener.onInstallLip(checkedLocation(scope), value(path));
+            dialog.dismiss();
+        }), top());
+        showPanel(dialog, panel);
     }
 
     private void showGitHubSkillDialog() {

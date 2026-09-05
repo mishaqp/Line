@@ -130,9 +130,10 @@ final class ExtensionManagementController {
     }
 
     void installLip(String location, String sourcePath) {
+        final String homePath = host.projectPath();
         backgroundTasks.execute("lip-install", () -> {
             try {
-                lipInstaller.installFile(host.projectPath(), location, new File(sourcePath));
+                lipInstaller.installFile(homePath, location, new File(sourcePath));
                 mainThread.dispatch(this::completeLipInstall);
             } catch (Exception e) {
                 mainThread.dispatch(() -> host.showSkillError(errorMessage(e)));
@@ -141,6 +142,7 @@ final class ExtensionManagementController {
     }
 
     void installLipFromUri(String location, String uri, String displayName) {
+        final String homePath = host.projectPath();
         backgroundTasks.execute("lip-install-from-uri", () -> {
             File temp = null;
             try {
@@ -149,9 +151,9 @@ final class ExtensionManagementController {
                         : displayName;
                 File tempRoot = new File(skillFileManager.getWorkspacePaths().getLinecodeRoot(), "tmp/lip");
                 tempRoot.mkdirs();
-                temp = new File(tempRoot, System.currentTimeMillis() + "-" + name);
+                temp = File.createTempFile("lip-import-", ".lip", tempRoot);
                 skillFileManager.copyUriToFile(uri, temp);
-                lipInstaller.installFile(host.projectPath(), location, temp);
+                lipInstaller.installFile(homePath, location, temp, name);
                 mainThread.dispatch(this::completeLipInstall);
             } catch (Exception e) {
                 mainThread.dispatch(() -> host.showSkillError(errorMessage(e)));

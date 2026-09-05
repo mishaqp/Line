@@ -812,6 +812,16 @@ public final class MainCoordinator implements MainUiController {
     }
 
     @Override
+    public void onLipInstalled(String location, String sourcePath) {
+        extensionManagementController.installLip(location, sourcePath);
+    }
+
+    @Override
+    public void onLipInstalledFromUri(String location, String uri, String displayName) {
+        extensionManagementController.installLipFromUri(location, uri, displayName);
+    }
+
+    @Override
     public void onExtensionEnabledChanged(String kind, String id, boolean enabled) {
         extensionManagementController.setExtensionEnabled(kind, id, enabled);
     }
