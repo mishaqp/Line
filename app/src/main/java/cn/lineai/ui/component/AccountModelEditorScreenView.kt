@@ -1,6 +1,7 @@
 package cn.lineai.ui.component
 
 import android.content.Context
+import android.widget.FrameLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -64,7 +65,7 @@ class AccountModelEditorScreenView(
     provider: AccountModelProvider,
     editingModel: ModelConfig?,
     listener: Listener
-) : ComposeView(context) {
+) : FrameLayout(context) {
 
     interface Listener {
         fun onBack()
@@ -74,35 +75,41 @@ class AccountModelEditorScreenView(
     }
 
     init {
-        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent {
-            val editor: AccountModelEditorViewModel = viewModel(
-                key = "account-model-editor:${provider.kind}:${editingModel?.id ?: "new"}",
-                factory = AccountModelEditorViewModel.factory(context, provider, editingModel)
-            )
-            AccountModelEditorTheme {
-                AccountModelEditorScreen(
-                    state = editor.state.collectAsState().value,
-                    editing = editingModel != null,
-                    provider = provider,
-                    onBack = listener::onBack,
-                    onOpenAccount = { listener.onOpenAccount(provider.accountScreenId) },
-                    onRefresh = editor::refreshModels,
-                    onSelectModel = editor::selectModel,
-                    onNameChanged = editor::setName,
-                    onAdvancedChanged = editor::setAdvancedExpanded,
-                    onUseCustomIdChanged = editor::setUseCustomModelId,
-                    onCustomIdChanged = editor::setCustomModelId,
-                    onToolLimitChanged = editor::setToolCallLimit,
-                    onContextSizeChanged = editor::setContextSize,
-                    onCompressionEnabledChanged = editor::setCompressionEnabled,
-                    onCompressionAutoChanged = editor::setCompressionAuto,
-                    onCompressionModelIdChanged = editor::setCompressionModelId,
-                    onSave = { editor.buildModel()?.let(listener::onSave) },
-                    onTest = { editor.buildModel()?.let(listener::onTest) }
+        val composeView = ComposeView(context).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val editor: AccountModelEditorViewModel = viewModel(
+                    key = "account-model-editor:${provider.kind}:${editingModel?.id ?: "new"}",
+                    factory = AccountModelEditorViewModel.factory(context, provider, editingModel)
                 )
+                AccountModelEditorTheme {
+                    AccountModelEditorScreen(
+                        state = editor.state.collectAsState().value,
+                        editing = editingModel != null,
+                        provider = provider,
+                        onBack = listener::onBack,
+                        onOpenAccount = { listener.onOpenAccount(provider.accountScreenId) },
+                        onRefresh = editor::refreshModels,
+                        onSelectModel = editor::selectModel,
+                        onNameChanged = editor::setName,
+                        onAdvancedChanged = editor::setAdvancedExpanded,
+                        onUseCustomIdChanged = editor::setUseCustomModelId,
+                        onCustomIdChanged = editor::setCustomModelId,
+                        onToolLimitChanged = editor::setToolCallLimit,
+                        onContextSizeChanged = editor::setContextSize,
+                        onCompressionEnabledChanged = editor::setCompressionEnabled,
+                        onCompressionAutoChanged = editor::setCompressionAuto,
+                        onCompressionModelIdChanged = editor::setCompressionModelId,
+                        onSave = { editor.buildModel()?.let(listener::onSave) },
+                        onTest = { editor.buildModel()?.let(listener::onTest) }
+                    )
+                }
             }
         }
+        addView(
+            composeView,
+            LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        )
     }
 }
 
