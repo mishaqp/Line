@@ -44,6 +44,13 @@
     <string name="screen_grok_models_unavailable">Models unavailable</string>
     <string name="screen_grok_models_unavailable_desc">The signed-in account did not return a model catalog.</string>
 
+    <string name="screen_grok_model_picker_title">Add Grok model</string>
+    <string name="screen_grok_model_picker_edit_title">Change Grok model</string>
+    <string name="screen_grok_model_picker_loading">Loading models available to this Grok account…</string>
+    <string name="screen_grok_model_picker_desc">Choose a model. Line will save it without copying your OAuth token into model settings.</string>
+    <string name="screen_grok_model_picker_current">Current model</string>
+    <string name="screen_grok_model_picker_failed">Could not load the Grok model catalog. Refresh the Grok account and try again.</string>
+
     <string name="model_provider_preset_grok_label">Grok (xAI account)</string>
     <string name="model_provider_preset_grok_desc">Grok Build via xAI account OAuth, live models and account limits</string>
     <string name="model_provider_preset_grok_hint">Sign in under Settings → Grok account, then load the model list</string>
