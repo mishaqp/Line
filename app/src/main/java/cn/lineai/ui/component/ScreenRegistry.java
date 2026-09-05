@@ -14,9 +14,9 @@ import java.util.Map;
 /**
  * Routes a screen id to the {@link ScreenFactory} that builds it.
  *
- * <p>Account-backed model editors are handled by the shared Compose screen;
- * legacy Java factories remain the fallback for API-key, local and other
- * providers during the incremental migration.</p>
+ * <p>Account-backed provider screens and model editors are handled by shared
+ * Compose surfaces; legacy Java factories remain the fallback for API-key,
+ * local and other providers during the incremental migration.</p>
  */
 public final class ScreenRegistry {
     private final Map<String, ScreenFactory> factories = new LinkedHashMap<>();
@@ -33,11 +33,22 @@ public final class ScreenRegistry {
     }
 
     public View createScreen(String id, MainChatView view, MainUiController controller, Context context) {
-        if ("grokAccount".equals(id)) {
-            return new GrokAccountScreenView(
+        if ("codexAccount".equals(id)) {
+            return createAccountScreen(
                     context,
-                    view::handleScreenBack,
-                    () -> controller.onSettingsItemSelected("modelAdd:preset:grok")
+                    view,
+                    controller,
+                    AccountModelProviders.fromProtocol(ModelProtocolType.CODEX_RESPONSES),
+                    "modelAdd:preset:codex"
+            );
+        }
+        if ("grokAccount".equals(id)) {
+            return createAccountScreen(
+                    context,
+                    view,
+                    controller,
+                    AccountModelProviders.fromProtocol(ModelProtocolType.GROK_RESPONSES),
+                    "modelAdd:preset:grok"
             );
         }
 
@@ -83,6 +94,33 @@ public final class ScreenRegistry {
             }
         }
         return null;
+    }
+
+    private View createAccountScreen(
+            Context context,
+            MainChatView view,
+            MainUiController controller,
+            AccountModelProvider provider,
+            String addModelScreenId
+    ) {
+        if (provider == null) {
+            return null;
+        }
+        return new AccountScreenView(
+                context,
+                provider,
+                new AccountScreenView.Listener() {
+                    @Override
+                    public void onBack() {
+                        view.handleScreenBack();
+                    }
+
+                    @Override
+                    public void onAddModel() {
+                        controller.onSettingsItemSelected(addModelScreenId);
+                    }
+                }
+        );
     }
 
     private View createAccountModelEditor(
