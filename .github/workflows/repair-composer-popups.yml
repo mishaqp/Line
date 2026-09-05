@@ -14,18 +14,16 @@ jobs:
         with:
           ref: feat/chat-compact
           fetch-depth: 0
-      - name: Apply audit fixes
+      - name: Fix semicolon
         run: |
           set -euo pipefail
-          python3 scripts/patch_audit_fixes.py
+          python3 scripts/fix_import_semicolon.py
           git config user.name "mishaqp"
           git config user.email "84035331+mishaqp@users.noreply.github.com"
-          git add app/src/main/java/cn/lineai/ui/component/ComposerView.java \
-                  app/src/main/java/cn/lineai/mvp/MainControllerInitializer.java \
-                  app/src/test/java/cn/lineai/mvp/SettingsManagementControllerTest.java
+          git add app/src/main/java/cn/lineai/mvp/MainControllerInitializer.java
           if git diff --cached --quiet; then
             echo no-change
           else
-            git commit -m "fix: remove dead composer mode chip and localize import dialog"
+            git commit -m "fix: restore semicolon after linecode import dialog"
             git push origin HEAD:feat/chat-compact
           fi
