@@ -169,6 +169,11 @@ public final class MainChatView extends FrameLayout implements MainContract.View
             }
 
             @Override
+            public void onModeChanged(String mode) {
+                MainChatView.this.presenter.onChatModeChanged(mode);
+            }
+
+            @Override
             public void onPermissionClick() {
                 MainChatView.this.presenter.onPermissionClick();
             }
@@ -287,6 +292,11 @@ public final class MainChatView extends FrameLayout implements MainContract.View
             @Override
             public void onImagePickerClick() {
                 MainChatView.this.presenter.onImagePickerRequested();
+            }
+
+            @Override
+            public void onCompactClick() {
+                MainChatView.this.presenter.onSheetOptionSelected("compact");
             }
 
             @Override
