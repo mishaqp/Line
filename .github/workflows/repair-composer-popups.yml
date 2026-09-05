@@ -14,16 +14,18 @@ jobs:
         with:
           ref: feat/chat-compact
           fetch-depth: 0
-      - name: Patch composer reasoning chrome
+      - name: Apply audit fixes
         run: |
           set -euo pipefail
-          python3 scripts/patch_reasoning_chrome.py
+          python3 scripts/patch_audit_fixes.py
           git config user.name "mishaqp"
           git config user.email "84035331+mishaqp@users.noreply.github.com"
-          git add app/src/main/java/cn/lineai/ui/component/ComposerView.java
+          git add app/src/main/java/cn/lineai/ui/component/ComposerView.java \
+                  app/src/main/java/cn/lineai/mvp/MainControllerInitializer.java \
+                  app/src/test/java/cn/lineai/mvp/SettingsManagementControllerTest.java
           if git diff --cached --quiet; then
             echo no-change
           else
-            git commit -m "fix(ui): show selected reasoning depth on composer"
+            git commit -m "fix: remove dead composer mode chip and localize import dialog"
             git push origin HEAD:feat/chat-compact
           fi
