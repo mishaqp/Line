@@ -385,6 +385,7 @@ public final class SettingsManagementController {
 
     public void setAiReasoningEffort(String effort) {
         settingsStore.setReasoningEffort(effort);
+        host.render();
     }
 
     public void setAiThinkingScrollEnabled(boolean enabled) {
