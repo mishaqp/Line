@@ -1,6 +1,7 @@
 package cn.lineai.ui.component
 
 import android.content.Context
+import android.view.View
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.mutableStateListOf
@@ -17,11 +18,11 @@ import cn.lineai.navigation.LineDestination
 import cn.lineai.ui.model.AccountModelProviders
 
 /**
- * Navigation 3 owner for the model-management flow.
+ * Navigation 3 owner for the complete model-management flow.
  *
- * Model list and provider chooser remain Java Views during this migration step,
- * but their navigation is typed and account-backed editors stay inside the same
- * back stack. Other provider editors continue through the legacy boundary.
+ * Model list, provider chooser and non-account editors remain Java Views during
+ * this migration step, but all navigation and back behavior is owned by one
+ * typed back stack.
  */
 class ModelNavigationHostView(
     context: Context,
@@ -35,10 +36,14 @@ class ModelNavigationHostView(
         fun onExit()
         fun onSelectModel(id: String)
         fun onDeleteModels(ids: List<String>)
-        fun onOpenExternal(destination: LineDestination)
         fun onSave(model: ModelConfig)
         fun onTest(model: ModelConfig)
         fun getModel(id: String): ModelConfig?
+        fun createLegacyEditor(
+            context: Context,
+            destination: LineDestination,
+            onBack: Runnable
+        ): View
     }
 
     init {
@@ -58,14 +63,23 @@ class ModelNavigationHostView(
                         }
 
                         fun openEditor(modelId: String) {
-                            val destination = LineDestination.ModelEdit(modelId)
-                            val model = listener.getModel(modelId)
-                            val provider = AccountModelProviders.fromProtocol(model?.protocolType)
-                            if (provider == null) {
-                                listener.onOpenExternal(destination)
-                            } else {
-                                backStack.add(destination)
+                            if (listener.getModel(modelId) != null) {
+                                backStack.add(LineDestination.ModelEdit(modelId))
                             }
+                        }
+
+                        @Suppress("DEPRECATION")
+                        fun legacyEditor(destination: LineDestination): @androidx.compose.runtime.Composable () -> Unit = {
+                            AndroidView(
+                                modifier = Modifier.fillMaxSize(),
+                                factory = { viewContext ->
+                                    listener.createLegacyEditor(
+                                        viewContext,
+                                        destination,
+                                        Runnable { navigateBack() }
+                                    )
+                                }
+                            )
                         }
 
                         NavDisplay(
@@ -115,21 +129,17 @@ class ModelNavigationHostView(
                                                         override fun onBack() = navigateBack()
 
                                                         override fun onCustom() {
-                                                            listener.onOpenExternal(LineDestination.ModelAdd)
+                                                            backStack.add(LineDestination.ModelAdd)
                                                         }
 
                                                         override fun onLocal() {
-                                                            listener.onOpenExternal(LineDestination.ModelAddLocal)
+                                                            backStack.add(LineDestination.ModelAddLocal)
                                                         }
 
                                                         override fun onProvider(id: String) {
-                                                            val providerDestination =
+                                                            backStack.add(
                                                                 LineDestination.ModelAddPreset(id)
-                                                            if (providerFor(id) == null) {
-                                                                listener.onOpenExternal(providerDestination)
-                                                            } else {
-                                                                backStack.add(providerDestination)
-                                                            }
+                                                            )
                                                         }
                                                     }
                                                 )
@@ -137,9 +147,17 @@ class ModelNavigationHostView(
                                         )
                                     }
 
+                                    LineDestination.ModelAdd,
+                                    LineDestination.ModelAddLocal -> NavEntry(
+                                        destination,
+                                        content = legacyEditor(destination)
+                                    )
+
                                     is LineDestination.ModelAddPreset -> NavEntry(destination) {
                                         val provider = providerFor(destination.providerId)
-                                        if (provider != null) {
+                                        if (provider == null) {
+                                            legacyEditor(destination).invoke()
+                                        } else {
                                             AndroidView(
                                                 modifier = Modifier.fillMaxSize(),
                                                 factory = { viewContext ->
@@ -159,7 +177,9 @@ class ModelNavigationHostView(
                                         val model = listener.getModel(destination.modelId)
                                         val provider =
                                             AccountModelProviders.fromProtocol(model?.protocolType)
-                                        if (model != null && provider != null) {
+                                        if (model == null || provider == null) {
+                                            legacyEditor(destination).invoke()
+                                        } else {
                                             AndroidView(
                                                 modifier = Modifier.fillMaxSize(),
                                                 factory = { viewContext ->
