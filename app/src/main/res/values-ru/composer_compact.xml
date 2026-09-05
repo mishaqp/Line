@@ -17,4 +17,5 @@
     <string name="composer_reasoning_medium">Средняя</string>
     <string name="composer_reasoning_high">Высокая</string>
     <string name="composer_reasoning_max">Макс</string>
+    <string name="composer_model_manage">Управление моделями…</string>
 </resources>
