@@ -27,6 +27,15 @@ public final class SettingsManagementControllerTest {
     }
 
     @Test
+    public void reasoningEffortChangeRenders() {
+        Fixture fixture = new Fixture();
+
+        fixture.controller.setAiReasoningEffort(AiBehaviorSettings.REASONING_HIGH);
+
+        Assert.assertTrue(fixture.host.rendered);
+    }
+
+    @Test
     public void toneChangeDoesNotForceRender() {
         Fixture fixture = new Fixture();
 

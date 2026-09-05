@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="header_mode_chat">Chat</string>
+    <string name="header_mode_plan">Plan</string>
+    <string name="header_mode_agent">Agent</string>
+    <string name="header_mode_control">Control</string>
+    <string name="composer_plus_file">Attach file</string>
+    <string name="composer_plus_image">Photo</string>
+    <string name="composer_plus_compact">Compact history</string>
+    <string name="composer_expand_title">Message</string>
+    <string name="composer_expand_save">Save</string>
+    <string name="composer_expand_desc">Expand input</string>
+    <string name="composer_reasoning_title">Reasoning depth</string>
+    <string name="composer_reasoning_off">Off</string>
+    <string name="composer_reasoning_auto">Auto</string>
+    <string name="composer_reasoning_low">Low</string>
+    <string name="composer_reasoning_medium">Medium</string>
+    <string name="composer_reasoning_high">High</string>
+    <string name="composer_reasoning_max">Max</string>
+    <string name="composer_model_manage">Manage models…</string>
+</resources>

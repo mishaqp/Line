@@ -1,0 +1,24 @@
+name: Repair model submenu once
+on:
+  workflow_dispatch:
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/chat-compact
+          fetch-depth: 0
+      - name: Patch ComposerView
+        run: python3 scripts/repair_model_submenu.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/src/main/java/cn/lineai/ui/component/ComposerView.java
+          if git diff --cached --quiet; then echo no-change; else
+            git commit -m "fix(ui): keep model submenu above the composer card"
+            git push origin HEAD:feat/chat-compact
+          fi

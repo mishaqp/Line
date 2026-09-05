@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ssh_error_command_empty">Команда не может быть пустой</string>
+    <string name="ssh_error_not_configured">SSH настроен не полностью. Укажите хост, порт, имя пользователя и пароль или приватный ключ.</string>
+    <string name="ssh_error_sftp_empty">SFTP-операция не может быть пустой</string>
+    <string name="ssh_error_termux_permission">LineCode не получил разрешение Termux RUN_COMMAND. Разрешите «Запуск команд в среде Termux» в разрешениях приложения.</string>
+    <string name="ssh_error_termux_no_result">Termux не вернул результат. Нужна версия Termux ≥ 0.109.</string>
+    <string name="ssh_error_termux_command_failed">Termux не смог запустить команду: %1$d</string>
+    <string name="ssh_error_termux_setup_timeout">Истекло время ожидания настройки OpenSSH в Termux. Проверь авторизацию и allow-external-apps=true.</string>
+    <string name="ssh_error_command_timeout">Истекло время выполнения команды</string>
+    <string name="ssh_error_create_config_dir">Не удалось создать каталог конфига SSH: %1$s</string>
+    <string name="ssh_error_create_known_hosts">Не удалось создать known_hosts: %1$s</string>
+    <string name="ssh_error_termux_parse_failed">Termux вернул результат, но имя пользователя или ключ не распознаны.\n%1$s</string>
+    <string name="ssh_error_termux_not_installed">Termux не найден. Сначала установи его.</string>
+    <string name="ssh_redact_private_key">LINEAI_PRIVATE_KEY=[сохранён в приватный ключ SSH]</string>
+    <string name="ssh_error_read_termux_script">Не удалось прочитать скрипт настройки Termux: %1$s</string>
+</resources>

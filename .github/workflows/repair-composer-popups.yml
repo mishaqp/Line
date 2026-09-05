@@ -12,33 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: feat/chat-compact
           fetch-depth: 0
-      - name: Merge master into feat/chat-compact
+      - name: Restore ComposerView from last good commit and patch anchors
         run: |
           set -euo pipefail
+          git checkout 50ad71fa4865f4c4d360d1fb4f67350a0c1236f1 -- app/src/main/java/cn/lineai/ui/component/ComposerView.java
+          python3 scripts/patch_composer_popups.py
           git config user.name "mishaqp"
           git config user.email "84035331+mishaqp@users.noreply.github.com"
-          git fetch origin master feat/chat-compact
-          git checkout -B feat/chat-compact origin/feat/chat-compact
-          if git merge --no-edit origin/master; then
-            echo merge-clean
-          else
-            echo conflicts:
-            git diff --name-only --diff-filter=U || true
-            while IFS= read -r f; do
-              [ -z "$f" ] && continue
-              case "$f" in
-                .github/workflows/*)
-                  git checkout --ours -- "$f" || git rm -f "$f" || true
-                  git add -f "$f" || true
-                  ;;
-                *)
-                  git checkout --ours -- "$f"
-                  git add -- "$f"
-                  ;;
-              esac
-            done < <(git diff --name-only --diff-filter=U)
-            git diff --name-only --diff-filter=U && test -z "$(git diff --name-only --diff-filter=U)"
-            git commit -m "merge master into feat/chat-compact"
-          fi
+          git add app/src/main/java/cn/lineai/ui/component/ComposerView.java
+          git commit -m "fix(ui): show composer popups above the input card"
+          git rm -f scripts/patch_composer_popups.py .github/workflows/repair-composer-popups.yml
+          git commit -m "chore: remove one-time composer popup repair files"
           git push origin HEAD:feat/chat-compact

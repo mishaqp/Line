@@ -2,6 +2,7 @@ package cn.lineai.tool;
 
 import cn.lineai.data.repository.ToolSettingsStore;
 import cn.lineai.tool.builtin.RootProbe;
+import cn.lineai.tool.builtin.RootPaths;
 
 /**
  * One-line execution-target caption for the chat header:
@@ -13,7 +14,6 @@ public final class ExecutionTargetLabel {
     private ExecutionTargetLabel() {
     }
 
-    /** Last execution mode read or written by ToolSettingsRepository. */
     public static void remember(String executionMode) {
         currentMode = executionMode == null ? "" : executionMode;
     }
@@ -38,7 +38,11 @@ public final class ExecutionTargetLabel {
         } else {
             target = "Local";
         }
-        String path = shorten(cwd);
+        String rawPath = cwd;
+        if (ToolSettingsStore.EXECUTION_ROOT.equals(mode)) {
+            rawPath = RootPaths.shellCwd(cwd);
+        }
+        String path = shorten(rawPath);
         if (ToolSettingsStore.EXECUTION_ROOT.equals(mode)
                 && rootStatus != null
                 && rootStatus != RootProbe.Status.READY

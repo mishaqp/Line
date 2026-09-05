@@ -76,12 +76,12 @@ public final class ChatUiStateAssembler {
         ContextSnapshot contextSnapshot = contextManager.snapshot(messages, contextInfo.getContextTokens(),
                 aiSettings.isPreserveReasoningEnabled());
         String modelLabel = selectedModel == null
-                ? "未选择模型"
+                ? "Модель не выбрана"
                 : contextInfo.getApiModelId();
         String selectedModelId = selectedModel == null ? "" : selectedModel.getId();
         List<ModelConfig> availableModels = modelRepository.getModels();
         String uiProjectPath = WorkspacePaths.SOURCE_SSH.equals(projectSource) && safe(projectPath).length() == 0
-                ? "SSH 登录目录"
+                ? "Каталог входа SSH"
                 : safe(projectPath);
         String targetLabel = ExecutionTargetLabel.format(executionMode, uiProjectPath);
         return new ChatUiState(
@@ -102,7 +102,8 @@ public final class ChatUiStateAssembler {
                 messages,
                 selectedModelId,
                 availableModels,
-                targetLabel
+                targetLabel,
+                aiSettings.getReasoningEffort()
         );
     }
 

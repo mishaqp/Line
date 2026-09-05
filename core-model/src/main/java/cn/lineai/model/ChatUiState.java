@@ -23,6 +23,7 @@ public final class ChatUiState {
     private final List<ChatMessage> messages;
     private final List<ModelConfig> availableModels;
     private final String executionTargetLabel;
+    private final String reasoningEffort;
 
     public ChatUiState(
             String projectLabel, String projectPath, String modelLabel, String contextLabel,
@@ -112,6 +113,21 @@ public final class ChatUiState {
             String selectedModelId, List<ModelConfig> availableModels,
             String executionTargetLabel
     ) {
+        this(projectLabel, projectPath, modelLabel, contextLabel, contextPercent, streaming,
+                hasConfiguredModel, thinkingScrollEnabled, thinkingAutoExpandEnabled, codeWrapEnabled,
+                browserMode, enterKeyBehavior, chatMode, conversationId, messages, selectedModelId,
+                availableModels, executionTargetLabel, AiBehaviorSettings.REASONING_MEDIUM);
+    }
+
+    public ChatUiState(
+            String projectLabel, String projectPath, String modelLabel, String contextLabel,
+            int contextPercent, boolean streaming, boolean hasConfiguredModel,
+            boolean thinkingScrollEnabled, boolean thinkingAutoExpandEnabled,
+            boolean codeWrapEnabled, String browserMode, String enterKeyBehavior,
+            String chatMode, String conversationId, List<ChatMessage> messages,
+            String selectedModelId, List<ModelConfig> availableModels,
+            String executionTargetLabel, String reasoningEffort
+    ) {
         this.projectLabel = projectLabel;
         this.projectPath = projectPath == null ? "" : projectPath;
         this.modelLabel = modelLabel;
@@ -134,6 +150,7 @@ public final class ChatUiState {
                 ? Collections.emptyList()
                 : Collections.unmodifiableList(new ArrayList<>(availableModels));
         this.executionTargetLabel = executionTargetLabel == null ? "" : executionTargetLabel;
+        this.reasoningEffort = AiBehaviorSettings.normalizeReasoningEffort(reasoningEffort);
     }
 
     public String getProjectLabel() { return projectLabel; }
@@ -154,4 +171,5 @@ public final class ChatUiState {
     public String getConversationId() { return conversationId; }
     public List<ChatMessage> getMessages() { return messages; }
     public String getExecutionTargetLabel() { return executionTargetLabel; }
+    public String getReasoningEffort() { return reasoningEffort; }
 }
