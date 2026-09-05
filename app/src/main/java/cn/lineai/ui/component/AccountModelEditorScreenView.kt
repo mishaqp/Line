@@ -83,7 +83,7 @@ class AccountModelEditorScreenView(
                     factory = AccountModelEditorViewModel.factory(context, provider, editingModel)
                 )
                 AccountModelEditorTheme {
-                    AccountModelEditorScreen(
+                    AccountModelEditorScreenContent(
                         state = editor.state.collectAsStateWithLifecycle().value,
                         editing = editingModel != null,
                         provider = provider,
@@ -132,7 +132,7 @@ private fun AccountModelEditorTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun AccountModelEditorScreen(
+internal fun AccountModelEditorScreenContent(
     state: AccountModelEditorState,
     editing: Boolean,
     provider: AccountModelProvider,
