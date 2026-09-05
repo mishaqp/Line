@@ -38,6 +38,7 @@ class LineDestinationTest {
         assertTrue(LineDestinations.fromScreenId("input") is LineDestination.Input)
         assertTrue(LineDestinations.fromScreenId("theme") is LineDestination.Theme)
         assertTrue(LineDestinations.fromScreenId("output") is LineDestination.Output)
+        assertTrue(LineDestinations.fromScreenId("toolcall_preview") is LineDestination.ToolCallPreview)
         assertTrue(LineDestinations.fromScreenId("security") is LineDestination.Security)
         assertTrue(LineDestinations.fromScreenId("storage") is LineDestination.Storage)
         assertTrue(LineDestinations.fromScreenId("memory") is LineDestination.Memory)
@@ -82,6 +83,18 @@ class LineDestinationTest {
         assertEquals(
             LineDestination.Llm,
             LineDestinations.parentOf(LineDestination.PromptTemplates)
+        )
+        assertEquals(
+            LineDestination.Settings,
+            LineDestinations.parentOf(LineDestination.Input)
+        )
+        assertEquals(
+            LineDestination.Settings,
+            LineDestinations.parentOf(LineDestination.Output)
+        )
+        assertEquals(
+            LineDestination.Output,
+            LineDestinations.parentOf(LineDestination.ToolCallPreview)
         )
     }
 
