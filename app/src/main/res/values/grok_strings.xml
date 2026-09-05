@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_row_grok_account_title">Grok account</string>
+    <string name="settings_row_grok_account_desc">Sign in with xAI, view models, plan and limits</string>
+
+    <string name="screen_grok_account_title">Grok account</string>
+    <string name="screen_grok_account_section_auth">xAI account</string>
+    <string name="screen_grok_account_signed_out">Not signed in</string>
+    <string name="screen_grok_account_login_desc">Sign in with your Grok/xAI account. Line uses the official Grok Build device OAuth flow and never shows your access or refresh token.</string>
+    <string name="screen_grok_account_error_title">Sign-in error</string>
+    <string name="screen_grok_account_login">Sign in with Grok</string>
+    <string name="screen_grok_account_security_title">Authentication</string>
+    <string name="screen_grok_account_security_desc">OAuth tokens are stored encrypted with Android Keystore. The model list and limits are loaded directly from the Grok Build account API.</string>
+    <string name="screen_grok_account_login_wait">Preparing Grok sign-in…</string>
+    <string name="screen_grok_account_device_code_title">Confirm in the browser</string>
+    <string name="screen_grok_account_device_code_desc">If the code is not filled automatically, enter: %1$s</string>
+    <string name="screen_grok_account_browser_opened">The xAI sign-in page was opened. Return to Line after approving access.</string>
+    <string name="screen_grok_account_loading">Loading Grok account, models and limits…</string>
+    <string name="screen_grok_account_email">Email</string>
+    <string name="screen_grok_account_plan">Plan</string>
+    <string name="screen_grok_account_id">User ID</string>
+    <string name="screen_grok_account_refresh">Refresh account</string>
+    <string name="screen_grok_account_add_model">Add Grok model</string>
+    <string name="screen_grok_account_logout">Sign out</string>
+    <string name="screen_grok_account_unknown">—</string>
+    <string name="screen_grok_account_session_expired">The Grok session expired. Sign in again.</string>
+
+    <string name="screen_grok_usage_section">Limits</string>
+    <string name="screen_grok_weekly_limit">Grok Build usage</string>
+    <string name="screen_grok_used">Used</string>
+    <string name="screen_grok_remaining">Remaining</string>
+    <string name="screen_grok_period">Period</string>
+    <string name="screen_grok_period_weekly">Weekly</string>
+    <string name="screen_grok_period_monthly">Monthly</string>
+    <string name="screen_grok_reset">Reset</string>
+    <string name="screen_grok_reset_unknown">Unknown</string>
+    <string name="screen_grok_reset_now">Now</string>
+    <string name="screen_grok_reset_in">in %1$s</string>
+    <string name="screen_grok_usage_failed_title">Limits unavailable</string>
+    <string name="screen_grok_request_failed">Grok did not return this data. Try Refresh account.</string>
+
+    <string name="screen_grok_models_section">Available models</string>
+    <string name="screen_grok_models_count">%1$d models available</string>
+    <string name="screen_grok_models_unavailable">Models unavailable</string>
+    <string name="screen_grok_models_unavailable_desc">The signed-in account did not return a model catalog.</string>
+
+    <string name="screen_grok_model_picker_title">Add Grok model</string>
+    <string name="screen_grok_model_picker_edit_title">Change Grok model</string>
+    <string name="screen_grok_model_picker_loading">Loading models available to this Grok account…</string>
+    <string name="screen_grok_model_picker_desc">Choose a model. Line will save it without copying your OAuth token into model settings.</string>
+    <string name="screen_grok_model_picker_current">Current model</string>
+    <string name="screen_grok_model_picker_failed">Could not load the Grok model catalog. Refresh the Grok account and try again.</string>
+
+    <string name="model_provider_preset_grok_label">Grok (xAI account)</string>
+    <string name="model_provider_preset_grok_desc">Grok Build via xAI account OAuth, live models and account limits</string>
+    <string name="model_provider_preset_grok_hint">Sign in under Settings → Grok account, then load the model list</string>
+</resources>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_row_grok_account_title">Аккаунт Grok</string>
+    <string name="settings_row_grok_account_desc">Вход через xAI, модели, тариф и лимиты</string>
+
+    <string name="screen_grok_account_title">Аккаунт Grok</string>
+    <string name="screen_grok_account_section_auth">Аккаунт xAI</string>
+    <string name="screen_grok_account_signed_out">Вход не выполнен</string>
+    <string name="screen_grok_account_login_desc">Войдите в аккаунт Grok/xAI. Line использует официальный device OAuth из Grok Build и не показывает access/refresh токены.</string>
+    <string name="screen_grok_account_error_title">Ошибка входа</string>
+    <string name="screen_grok_account_login">Войти через Grok</string>
+    <string name="screen_grok_account_security_title">Авторизация</string>
+    <string name="screen_grok_account_security_desc">OAuth-токены хранятся в зашифрованном виде через Android Keystore. Список моделей и лимиты загружаются прямо из API аккаунта Grok Build.</string>
+    <string name="screen_grok_account_login_wait">Подготавливаю вход в Grok…</string>
+    <string name="screen_grok_account_device_code_title">Подтвердите вход в браузере</string>
+    <string name="screen_grok_account_device_code_desc">Если код не подставился автоматически, введите: %1$s</string>
+    <string name="screen_grok_account_browser_opened">Страница xAI открыта в браузере. После подтверждения вернитесь в Line.</string>
+    <string name="screen_grok_account_loading">Загружаю аккаунт Grok, модели и лимиты…</string>
+    <string name="screen_grok_account_email">Email</string>
+    <string name="screen_grok_account_plan">Тариф</string>
+    <string name="screen_grok_account_id">ID пользователя</string>
+    <string name="screen_grok_account_refresh">Обновить аккаунт</string>
+    <string name="screen_grok_account_add_model">Добавить модель Grok</string>
+    <string name="screen_grok_account_logout">Выйти</string>
+    <string name="screen_grok_account_unknown">—</string>
+    <string name="screen_grok_account_session_expired">Сессия Grok истекла. Войдите снова.</string>
+
+    <string name="screen_grok_usage_section">Лимиты</string>
+    <string name="screen_grok_weekly_limit">Использование Grok Build</string>
+    <string name="screen_grok_used">Использовано</string>
+    <string name="screen_grok_remaining">Осталось</string>
+    <string name="screen_grok_period">Период</string>
+    <string name="screen_grok_period_weekly">Неделя</string>
+    <string name="screen_grok_period_monthly">Месяц</string>
+    <string name="screen_grok_reset">Сброс</string>
+    <string name="screen_grok_reset_unknown">Неизвестно</string>
+    <string name="screen_grok_reset_now">Сейчас</string>
+    <string name="screen_grok_reset_in">через %1$s</string>
+    <string name="screen_grok_usage_failed_title">Лимиты недоступны</string>
+    <string name="screen_grok_request_failed">Grok не вернул эти данные. Нажмите «Обновить аккаунт».</string>
+
+    <string name="screen_grok_models_section">Доступные модели</string>
+    <string name="screen_grok_models_count">Доступно моделей: %1$d</string>
+    <string name="screen_grok_models_unavailable">Модели недоступны</string>
+    <string name="screen_grok_models_unavailable_desc">Аккаунт Grok не вернул список доступных моделей.</string>
+
+    <string name="screen_grok_model_picker_title">Добавить модель Grok</string>
+    <string name="screen_grok_model_picker_edit_title">Сменить модель Grok</string>
+    <string name="screen_grok_model_picker_loading">Загружаю модели, доступные этому аккаунту Grok…</string>
+    <string name="screen_grok_model_picker_desc">Выберите модель. Line сохранит её без копирования OAuth-токена в настройки модели.</string>
+    <string name="screen_grok_model_picker_current">Текущая модель</string>
+    <string name="screen_grok_model_picker_failed">Не удалось загрузить список моделей Grok. Обновите аккаунт Grok и попробуйте снова.</string>
+
+    <string name="model_provider_preset_grok_label">Grok (аккаунт xAI)</string>
+    <string name="model_provider_preset_grok_desc">Grok Build через OAuth аккаунта xAI, живой список моделей и лимиты</string>
+    <string name="model_provider_preset_grok_hint">Сначала войдите: Настройки → Аккаунт Grok, затем загрузите список моделей</string>
+</resources>

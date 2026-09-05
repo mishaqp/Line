@@ -17,6 +17,7 @@ public final class ModelProtocolFactory {
     public ModelProtocolFactory(Context context) {
         this.context = context;
         register(ModelProtocolType.CODEX_RESPONSES, () -> new CodexResponsesProtocol(this.context));
+        register(ModelProtocolType.GROK_RESPONSES, () -> new GrokResponsesProtocol(this.context));
         register(ModelProtocolType.ANTHROPIC_MESSAGES, AnthropicMessagesProtocol::new);
         register(ModelProtocolType.LOCAL_GGUF, LocalGgufProtocol::new);
         register(ModelProtocolType.OPENAI_COMPATIBLE, OpenAiCompatibleProtocol::new);

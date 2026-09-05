@@ -40,6 +40,7 @@ public final class SettingsScreenView extends LinearLayout {
         addSection(content, context.getString(R.string.screen_settings_section_ai), new RowSpec[] {
                 new RowSpec("models", context.getString(R.string.settings_row_models_title), context.getString(R.string.settings_row_models_desc), IconButtonView.BOX),
                 new RowSpec("codexAccount", context.getString(R.string.settings_row_codex_account_title), context.getString(R.string.settings_row_codex_account_desc), IconButtonView.USER),
+                new RowSpec("grokAccount", context.getString(R.string.settings_row_grok_account_title), context.getString(R.string.settings_row_grok_account_desc), IconButtonView.USER),
                 new RowSpec("llm", context.getString(R.string.screen_llm_title), context.getString(R.string.settings_row_llm_desc), IconButtonView.BRAIN),
         });
         addSection(content, context.getString(R.string.screen_settings_section_tools), new RowSpec[] {

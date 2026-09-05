@@ -25,7 +25,8 @@ public final class ModelProviderPresets {
             new ModelProviderPreset("minimax", ModelProtocolType.OPENAI_COMPATIBLE, "https://api.minimax.chat/v1", "https://api.minimax.chat/v1"),
             new ModelProviderPreset("ollama", ModelProtocolType.OPENAI_COMPATIBLE, "http://127.0.0.1:11434/v1", "http://127.0.0.1:11434/v1"),
             new ModelProviderPreset("lmstudio", ModelProtocolType.OPENAI_COMPATIBLE, "http://127.0.0.1:1234/v1", "http://127.0.0.1:1234/v1"),
-            new ModelProviderPreset("codex", ModelProtocolType.CODEX_RESPONSES, "https://api.openai.com/v1", "https://api.openai.com/v1")
+            new ModelProviderPreset("codex", ModelProtocolType.CODEX_RESPONSES, "https://api.openai.com/v1", "https://api.openai.com/v1"),
+            new ModelProviderPreset("grok", ModelProtocolType.GROK_RESPONSES, "https://cli-chat-proxy.grok.com/v1", "https://cli-chat-proxy.grok.com/v1")
     };
 
     private ModelProviderPresets() {
