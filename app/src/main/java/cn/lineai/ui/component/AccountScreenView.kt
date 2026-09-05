@@ -76,7 +76,7 @@ class AccountScreenView(
                     factory = AccountScreenViewModel.factory(context, provider)
                 )
                 AccountScreenTheme {
-                    AccountScreen(
+                    AccountScreenContent(
                         state = model.state.collectAsStateWithLifecycle().value,
                         onBack = listener::onBack,
                         onAddModel = listener::onAddModel,
@@ -196,7 +196,7 @@ private fun stringsFor(kind: AccountProviderKind): AccountStrings = when (kind) 
 }
 
 @Composable
-private fun AccountScreenTheme(content: @Composable () -> Unit) {
+internal fun AccountScreenTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = darkColorScheme(
             primary = Color(LineTheme.ACCENT),
@@ -214,7 +214,7 @@ private fun AccountScreenTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun AccountScreen(
+internal fun AccountScreenContent(
     state: AccountScreenState,
     onBack: () -> Unit,
     onAddModel: () -> Unit,
