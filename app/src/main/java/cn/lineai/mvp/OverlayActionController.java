@@ -85,9 +85,6 @@ final class OverlayActionController {
             return;
         }
         ArrayList<SheetOption> options = new ArrayList<>();
-        options.add(new SheetOption("tutorial",
-                context.getString(R.string.sheet_more_tutorial),
-                context.getString(R.string.sheet_more_tutorial_desc), false));
         options.add(new SheetOption("settings",
                 context.getString(R.string.screen_settings_title),
                 context.getString(R.string.sheet_more_settings_desc), false));
@@ -131,8 +128,6 @@ final class OverlayActionController {
             // Handled above.
         } else if ("settings".equals(id)) {
             host.showScreen("settings");
-        } else if ("tutorial".equals(id)) {
-            host.showScreen("tutorial");
         } else if ("compact".equals(id)) {
             contextCompactionController.showCompactConfirmation();
             return;
@@ -147,7 +142,7 @@ final class OverlayActionController {
         } else if ("select_export".equals(id)) {
             host.enterMessageSelectMode();
         }
-        if (!"settings".equals(id) && !"tutorial".equals(id)) {
+        if (!"settings".equals(id)) {
             host.hideOverlays();
         }
         host.render();
