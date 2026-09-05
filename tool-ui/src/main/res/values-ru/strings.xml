@@ -17,6 +17,7 @@
     <string name="tool_call_agent_done">Задача выполнена</string>
     <string name="tool_call_pipeline_running">Сборка Agent pipeline…</string>
     <string name="tool_call_todo_empty">Пока нет элементов TODO. Используйте инструмент todo_update для ведения списка.</string>
+    <string name="tool_call_todo_chip">Задачи %1$d/%2$d</string>
     <string name="tool_call_input">Ввод</string>
     <string name="tool_call_progress">Прогресс</string>
     <string name="tool_call_output">Вывод</string>
