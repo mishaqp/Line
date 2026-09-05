@@ -1,7 +1,7 @@
 package cn.lineai;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import androidx.activity.ComponentActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -23,7 +23,7 @@ import cn.lineai.ui.component.UserAgreementDialog;
 import cn.lineai.tool.builtin.PhoneScreenshotCache;
 
 @SuppressWarnings("deprecation")
-public final class MainActivity extends Activity implements MainChatView.WorkspaceHost {
+public final class MainActivity extends ComponentActivity implements MainChatView.WorkspaceHost {
     private MainCoordinator presenter;
     private MainChatView mainView;
     private MainChatView.DocumentPickCallback documentPickCallback;
