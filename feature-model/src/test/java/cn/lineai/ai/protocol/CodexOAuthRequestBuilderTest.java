@@ -19,6 +19,7 @@ public final class CodexOAuthRequestBuilderTest {
         assertEquals("Bearer oauth-token", headers.get("Authorization"));
         assertEquals("account-123", headers.get("ChatGPT-Account-Id"));
         assertEquals(CodexRequestBuilder.CODEX_ORIGINATOR, headers.get("originator"));
+        assertEquals("0.153.4", CodexRequestBuilder.CODEX_OAUTH_CLIENT_VERSION);
         assertEquals(CodexRequestBuilder.CODEX_OAUTH_CLIENT_VERSION, headers.get("version"));
         assertEquals("responses=experimental", headers.get("OpenAI-Beta"));
         assertTrue(headers.get("x-codex-window-id") != null
