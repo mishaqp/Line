@@ -3,6 +3,7 @@ package cn.lineai.model;
 public enum ModelProtocolType {
     OPENAI_COMPATIBLE("OpenAI", true),
     CODEX_RESPONSES("Codex", true),
+    GROK_RESPONSES("Grok", true),
     ANTHROPIC_MESSAGES("Anthropic", false),
     LOCAL_GGUF("Local", false);
 
@@ -33,6 +34,10 @@ public enum ModelProtocolType {
         }
         if ("codex".equalsIgnoreCase(normalized) || "codex_responses".equalsIgnoreCase(normalized)) {
             return CODEX_RESPONSES;
+        }
+        if ("grok".equalsIgnoreCase(normalized) || "grok_responses".equalsIgnoreCase(normalized)
+                || "xai".equalsIgnoreCase(normalized)) {
+            return GROK_RESPONSES;
         }
         if ("anthropic".equalsIgnoreCase(normalized) || "claude".equalsIgnoreCase(normalized)
                 || "anthropic_messages".equalsIgnoreCase(normalized)) {
