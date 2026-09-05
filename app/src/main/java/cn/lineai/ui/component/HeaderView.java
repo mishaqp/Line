@@ -1,16 +1,19 @@
 package cn.lineai.ui.component;
 import cn.lineai.ui.theme.IconButtonView;
+import cn.lineai.ui.theme.LineCards;
 import cn.lineai.ui.theme.LineTheme;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import cn.lineai.R;
+import cn.lineai.model.ChatMode;
 import cn.lineai.model.ChatUiState;
 
 public final class HeaderView extends LinearLayout {
@@ -18,6 +21,8 @@ public final class HeaderView extends LinearLayout {
         void onMenuClick();
 
         void onProjectClick();
+
+        void onModeChanged(String mode);
 
         void onPermissionClick();
 
@@ -29,7 +34,11 @@ public final class HeaderView extends LinearLayout {
     private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final TextView projectText;
     private final TextView targetText;
+    private final TextView modeText;
+    private final LinearLayout modeButton;
     private Listener listener;
+    private String chatMode = ChatMode.DEFAULT;
+    private PopupWindow modePopup;
 
     public HeaderView(Context context) {
         super(context);
@@ -87,6 +96,28 @@ public final class HeaderView extends LinearLayout {
         chevron.setIconSizeDp(20, 14);
         projectButton.addView(chevron, new LinearLayout.LayoutParams(LineTheme.dp(context, 20), LineTheme.dp(context, 20)));
 
+        modeButton = new LinearLayout(context);
+        modeButton.setOrientation(HORIZONTAL);
+        modeButton.setGravity(Gravity.CENTER_VERTICAL);
+        modeButton.setClickable(true);
+        modeButton.setFocusable(true);
+        modeButton.setBackground(LineCards.chipBackground(context));
+        LineTheme.attachStateLayer(modeButton);
+        LineTheme.padding(modeButton, LineTheme.SM, 0, LineTheme.SM, 0);
+        modeButton.setOnClickListener(v -> showModePopup(modeButton));
+        modeText = LineTheme.textMedium(context, modeLabel(chatMode), LineTheme.FONT_XS, LineTheme.TEXT);
+        modeText.setSingleLine(true);
+        modeButton.addView(modeText);
+        IconButtonView modeChevron = icon(context, IconButtonView.CHEVRON_DOWN, LineTheme.TEXT_SECONDARY, 12);
+        modeChevron.setIconSizeDp(16, 12);
+        modeChevron.setClickable(false);
+        LinearLayout.LayoutParams modeChevronParams = new LinearLayout.LayoutParams(LineTheme.dp(context, 16), LineTheme.dp(context, 16));
+        modeChevronParams.leftMargin = LineTheme.dp(context, 2);
+        modeButton.addView(modeChevron, modeChevronParams);
+        LinearLayout.LayoutParams modeParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LineTheme.dp(context, 28));
+        modeParams.rightMargin = LineTheme.dp(context, 4);
+        addView(modeButton, modeParams);
+
         IconButtonView shield = icon(context, IconButtonView.SHIELD, LineTheme.TEXT_SECONDARY, 18);
         shield.setContentDescription(context.getString(R.string.header_permission_desc));
         shield.setOnClickListener(v -> {
@@ -124,6 +155,8 @@ public final class HeaderView extends LinearLayout {
         String target = state.getExecutionTargetLabel();
         targetText.setText(target);
         targetText.setVisibility(target == null || target.length() == 0 ? GONE : VISIBLE);
+        chatMode = state.getChatMode();
+        modeText.setText(modeLabel(chatMode));
     }
 
     @Override
@@ -132,6 +165,64 @@ public final class HeaderView extends LinearLayout {
         borderPaint.setColor(LineTheme.BORDER);
         borderPaint.setStrokeWidth(1f);
         canvas.drawLine(0, getHeight() - 1, getWidth(), getHeight() - 1, borderPaint);
+    }
+
+    private void showModePopup(View anchor) {
+        if (modePopup != null && modePopup.isShowing()) {
+            modePopup.dismiss();
+        }
+        Context context = getContext();
+        LinearLayout content = new LinearLayout(context);
+        content.setOrientation(VERTICAL);
+        content.setBackground(LineTheme.roundedStroke(context, LineTheme.SURFACE_ELEVATED, LineTheme.SHAPE_LG, LineTheme.BORDER));
+        LineTheme.padding(content, LineTheme.SM, LineTheme.SM, LineTheme.SM, LineTheme.SM);
+        int rowHeight = LineTheme.dp(context, 36);
+        content.addView(modeOption(context, modeLabel(ChatMode.CHAT), ChatMode.CHAT),
+                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, rowHeight));
+        content.addView(modeOption(context, modeLabel(ChatMode.PLAN), ChatMode.PLAN),
+                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, rowHeight));
+        content.addView(modeOption(context, modeLabel(ChatMode.AGENT), ChatMode.AGENT),
+                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, rowHeight));
+        content.addView(modeOption(context, modeLabel(ChatMode.CONTROL), ChatMode.CONTROL),
+                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, rowHeight));
+        int popupWidth = LineTheme.dp(context, 160);
+        modePopup = new PopupWindow(content, popupWidth, LayoutParams.WRAP_CONTENT, true);
+        modePopup.setOutsideTouchable(true);
+        modePopup.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        modePopup.showAsDropDown(anchor, 0, LineTheme.dp(context, 6));
+    }
+
+    private TextView modeOption(Context context, String label, String mode) {
+        boolean selected = mode.equals(chatMode);
+        TextView item = LineTheme.textMedium(context, label, LineTheme.FONT_SM,
+                selected ? LineTheme.TEXT_ON_COLOR : LineTheme.TEXT);
+        item.setGravity(Gravity.CENTER_VERTICAL);
+        item.setSingleLine(true);
+        item.setPadding(LineTheme.dp(context, LineTheme.MD), 0, LineTheme.dp(context, LineTheme.MD), 0);
+        item.setBackground(LineTheme.rounded(context, selected ? LineTheme.ACCENT : android.graphics.Color.TRANSPARENT, LineTheme.SHAPE_MD));
+        item.setClickable(true);
+        item.setOnClickListener(v -> {
+            if (modePopup != null) {
+                modePopup.dismiss();
+            }
+            if (!mode.equals(chatMode) && listener != null) {
+                listener.onModeChanged(mode);
+            }
+        });
+        return item;
+    }
+
+    private String modeLabel(String mode) {
+        if (ChatMode.CHAT.equals(mode)) {
+            return getContext().getString(R.string.header_mode_chat);
+        }
+        if (ChatMode.PLAN.equals(mode)) {
+            return getContext().getString(R.string.header_mode_plan);
+        }
+        if (ChatMode.CONTROL.equals(mode)) {
+            return getContext().getString(R.string.header_mode_control);
+        }
+        return getContext().getString(R.string.header_mode_agent);
     }
 
     private IconButtonView icon(Context context, int type, int color, int iconDp) {
