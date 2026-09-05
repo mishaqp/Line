@@ -44,6 +44,13 @@
     <string name="screen_grok_models_unavailable">Модели недоступны</string>
     <string name="screen_grok_models_unavailable_desc">Аккаунт Grok не вернул список доступных моделей.</string>
 
+    <string name="screen_grok_model_picker_title">Добавить модель Grok</string>
+    <string name="screen_grok_model_picker_edit_title">Сменить модель Grok</string>
+    <string name="screen_grok_model_picker_loading">Загружаю модели, доступные этому аккаунту Grok…</string>
+    <string name="screen_grok_model_picker_desc">Выберите модель. Line сохранит её без копирования OAuth-токена в настройки модели.</string>
+    <string name="screen_grok_model_picker_current">Текущая модель</string>
+    <string name="screen_grok_model_picker_failed">Не удалось загрузить список моделей Grok. Обновите аккаунт Grok и попробуйте снова.</string>
+
     <string name="model_provider_preset_grok_label">Grok (аккаунт xAI)</string>
     <string name="model_provider_preset_grok_desc">Grok Build через OAuth аккаунта xAI, живой список моделей и лимиты</string>
     <string name="model_provider_preset_grok_hint">Сначала войдите: Настройки → Аккаунт Grok, затем загрузите список моделей</string>
