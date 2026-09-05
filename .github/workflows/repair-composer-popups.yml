@@ -12,18 +12,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: feat/chat-compact
           fetch-depth: 0
-      - name: Fix semicolon
+      - name: Merge master into feat/chat-compact
         run: |
           set -euo pipefail
-          python3 scripts/fix_import_semicolon.py
           git config user.name "mishaqp"
           git config user.email "84035331+mishaqp@users.noreply.github.com"
-          git add app/src/main/java/cn/lineai/mvp/MainControllerInitializer.java
-          if git diff --cached --quiet; then
-            echo no-change
+          git fetch origin master feat/chat-compact
+          git checkout -B feat/chat-compact origin/feat/chat-compact
+          if git merge --no-edit origin/master; then
+            echo merge-clean
           else
-            git commit -m "fix: restore semicolon after linecode import dialog"
-            git push origin HEAD:feat/chat-compact
+            echo conflicts:
+            git diff --name-only --diff-filter=U || true
+            while IFS= read -r f; do
+              [ -z "$f" ] && continue
+              case "$f" in
+                .github/workflows/*)
+                  git checkout --ours -- "$f" || git rm -f "$f" || true
+                  git add -f "$f" || true
+                  ;;
+                *)
+                  git checkout --ours -- "$f"
+                  git add -- "$f"
+                  ;;
+              esac
+            done < <(git diff --name-only --diff-filter=U)
+            git diff --name-only --diff-filter=U && test -z "$(git diff --name-only --diff-filter=U)"
+            git commit -m "merge master into feat/chat-compact"
           fi
+          git push origin HEAD:feat/chat-compact
