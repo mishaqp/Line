@@ -16,7 +16,7 @@ import org.json.JSONObject;
 final class CodexRequestBuilder {
 
     static final String CODEX_PROTOCOL_VERSION = "0.120.0";
-    static final String CODEX_OAUTH_CLIENT_VERSION = "0.144.5";
+    static final String CODEX_OAUTH_CLIENT_VERSION = "0.153.4";
     static final String CODEX_ORIGINATOR = "codex_cli_rs";
     private static final String CODEX_INSTALLATION_ID = UUID.nameUUIDFromBytes(
             "cn.lineai.linecode.codex".getBytes(StandardCharsets.UTF_8)
