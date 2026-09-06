@@ -1,16 +1,16 @@
 package cn.lineai.ui.component;
-import cn.lineai.ui.theme.IconButtonView;
 
 import android.content.Context;
 import android.os.Build;
 import android.os.PowerManager;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 import cn.lineai.R;
 import cn.lineai.model.KeepAliveSettings;
+import cn.lineai.ui.model.KeepAliveSettingsRepository;
+import cn.lineai.ui.model.KeepAliveStoredSettings;
 
-public final class KeepAliveSettingsScreenView extends ScreenScaffoldView {
+public final class KeepAliveSettingsScreenView extends FrameLayout {
     public interface Listener {
         void onBack();
         void onSettingsChanged();
@@ -23,60 +23,104 @@ public final class KeepAliveSettingsScreenView extends ScreenScaffoldView {
         void onRequestIgnoreBatteryOptimizations();
     }
 
-    private final Context context;
     private final Listener listener;
-    private final PermissionUiHelper permissionUiHelper;
 
     public KeepAliveSettingsScreenView(Context context, Listener listener) {
         this(context, listener, null);
     }
 
-    public KeepAliveSettingsScreenView(Context context, Listener listener, PermissionUiHelper permissionUiHelper) {
-        super(context, context.getString(R.string.screen_keep_alive_title), listener::onBack, null);
-        this.context = context;
+    public KeepAliveSettingsScreenView(
+            Context context,
+            Listener listener,
+            PermissionUiHelper permissionUiHelper
+    ) {
+        super(context);
         this.listener = listener;
-        this.permissionUiHelper = permissionUiHelper;
-        LinearLayout content = getContent();
 
-        KeepAliveSettings settings = listener.onLoadSettings();
-
-        SettingsSectionView coding = new SettingsSectionView(context, context.getString(R.string.screen_keep_alive_section_coding));
-
-        SwitchRowView wakeLockSwitch = new SwitchRowView(context, IconButtonView.ZAP, context.getString(R.string.screen_keep_alive_wake_lock_label), context.getString(R.string.screen_keep_alive_wake_lock_desc), settings.wakeLockEnabled, (buttonView, enabled) -> {
-            listener.onSetWakeLockEnabled(enabled);
-            listener.onUpdateService();
-            listener.onSettingsChanged();
-        });
-        coding.addRow(wakeLockSwitch, true);
-
-        SwitchRowView foregroundSwitch = new SwitchRowView(context, IconButtonView.BELL, context.getString(R.string.screen_keep_alive_foreground_label), context.getString(R.string.screen_keep_alive_foreground_desc), settings.foregroundEnabled, (buttonView, enabled) -> {
-            listener.onSetForegroundEnabled(enabled);
-            requestNotificationPermissionIfNeeded(enabled);
-            listener.onUpdateService();
-            listener.onSettingsChanged();
-        });
-        coding.addRow(foregroundSwitch, true);
-
-        SwitchRowView fakeAudioSwitch = new SwitchRowView(context, IconButtonView.MUSIC, context.getString(R.string.screen_keep_alive_fake_music_label), context.getString(R.string.screen_keep_alive_fake_music_desc), settings.fakeAudioEnabled, (buttonView, enabled) -> {
-            listener.onSetFakeAudioEnabled(enabled);
-            requestNotificationPermissionIfNeeded(enabled);
-            listener.onUpdateService();
-            listener.onSettingsChanged();
-        });
-        coding.addRow(fakeAudioSwitch, false);
-        content.addView(coding, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        SettingsSectionView system = new SettingsSectionView(context, context.getString(R.string.screen_keep_alive_section_system));
-        SwitchRowView batterySwitch = new SwitchRowView(context, IconButtonView.BATTERY_CHARGING, context.getString(R.string.screen_keep_alive_ignore_battery_label), context.getString(R.string.screen_keep_alive_ignore_battery_desc), isIgnoringBatteryOptimizations(), (buttonView, enabled) -> {
-            if (enabled && !isIgnoringBatteryOptimizations()) {
-                listener.onRequestIgnoreBatteryOptimizations();
+        KeepAliveSettingsRepository repository = new KeepAliveSettingsRepository() {
+            @Override
+            public KeepAliveStoredSettings loadSettings() {
+                KeepAliveSettings settings = listener.onLoadSettings();
+                if (settings == null) {
+                    return null;
+                }
+                return new KeepAliveStoredSettings(
+                        settings.wakeLockEnabled,
+                        settings.foregroundEnabled,
+                        settings.fakeAudioEnabled
+                );
             }
-        });
-        system.addRow(batterySwitch, false);
-        content.addView(system, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+
+            @Override
+            public void setWakeLockEnabled(boolean enabled) {
+                listener.onSetWakeLockEnabled(enabled);
+            }
+
+            @Override
+            public void setForegroundEnabled(boolean enabled) {
+                listener.onSetForegroundEnabled(enabled);
+            }
+
+            @Override
+            public void setFakeAudioEnabled(boolean enabled) {
+                listener.onSetFakeAudioEnabled(enabled);
+            }
+
+            @Override
+            public void updateService() {
+                listener.onUpdateService();
+            }
+
+            @Override
+            public void notifySettingsChanged() {
+                listener.onSettingsChanged();
+            }
+
+            @Override
+            public boolean hasPostNotificationsPermission() {
+                return permissionUiHelper == null || permissionUiHelper.hasPostNotificationsPermission();
+            }
+
+            @Override
+            public boolean isIgnoringBatteryOptimizations() {
+                return KeepAliveSettingsScreenView.isIgnoringBatteryOptimizations(context);
+            }
+        };
+
+        addView(
+                new KeepAliveSettingsHostView(
+                        context,
+                        repository,
+                        new KeepAliveSettingsHostView.Listener() {
+                            @Override
+                            public void onBack() {
+                                listener.onBack();
+                            }
+
+                            @Override
+                            public void onRequestPostNotifications() {
+                                if (permissionUiHelper == null || permissionUiHelper.hasPostNotificationsPermission()) {
+                                    return;
+                                }
+                                permissionUiHelper.requestPostNotificationsPermission();
+                                Toast.makeText(
+                                        context,
+                                        R.string.screen_keep_alive_notification_permission_hint,
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            }
+
+                            @Override
+                            public void onOpenBatteryOptimizationSettings() {
+                                listener.onRequestIgnoreBatteryOptimizations();
+                            }
+                        }
+                ),
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        );
     }
 
-    private boolean isIgnoringBatteryOptimizations() {
+    private static boolean isIgnoringBatteryOptimizations(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
             if (pm != null) {
@@ -84,14 +128,6 @@ public final class KeepAliveSettingsScreenView extends ScreenScaffoldView {
             }
         }
         return true;
-    }
-
-    private void requestNotificationPermissionIfNeeded(boolean enabled) {
-        if (!enabled || permissionUiHelper == null || permissionUiHelper.hasPostNotificationsPermission()) {
-            return;
-        }
-        permissionUiHelper.requestPostNotificationsPermission();
-        Toast.makeText(context, R.string.screen_keep_alive_notification_permission_hint, Toast.LENGTH_SHORT).show();
     }
 
     public void updateStatus(String status) {
