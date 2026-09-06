@@ -43,6 +43,14 @@ sealed interface LineDestination : NavKey {
         override val screenId: String = "mcp"
     }
 
+    data object SshSettings : LineDestination {
+        override val screenId: String = "sshSettings"
+    }
+
+    data object TermuxIntegration : LineDestination {
+        override val screenId: String = "termuxIntegration"
+    }
+
     data object ToolSettings : LineDestination {
         override val screenId: String = "toolSettings"
     }
@@ -178,6 +186,8 @@ object LineDestinations {
             id == "llm" -> LineDestination.Llm
             id == "promptTemplates" -> LineDestination.PromptTemplates
             id == "mcp" -> LineDestination.Mcp
+            id == "sshSettings" -> LineDestination.SshSettings
+            id == "termuxIntegration" -> LineDestination.TermuxIntegration
             id == "toolSettings" -> LineDestination.ToolSettings
             id == "extensions" -> LineDestination.Extensions
             id == "terminalProvider" -> LineDestination.TerminalProvider
@@ -241,6 +251,9 @@ object LineDestinations {
             LineDestination.ErrorLogs,
             LineDestination.KeepAlive,
             LineDestination.About -> LineDestination.Settings
+
+            LineDestination.SshSettings,
+            LineDestination.TermuxIntegration -> LineDestination.Mcp
 
             LineDestination.Licenses -> LineDestination.About
             LineDestination.PromptTemplates -> LineDestination.Llm
