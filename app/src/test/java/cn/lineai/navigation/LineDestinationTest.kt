@@ -46,6 +46,7 @@ class LineDestinationTest {
         assertTrue(LineDestinations.fromScreenId("errorLogs") is LineDestination.ErrorLogs)
         assertTrue(LineDestinations.fromScreenId("keepAlive") is LineDestination.KeepAlive)
         assertTrue(LineDestinations.fromScreenId("about") is LineDestination.About)
+        assertTrue(LineDestinations.fromScreenId("licenses") is LineDestination.Licenses)
     }
 
     @Test
@@ -95,6 +96,14 @@ class LineDestinationTest {
         assertEquals(
             LineDestination.Output,
             LineDestinations.parentOf(LineDestination.ToolCallPreview)
+        )
+        assertEquals(
+            LineDestination.About,
+            LineDestinations.parentOf(LineDestination.Licenses)
+        )
+        assertEquals(
+            LineDestination.Settings,
+            LineDestinations.parentOf(LineDestination.About)
         )
     }
 

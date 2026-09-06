@@ -99,6 +99,10 @@ sealed interface LineDestination : NavKey {
         override val screenId: String = "about"
     }
 
+    data object Licenses : LineDestination {
+        override val screenId: String = "licenses"
+    }
+
     data object ModelAddOptions : LineDestination {
         override val screenId: String = "modelAddOptions"
     }
@@ -180,6 +184,7 @@ object LineDestinations {
             id == "errorLogs" -> LineDestination.ErrorLogs
             id == "keepAlive" -> LineDestination.KeepAlive
             id == "about" -> LineDestination.About
+            id == "licenses" -> LineDestination.Licenses
             id == "modelAddOptions" -> LineDestination.ModelAddOptions
             id == "modelAdd" -> LineDestination.ModelAdd
             id == "modelAdd:local" -> LineDestination.ModelAddLocal
@@ -226,6 +231,7 @@ object LineDestinations {
             LineDestination.KeepAlive,
             LineDestination.About -> LineDestination.Settings
 
+            LineDestination.Licenses -> LineDestination.About
             LineDestination.PromptTemplates -> LineDestination.Llm
             LineDestination.ToolCallPreview -> LineDestination.Output
 
@@ -252,7 +258,6 @@ object LineDestinations {
             "imageUnderstandingModel", "imageGenerationModel" -> "toolSettings"
             "promptTemplates" -> "llm"
             "toolcall_preview" -> "output"
-            "licenses" -> "about"
             "terminalProvider" -> "extensions"
             else -> ""
         }
