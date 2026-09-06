@@ -40,32 +40,104 @@ public final class ToolSettingsScreenView extends FrameLayout {
             String imageGenerationModelLabel,
             Listener listener
     ) {
-        this(context, listener);
+        this(
+                context,
+                new SeededListener(
+                        listener,
+                        state,
+                        imageUnderstandingModelLabel,
+                        imageGenerationModelLabel
+                )
+        );
     }
 
     public ToolSettingsScreenView(Context context, Listener listener) {
         super(context);
+        final Listener hostListener = listener;
         ToolSettingsRepository repository = new ToolSettingsControllerRepository(
-                new ListenerGateway(listener)
+                new ListenerGateway(hostListener)
         );
         addView(
                 new ToolSettingsHostView(context, repository, new ToolSettingsHostView.Listener() {
                     @Override
                     public void onBack() {
-                        listener.onBack();
+                        hostListener.onBack();
                     }
 
                     @Override
                     public void onOpen(LineDestination destination) {
                         if (destination instanceof LineDestination.ImageUnderstandingModel) {
-                            listener.onOpenImageUnderstandingModelPicker();
+                            hostListener.onOpenImageUnderstandingModelPicker();
                         } else if (destination instanceof LineDestination.ImageGenerationModel) {
-                            listener.onOpenImageGenerationModelPicker();
+                            hostListener.onOpenImageGenerationModelPicker();
                         }
                     }
                 }),
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         );
+    }
+
+    private static final class SeededListener implements Listener {
+        private final Listener delegate;
+        private McpSettingsState seededState;
+        private final String seededUnderstanding;
+        private final String seededGeneration;
+
+        SeededListener(
+                Listener delegate,
+                McpSettingsState seededState,
+                String seededUnderstanding,
+                String seededGeneration
+        ) {
+            this.delegate = delegate;
+            this.seededState = seededState;
+            this.seededUnderstanding = seededUnderstanding == null ? "" : seededUnderstanding.trim();
+            this.seededGeneration = seededGeneration == null ? "" : seededGeneration.trim();
+        }
+
+        @Override
+        public void onBack() {
+            delegate.onBack();
+        }
+
+        @Override
+        public void onWebSearchConfigChanged(WebSearchConfig config) {
+            delegate.onWebSearchConfigChanged(config);
+        }
+
+        @Override
+        public void onOpenImageUnderstandingModelPicker() {
+            delegate.onOpenImageUnderstandingModelPicker();
+        }
+
+        @Override
+        public void onOpenImageGenerationModelPicker() {
+            delegate.onOpenImageGenerationModelPicker();
+        }
+
+        @Override
+        public McpSettingsState currentMcpSettingsState() {
+            McpSettingsState live = delegate.currentMcpSettingsState();
+            return live != null ? live : seededState;
+        }
+
+        @Override
+        public String currentImageUnderstandingModelLabel() {
+            String live = delegate.currentImageUnderstandingModelLabel();
+            if (live != null && live.trim().length() > 0) {
+                return live.trim();
+            }
+            return seededUnderstanding;
+        }
+
+        @Override
+        public String currentImageGenerationModelLabel() {
+            String live = delegate.currentImageGenerationModelLabel();
+            if (live != null && live.trim().length() > 0) {
+                return live.trim();
+            }
+            return seededGeneration;
+        }
     }
 
     private static final class ListenerGateway implements ToolSettingsLegacyGateway {
