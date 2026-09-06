@@ -60,6 +60,9 @@ public final class ScreenRegistry {
         if (LinecodeExtensionsLegacyBridge.handles(destination)) {
             return LinecodeExtensionsLegacyBridge.create(context, view, controller);
         }
+        if (SkillsExtensionsLegacyBridge.handles(destination)) {
+            return SkillsExtensionsLegacyBridge.create(context, view, controller);
+        }
         if ("models".equals(id) || "modelAddOptions".equals(id)) {
             return createModelNavigationHost(context, view, controller, destination);
         }
