@@ -54,6 +54,9 @@ public final class ScreenRegistry {
         if (McpExtensionsLegacyBridge.handles(destination)) {
             return McpExtensionsLegacyBridge.create(context, view, controller);
         }
+        if (AgentExtensionsLegacyBridge.handles(destination)) {
+            return AgentExtensionsLegacyBridge.create(context, view, controller);
+        }
         if ("models".equals(id) || "modelAddOptions".equals(id)) {
             return createModelNavigationHost(context, view, controller, destination);
         }
