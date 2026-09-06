@@ -34,6 +34,7 @@ class LineDestinationTest {
         assertTrue(LineDestinations.fromScreenId("mcp") is LineDestination.Mcp)
         assertTrue(LineDestinations.fromScreenId("toolSettings") is LineDestination.ToolSettings)
         assertTrue(LineDestinations.fromScreenId("extensions") is LineDestination.Extensions)
+        assertTrue(LineDestinations.fromScreenId("terminalProvider") is LineDestination.TerminalProvider)
         assertTrue(LineDestinations.fromScreenId("advancedFeatures") is LineDestination.AdvancedFeatures)
         assertTrue(LineDestinations.fromScreenId("phoneControl") is LineDestination.PhoneControl)
         assertTrue(LineDestinations.fromScreenId("input") is LineDestination.Input)
@@ -62,6 +63,16 @@ class LineDestinationTest {
         )
         assertEquals("advancedFeatures", LineDestination.AdvancedFeatures.screenId)
         assertEquals("phoneControl", LineDestination.PhoneControl.screenId)
+    }
+
+    @Test
+    fun terminalProviderRoundTripsAsTypedDestination() {
+        assertEquals(
+            LineDestination.TerminalProvider,
+            LineDestinations.fromScreenId(LineDestination.TerminalProvider.screenId)
+        )
+        assertEquals("terminalProvider", LineDestination.TerminalProvider.screenId)
+        assertFalse(LineDestinations.fromScreenId("terminalProvider") is LineDestination.Legacy)
     }
 
     @Test
@@ -95,6 +106,10 @@ class LineDestinationTest {
         assertEquals(
             LineDestination.Extensions,
             LineDestinations.parentOf(LineDestination.Extension("skills"))
+        )
+        assertEquals(
+            LineDestination.Extensions,
+            LineDestinations.parentOf(LineDestination.TerminalProvider)
         )
         assertEquals(
             LineDestination.Llm,

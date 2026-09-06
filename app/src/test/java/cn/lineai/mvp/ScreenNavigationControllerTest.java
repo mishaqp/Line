@@ -133,6 +133,48 @@ public final class ScreenNavigationControllerTest {
         Assert.assertEquals("", host.lastScreenId);
     }
 
+    @Test
+    public void extensionsBackChainWorksForAllFiveMenuDestinations() {
+        String[] childIds = new String[] {
+                "extension:agent",
+                "extension:mcp",
+                "extension:skills",
+                "extension:linecode",
+                "terminalProvider"
+        };
+
+        for (String childId : childIds) {
+            ScreenNavigationController controller = new ScreenNavigationController();
+            RecordingHost host = new RecordingHost();
+
+            controller.showScreen("settings", host);
+            controller.showScreen("extensions", host);
+            controller.showScreen(childId, host);
+
+            controller.backFrom(childId, host);
+            Assert.assertEquals(childId, "extensions", host.lastScreenId);
+            Assert.assertFalse(childId, host.lastForward);
+            Assert.assertFalse(childId, host.chatShown);
+
+            controller.backFrom("extensions", host);
+            Assert.assertEquals(childId, "settings", host.lastScreenId);
+            Assert.assertFalse(childId, host.lastForward);
+            Assert.assertFalse(childId, host.chatShown);
+        }
+    }
+
+    @Test
+    public void terminalProviderDirectBackUsesExtensionsFallback() {
+        ScreenNavigationController controller = new ScreenNavigationController();
+        RecordingHost host = new RecordingHost();
+
+        controller.backFrom("terminalProvider", host);
+
+        Assert.assertEquals("extensions", host.lastScreenId);
+        Assert.assertFalse(host.lastForward);
+        Assert.assertFalse(host.chatShown);
+    }
+
     private static final class RecordingHost implements ScreenNavigationController.Host {
         private String lastScreenId = "";
         private boolean lastForward;

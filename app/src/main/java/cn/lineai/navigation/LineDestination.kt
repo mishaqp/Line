@@ -51,6 +51,10 @@ sealed interface LineDestination : NavKey {
         override val screenId: String = "extensions"
     }
 
+    data object TerminalProvider : LineDestination {
+        override val screenId: String = "terminalProvider"
+    }
+
     data object AdvancedFeatures : LineDestination {
         override val screenId: String = "advancedFeatures"
     }
@@ -176,6 +180,7 @@ object LineDestinations {
             id == "mcp" -> LineDestination.Mcp
             id == "toolSettings" -> LineDestination.ToolSettings
             id == "extensions" -> LineDestination.Extensions
+            id == "terminalProvider" -> LineDestination.TerminalProvider
             id == "advancedFeatures" -> LineDestination.AdvancedFeatures
             id == "phoneControl" -> LineDestination.PhoneControl
             id == "input" -> LineDestination.Input
@@ -249,6 +254,7 @@ object LineDestinations {
             is LineDestination.ModelAddPreset -> LineDestination.ModelAddOptions
 
             is LineDestination.Extension,
+            LineDestination.TerminalProvider,
             is LineDestination.AgentEdit,
             is LineDestination.McpEdit -> LineDestination.Extensions
 
@@ -264,7 +270,6 @@ object LineDestinations {
             "imageUnderstandingModel", "imageGenerationModel" -> "toolSettings"
             "promptTemplates" -> "llm"
             "toolcall_preview" -> "output"
-            "terminalProvider" -> "extensions"
             else -> ""
         }
         return fromScreenId(parentId)
