@@ -15,23 +15,26 @@ class SshSettingsViewModelTest {
 
     @Test
     fun initialReadDoesNotWrite() {
-        val repository = RecordingRepository(config("10.0.0.2", 22, "root", "secret", "KEY", "phrase"))
+        val repository = RecordingRepository(
+            config("10.0.0.2", 22, "root", "s3cret-pass", "BEGIN-PRIV", "key-phrase")
+        )
 
         val viewModel = SshSettingsViewModel(repository, QueuedDispatcher())
+        val rendered = viewModel.state.value.toString()
 
         assertEquals("10.0.0.2", viewModel.state.value.host)
         assertEquals("22", viewModel.state.value.port)
         assertEquals("root", viewModel.state.value.username)
-        assertEquals("secret", viewModel.state.value.password)
-        assertEquals("KEY", viewModel.state.value.privateKey)
-        assertEquals("phrase", viewModel.state.value.passphrase)
+        assertEquals("s3cret-pass", viewModel.state.value.password)
+        assertEquals("BEGIN-PRIV", viewModel.state.value.privateKey)
+        assertEquals("key-phrase", viewModel.state.value.passphrase)
         assertFalse(viewModel.state.value.dirty)
         assertEquals(1, repository.loadCalls)
         assertEquals(0, repository.saveCalls)
         assertEquals(0, repository.testCalls)
-        assertFalse(viewModel.state.value.toString().contains("secret"))
-        assertFalse(viewModel.state.value.toString().contains("phrase"))
-        assertFalse(viewModel.state.value.toString().contains("KEY"))
+        assertFalse(rendered.contains("s3cret-pass"))
+        assertFalse(rendered.contains("BEGIN-PRIV"))
+        assertFalse(rendered.contains("key-phrase"))
     }
 
     @Test
@@ -149,14 +152,18 @@ class SshSettingsViewModelTest {
     }
 
     @Test
-    fun blankExceptionFallsBackToLegacyUnknownLabel() {
+    fun blankExceptionUsesClassNameAndNullFallsBackToLegacyUnknownLabel() {
         assertEquals(
-            SshSettingsViewModel.UNKNOWN_ERROR,
+            "IllegalStateException",
             SshSettingsViewModel.describeException(IllegalStateException("  "))
         )
         assertEquals(
             "IllegalStateException",
             SshSettingsViewModel.describeException(IllegalStateException())
+        )
+        assertEquals(
+            SshSettingsViewModel.UNKNOWN_ERROR,
+            SshSettingsViewModel.describeException(null)
         )
     }
 
