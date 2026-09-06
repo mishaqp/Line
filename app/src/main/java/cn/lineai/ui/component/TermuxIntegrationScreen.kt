@@ -1,5 +1,6 @@
 package cn.lineai.ui.component
 
+import android.graphics.Typeface
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.SelectionContainer
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -97,25 +97,34 @@ internal fun TermuxIntegrationScreenContent(
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.padding(top = 8.dp))
-                SelectionContainer {
-                    Text(
-                        text = state.grantCommand,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(LineTheme.SHAPE_SM.dp))
-                            .background(Color(LineTheme.CODE_BG))
-                            .border(
-                                width = 1.dp,
-                                color = Color(LineTheme.CODE_BORDER),
-                                shape = RoundedCornerShape(LineTheme.SHAPE_SM.dp)
+                AndroidView(
+                    modifier = Modifier.fillMaxWidth(),
+                    factory = { context ->
+                        LineTheme.text(
+                            context,
+                            "",
+                            LineTheme.FONT_XS,
+                            LineTheme.TEXT_SECONDARY,
+                            Typeface.NORMAL
+                        ).apply {
+                            typeface = Typeface.MONOSPACE
+                            setTextIsSelectable(true)
+                            setLineSpacing(LineTheme.dp(context, 3).toFloat(), 1f)
+                            background = LineTheme.roundedStroke(
+                                context,
+                                LineTheme.CODE_BG,
+                                LineTheme.SHAPE_SM.toFloat(),
+                                LineTheme.CODE_BORDER
                             )
-                            .padding(12.dp),
-                        color = Color(LineTheme.TEXT_SECONDARY),
-                        fontSize = LineTheme.FONT_XS.sp,
-                        fontFamily = FontFamily.Monospace,
-                        lineHeight = (LineTheme.FONT_XS + 3).sp
-                    )
-                }
+                            LineTheme.padding(this, LineTheme.MD, LineTheme.MD, LineTheme.MD, LineTheme.MD)
+                        }
+                    },
+                    update = { view ->
+                        if (view.text.toString() != state.grantCommand) {
+                            view.text = state.grantCommand
+                        }
+                    }
+                )
             }
             Spacer(Modifier.padding(top = 12.dp))
             TermuxCard {
