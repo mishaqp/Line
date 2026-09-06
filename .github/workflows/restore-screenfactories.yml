@@ -1,0 +1,45 @@
+name: Restore ScreenFactories once
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refactor/foundation-v2
+          fetch-depth: 0
+      - name: Restore ScreenFactories.java from ffa2ebf5 blob
+        run: |
+          set -euo pipefail
+          git checkout ffa2ebf5a16d8b1fd69f1e5969c21bd5b9771270 -- app/src/main/java/cn/lineai/ui/component/ScreenFactories.java
+          python3 - <<'PY'
+          import hashlib, pathlib
+          data = pathlib.Path('app/src/main/java/cn/lineai/ui/component/ScreenFactories.java').read_bytes()
+          blob = f'blob {len(data)}\0'.encode() + data
+          sha = hashlib.sha1(blob).hexdigest()
+          print('restored bytes', len(data), 'blob', sha)
+          if sha != '6edef16e287e9318b59d84393b75aea6ea52857f':
+              raise SystemExit(f'unexpected blob sha {sha}')
+          text = data.decode('utf-8')
+          if not text.startswith('package cn.lineai.ui.component;'):
+              raise SystemExit('missing package')
+          if 'public final class ScreenFactories' not in text:
+              raise SystemExit('missing class')
+          if 'ToolSettingsScreenFactory' not in text:
+              raise SystemExit('missing ToolSettingsScreenFactory')
+          if 'PLACEHOLDER' in text or 'RESTORED_FROM_FFA2' in text or 'USE_FILE:' in text:
+              raise SystemExit('placeholder markers present')
+          PY
+          git config user.name "mishaqp"
+          git config user.email "84035331+mishaqp@users.noreply.github.com"
+          git add app/src/main/java/cn/lineai/ui/component/ScreenFactories.java
+          git commit -m "fix: restore complete ScreenFactories registry"
+          git rm -f .github/workflows/restore-screenfactories.yml
+          git commit -m "chore: remove one-time ScreenFactories restore workflow"
+          git push origin HEAD:refactor/foundation-v2
