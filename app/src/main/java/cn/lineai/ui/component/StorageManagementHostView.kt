@@ -19,6 +19,8 @@ class StorageManagementHostView(
 
     interface Listener {
         fun onBack()
+        fun onClearDiffCache()
+        fun onClearChatHistory()
     }
 
     @Volatile
@@ -26,6 +28,9 @@ class StorageManagementHostView(
 
     @Volatile
     private var pendingRefresh: Boolean = false
+
+    @Volatile
+    private var suppressExternalRefresh: Boolean = false
 
     init {
         addView(
@@ -40,8 +45,9 @@ class StorageManagementHostView(
 
                         DisposableEffect(storage) {
                             storageViewModel = storage
-                            if (pendingRefresh) {
-                                pendingRefresh = false
+                            val shouldRefresh = pendingRefresh || storage.state.value.stats != null
+                            pendingRefresh = false
+                            if (shouldRefresh) {
                                 storage.refresh()
                             }
                             onDispose {
@@ -51,14 +57,37 @@ class StorageManagementHostView(
                             }
                         }
 
-                        StorageManagementScreenContent(
-                            state = storage.state.collectAsStateWithLifecycle().value,
-                            onAction = { action ->
-                                when (storage.onAction(action)) {
-                                    StorageUiEffect.Back -> listener.onBack()
-                                    null -> Unit
+                        fun handleEffect(effect: StorageUiEffect?) {
+                            when (effect) {
+                                null -> Unit
+                                StorageUiEffect.Back -> listener.onBack()
+                                is StorageUiEffect.ClearSelected -> {
+                                    suppressExternalRefresh = true
+                                    try {
+                                        if (effect.clearDiffCache) {
+                                            try {
+                                                listener.onClearDiffCache()
+                                            } catch (_: RuntimeException) {
+                                            }
+                                        }
+                                        if (effect.clearChatHistory) {
+                                            try {
+                                                listener.onClearChatHistory()
+                                            } catch (_: RuntimeException) {
+                                            }
+                                        }
+                                    } finally {
+                                        suppressExternalRefresh = false
+                                        pendingRefresh = false
+                                        storage.onAction(cn.lineai.ui.model.StorageUiAction.ClearCompleted)
+                                    }
                                 }
                             }
+                        }
+
+                        StorageManagementScreenContent(
+                            state = storage.state.collectAsStateWithLifecycle().value,
+                            onAction = { action -> handleEffect(storage.onAction(action)) }
                         )
                     }
                 }
@@ -68,6 +97,10 @@ class StorageManagementHostView(
     }
 
     fun refresh() {
+        if (suppressExternalRefresh) {
+            pendingRefresh = true
+            return
+        }
         val current = storageViewModel
         if (current != null) {
             current.refresh()

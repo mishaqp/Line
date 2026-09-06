@@ -28,6 +28,16 @@ public final class StorageManagementScreenView extends FrameLayout {
             public void onBack() {
                 listener.onBack();
             }
+
+            @Override
+            public void onClearDiffCache() {
+                listener.onClearDiffCache();
+            }
+
+            @Override
+            public void onClearChatHistory() {
+                listener.onClearChatHistory();
+            }
         });
         addView(
                 hostView,

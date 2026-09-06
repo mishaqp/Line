@@ -14,7 +14,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import cn.lineai.R
-import cn.lineai.model.StorageStatsUiModel
 import cn.lineai.ui.model.StorageUiAction
 import cn.lineai.ui.model.StorageUiState
 import cn.lineai.ui.theme.IconButtonView
@@ -44,7 +47,10 @@ internal fun StorageManagementScreenContent(
             .background(Color(LineTheme.BG))
     ) {
         StorageHeader(
+            busy = state.isInitialLoading || state.isRefreshing || state.isClearing,
+            clearEnabled = state.stats != null && !state.isClearing,
             onBack = { onAction(StorageUiAction.Back) },
+            onClear = { onAction(StorageUiAction.OpenClearDialog) },
             onRefresh = { onAction(StorageUiAction.Refresh) }
         )
 
@@ -86,11 +92,25 @@ internal fun StorageManagementScreenContent(
             )
         }
     }
+
+    if (state.showClearDialog) {
+        StorageClearDialog(
+            clearDiffCache = state.clearDiffCacheSelected,
+            clearChatHistory = state.clearChatHistorySelected,
+            onClearDiffCacheChanged = { onAction(StorageUiAction.SetClearDiffCache(it)) },
+            onClearChatHistoryChanged = { onAction(StorageUiAction.SetClearChatHistory(it)) },
+            onConfirm = { onAction(StorageUiAction.ConfirmClear) },
+            onDismiss = { onAction(StorageUiAction.DismissClearDialog) }
+        )
+    }
 }
 
 @Composable
 private fun StorageHeader(
+    busy: Boolean,
+    clearEnabled: Boolean,
     onBack: () -> Unit,
+    onClear: () -> Unit,
     onRefresh: () -> Unit
 ) {
     Row(
@@ -115,6 +135,17 @@ private fun StorageHeader(
             fontSize = LineTheme.FONT_LG.sp,
             fontWeight = FontWeight.Bold
         )
+        if (busy) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .size(16.dp),
+                strokeWidth = 2.dp
+            )
+        }
+        TextButton(onClick = onClear, enabled = clearEnabled) {
+            Text(stringResource(R.string.common_clear))
+        }
         AndroidView(
             factory = { context ->
                 RefreshCwButtonView(context, 18).apply {
@@ -238,6 +269,82 @@ private fun StorageCard(
                 color = Color(LineTheme.TEXT_TERTIARY),
                 fontSize = LineTheme.FONT_XS.sp,
                 textAlign = TextAlign.End
+            )
+        }
+    }
+}
+
+@Composable
+private fun StorageClearDialog(
+    clearDiffCache: Boolean,
+    clearChatHistory: Boolean,
+    onClearDiffCacheChanged: (Boolean) -> Unit,
+    onClearChatHistoryChanged: (Boolean) -> Unit,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.screen_storage_clear_title)) },
+        text = {
+            Column {
+                Text(stringResource(R.string.screen_storage_clear_message))
+                Spacer(Modifier.height(12.dp))
+                StorageClearChoice(
+                    checked = clearDiffCache,
+                    titleRes = R.string.screen_storage_row_diff_cache,
+                    descRes = R.string.screen_storage_desc_diff,
+                    onCheckedChange = onClearDiffCacheChanged
+                )
+                StorageClearChoice(
+                    checked = clearChatHistory,
+                    titleRes = R.string.screen_storage_row_chat,
+                    descRes = R.string.screen_storage_desc_chat,
+                    onCheckedChange = onClearChatHistoryChanged
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm,
+                enabled = clearDiffCache || clearChatHistory
+            ) {
+                Text(stringResource(R.string.common_clear))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.common_cancel))
+            }
+        }
+    )
+}
+
+@Composable
+private fun StorageClearChoice(
+    checked: Boolean,
+    titleRes: Int,
+    descRes: Int,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCheckedChange(!checked) }
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Checkbox(checked = checked, onCheckedChange = onCheckedChange)
+        Column(modifier = Modifier.padding(start = 8.dp)) {
+            Text(
+                text = stringResource(titleRes),
+                color = Color(LineTheme.TEXT),
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                text = stringResource(descRes),
+                color = Color(LineTheme.TEXT_TERTIARY),
+                fontSize = LineTheme.FONT_XS.sp
             )
         }
     }

@@ -7,7 +7,6 @@ import cn.lineai.model.StorageStatsUiModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,16 +21,30 @@ interface StorageManagementRepository {
 data class StorageUiState(
     val stats: StorageStatsUiModel? = null,
     val isInitialLoading: Boolean = true,
-    val isRefreshing: Boolean = false
+    val isRefreshing: Boolean = false,
+    val showClearDialog: Boolean = false,
+    val clearDiffCacheSelected: Boolean = false,
+    val clearChatHistorySelected: Boolean = false,
+    val isClearing: Boolean = false
 )
 
 sealed interface StorageUiAction {
     data object Back : StorageUiAction
     data object Refresh : StorageUiAction
+    data object OpenClearDialog : StorageUiAction
+    data object DismissClearDialog : StorageUiAction
+    data class SetClearDiffCache(val selected: Boolean) : StorageUiAction
+    data class SetClearChatHistory(val selected: Boolean) : StorageUiAction
+    data object ConfirmClear : StorageUiAction
+    data object ClearCompleted : StorageUiAction
 }
 
 sealed interface StorageUiEffect {
     data object Back : StorageUiEffect
+    data class ClearSelected(
+        val clearDiffCache: Boolean,
+        val clearChatHistory: Boolean
+    ) : StorageUiEffect
 }
 
 class StorageManagementViewModel(
@@ -41,35 +54,11 @@ class StorageManagementViewModel(
     private val _state = MutableStateFlow(StorageUiState())
     val state: StateFlow<StorageUiState> = _state.asStateFlow()
 
-    private val refreshRequests = Channel<Unit>(Channel.CONFLATED)
+    private val workLock = Any()
+    private var workerRunning = false
+    private var refreshPending = false
 
     init {
-        viewModelScope.launch(loadDispatcher) {
-            for (ignored in refreshRequests) {
-                val currentStats = _state.value.stats
-                _state.value = _state.value.copy(
-                    isInitialLoading = currentStats == null,
-                    isRefreshing = currentStats != null
-                )
-                try {
-                    val loaded = repository.loadStats()
-                    currentCoroutineContext().ensureActive()
-                    _state.value = StorageUiState(
-                        stats = loaded,
-                        isInitialLoading = false,
-                        isRefreshing = false
-                    )
-                } catch (cancelled: CancellationException) {
-                    throw cancelled
-                } catch (_: Exception) {
-                    currentCoroutineContext().ensureActive()
-                    _state.value = _state.value.copy(
-                        isInitialLoading = false,
-                        isRefreshing = false
-                    )
-                }
-            }
-        }
         refresh()
     }
 
@@ -79,10 +68,115 @@ class StorageManagementViewModel(
             refresh()
             null
         }
+        StorageUiAction.OpenClearDialog -> {
+            if (!_state.value.isClearing) {
+                _state.value = _state.value.copy(
+                    showClearDialog = true,
+                    clearDiffCacheSelected = false,
+                    clearChatHistorySelected = false
+                )
+            }
+            null
+        }
+        StorageUiAction.DismissClearDialog -> {
+            _state.value = _state.value.copy(
+                showClearDialog = false,
+                clearDiffCacheSelected = false,
+                clearChatHistorySelected = false
+            )
+            null
+        }
+        is StorageUiAction.SetClearDiffCache -> {
+            _state.value = _state.value.copy(clearDiffCacheSelected = action.selected)
+            null
+        }
+        is StorageUiAction.SetClearChatHistory -> {
+            _state.value = _state.value.copy(clearChatHistorySelected = action.selected)
+            null
+        }
+        StorageUiAction.ConfirmClear -> confirmClear()
+        StorageUiAction.ClearCompleted -> {
+            _state.value = _state.value.copy(
+                showClearDialog = false,
+                clearDiffCacheSelected = false,
+                clearChatHistorySelected = false,
+                isClearing = false
+            )
+            refresh()
+            null
+        }
     }
 
     fun refresh() {
-        refreshRequests.trySend(Unit)
+        synchronized(workLock) {
+            refreshPending = true
+            if (workerRunning) {
+                return
+            }
+            workerRunning = true
+            viewModelScope.launch(loadDispatcher) {
+                drainRefreshRequests()
+            }
+        }
+    }
+
+    private suspend fun drainRefreshRequests() {
+        while (true) {
+            currentCoroutineContext().ensureActive()
+            val shouldLoad = synchronized(workLock) {
+                if (refreshPending) {
+                    refreshPending = false
+                    true
+                } else {
+                    workerRunning = false
+                    false
+                }
+            }
+            if (!shouldLoad) {
+                return
+            }
+            loadOnce()
+        }
+    }
+
+    private suspend fun loadOnce() {
+        val currentStats = _state.value.stats
+        _state.value = _state.value.copy(
+            isInitialLoading = currentStats == null,
+            isRefreshing = currentStats != null
+        )
+        try {
+            val loaded = repository.loadStats()
+            currentCoroutineContext().ensureActive()
+            _state.value = _state.value.copy(
+                stats = loaded,
+                isInitialLoading = false,
+                isRefreshing = false
+            )
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            currentCoroutineContext().ensureActive()
+            _state.value = _state.value.copy(
+                isInitialLoading = false,
+                isRefreshing = false
+            )
+        }
+    }
+
+    private fun confirmClear(): StorageUiEffect? {
+        val current = _state.value
+        if (current.isClearing || (!current.clearDiffCacheSelected && !current.clearChatHistorySelected)) {
+            return null
+        }
+        _state.value = current.copy(
+            showClearDialog = false,
+            isClearing = true
+        )
+        return StorageUiEffect.ClearSelected(
+            clearDiffCache = current.clearDiffCacheSelected,
+            clearChatHistory = current.clearChatHistorySelected
+        )
     }
 
     companion object {

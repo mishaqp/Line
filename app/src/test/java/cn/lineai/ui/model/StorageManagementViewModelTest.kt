@@ -122,24 +122,138 @@ class StorageManagementViewModelTest {
     }
 
     @Test
-    fun rapidRefreshRequestsAreConflatedAndNeverRunInParallel() {
+    fun rapidRefreshBeforeWorkerRunsIsCoalescedIntoOneFreshLoad() {
         val dispatcher = ManualDispatcher()
-        val repository = FakeRepository(listOf(snapshotA(), snapshotB(), snapshotC()))
+        val repository = FakeRepository(listOf(snapshotA(), snapshotB()))
         val viewModel = StorageManagementViewModel(repository, dispatcher)
         dispatcher.runAll()
 
         repeat(10) { viewModel.refresh() }
         dispatcher.runAll()
 
-        assertTrue(repository.loadCalls in 2..3)
+        assertEquals(2, repository.loadCalls)
         assertEquals(1, repository.maxConcurrentLoads)
-        assertFalse(viewModel.state.value.isInitialLoading)
-        assertFalse(viewModel.state.value.isRefreshing)
-        assertTrue(viewModel.state.value.stats != null)
+        assertEquals("30 KB", viewModel.state.value.stats!!.formatTotalSize())
     }
 
     @Test
-    fun backDoesNotStartAnotherLoadOrExposeDestructiveAction() {
+    fun refreshRequestedWhileLoadIsRunningRunsOnceMoreAfterCurrentLoad() {
+        val dispatcher = ManualDispatcher()
+        val repository = FakeRepository(listOf(snapshotA(), snapshotB(), snapshotC()))
+        lateinit var viewModel: StorageManagementViewModel
+        repository.onLoad = { call ->
+            if (call == 2) {
+                repeat(5) { viewModel.refresh() }
+            }
+        }
+        viewModel = StorageManagementViewModel(repository, dispatcher)
+        dispatcher.runAll()
+
+        viewModel.refresh()
+        dispatcher.runAll()
+
+        assertEquals(3, repository.loadCalls)
+        assertEquals(1, repository.maxConcurrentLoads)
+        assertEquals("46 KB", viewModel.state.value.stats!!.formatTotalSize())
+    }
+
+    @Test
+    fun clearDialogLetsUserSelectOnlyDiffCache() {
+        val dispatcher = ManualDispatcher()
+        val viewModel = StorageManagementViewModel(FakeRepository(listOf(snapshotA(), snapshotB())), dispatcher)
+        dispatcher.runAll()
+
+        viewModel.onAction(StorageUiAction.OpenClearDialog)
+        assertTrue(viewModel.state.value.showClearDialog)
+        viewModel.onAction(StorageUiAction.SetClearDiffCache(true))
+
+        val effect = viewModel.onAction(StorageUiAction.ConfirmClear)
+
+        assertEquals(StorageUiEffect.ClearSelected(true, false), effect)
+        assertTrue(viewModel.state.value.isClearing)
+        assertFalse(viewModel.state.value.showClearDialog)
+    }
+
+    @Test
+    fun clearDialogLetsUserSelectOnlyChatHistoryOrBoth() {
+        val dispatcher = ManualDispatcher()
+        val viewModel = StorageManagementViewModel(FakeRepository(listOf(snapshotA())), dispatcher)
+        dispatcher.runAll()
+
+        viewModel.onAction(StorageUiAction.OpenClearDialog)
+        viewModel.onAction(StorageUiAction.SetClearChatHistory(true))
+        assertEquals(
+            StorageUiEffect.ClearSelected(false, true),
+            viewModel.onAction(StorageUiAction.ConfirmClear)
+        )
+
+        viewModel.onAction(StorageUiAction.ClearCompleted)
+        dispatcher.runAll()
+        viewModel.onAction(StorageUiAction.OpenClearDialog)
+        viewModel.onAction(StorageUiAction.SetClearDiffCache(true))
+        viewModel.onAction(StorageUiAction.SetClearChatHistory(true))
+        assertEquals(
+            StorageUiEffect.ClearSelected(true, true),
+            viewModel.onAction(StorageUiAction.ConfirmClear)
+        )
+    }
+
+    @Test
+    fun confirmWithNothingSelectedDoesNothing() {
+        val dispatcher = ManualDispatcher()
+        val repository = FakeRepository(listOf(snapshotA()))
+        val viewModel = StorageManagementViewModel(repository, dispatcher)
+        dispatcher.runAll()
+
+        viewModel.onAction(StorageUiAction.OpenClearDialog)
+        val effect = viewModel.onAction(StorageUiAction.ConfirmClear)
+
+        assertNull(effect)
+        assertFalse(viewModel.state.value.isClearing)
+        assertTrue(viewModel.state.value.showClearDialog)
+    }
+
+    @Test
+    fun clearCompletionAlwaysRefreshesStats() {
+        val dispatcher = ManualDispatcher()
+        val first = snapshotA()
+        val second = snapshotB()
+        val repository = FakeRepository(listOf(first, second))
+        val viewModel = StorageManagementViewModel(repository, dispatcher)
+        dispatcher.runAll()
+
+        viewModel.onAction(StorageUiAction.OpenClearDialog)
+        viewModel.onAction(StorageUiAction.SetClearDiffCache(true))
+        viewModel.onAction(StorageUiAction.ConfirmClear)
+        viewModel.onAction(StorageUiAction.ClearCompleted)
+        dispatcher.runAll()
+
+        assertFalse(viewModel.state.value.isClearing)
+        assertSame(second, viewModel.state.value.stats)
+        assertEquals(2, repository.loadCalls)
+    }
+
+    @Test
+    fun dismissClearDialogDoesNotRefreshOrEmitClearEffect() {
+        val dispatcher = ManualDispatcher()
+        val repository = FakeRepository(listOf(snapshotA()))
+        val viewModel = StorageManagementViewModel(repository, dispatcher)
+        dispatcher.runAll()
+        val before = repository.loadCalls
+
+        viewModel.onAction(StorageUiAction.OpenClearDialog)
+        viewModel.onAction(StorageUiAction.SetClearDiffCache(true))
+        val effect = viewModel.onAction(StorageUiAction.DismissClearDialog)
+        dispatcher.runAll()
+
+        assertNull(effect)
+        assertFalse(viewModel.state.value.showClearDialog)
+        assertFalse(viewModel.state.value.clearDiffCacheSelected)
+        assertEquals(before, repository.loadCalls)
+    }
+
+    @Test
+    fun backDoesNotStartLoadOrEmitClearEffect() {
         val dispatcher = ManualDispatcher()
         val repository = FakeRepository(listOf(snapshotA()))
         val viewModel = StorageManagementViewModel(repository, dispatcher)
@@ -151,8 +265,6 @@ class StorageManagementViewModelTest {
 
         assertSame(StorageUiEffect.Back, effect)
         assertEquals(callsBeforeBack, repository.loadCalls)
-        val repositoryMethods = StorageManagementRepository::class.java.declaredMethods.map { it.name }
-        assertEquals(listOf("loadStats"), repositoryMethods.sorted())
     }
 
     @Test
