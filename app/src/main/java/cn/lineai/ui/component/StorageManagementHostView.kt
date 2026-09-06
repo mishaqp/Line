@@ -5,8 +5,10 @@ import android.widget.FrameLayout
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.lineai.ui.model.StorageManagementRepository
 import cn.lineai.ui.model.StorageManagementViewModel
 import cn.lineai.ui.model.StorageUiEffect
@@ -23,6 +25,17 @@ class StorageManagementHostView(
         fun onClearChatHistory()
     }
 
+    private val hostViewModelStore = ViewModelStore()
+
+    private val hostViewModelStoreOwner = object : ViewModelStoreOwner {
+        override val viewModelStore: ViewModelStore = hostViewModelStore
+    }
+
+    private val storage = ViewModelProvider(
+        hostViewModelStoreOwner,
+        StorageManagementViewModel.factory(repository)
+    )["storage-management", StorageManagementViewModel::class.java]
+
     @Volatile
     private var storageViewModel: StorageManagementViewModel? = null
 
@@ -38,11 +51,6 @@ class StorageManagementHostView(
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
                     AccountScreenTheme {
-                        val storage: StorageManagementViewModel = viewModel(
-                            key = "storage-management",
-                            factory = StorageManagementViewModel.factory(repository)
-                        )
-
                         DisposableEffect(storage) {
                             storageViewModel = storage
                             val shouldRefresh = pendingRefresh || storage.state.value.stats != null
@@ -54,6 +62,7 @@ class StorageManagementHostView(
                                 if (storageViewModel === storage) {
                                     storageViewModel = null
                                 }
+                                hostViewModelStore.clear()
                             }
                         }
 
