@@ -77,15 +77,16 @@ class TermuxIntegrationControllerRepositoryTest {
             TermuxRawSetup(SshConfig.defaultConfig(), "sh", "/rc", "")
         )
         gateway.setupError = IllegalStateException(
-            "failed\nLINEAI_PRIVATE_KEY_BEGIN\nPRIVATE\nLINEAI_PRIVATE_KEY_END"
+            "failed\nLINEAI_PRIVATE_KEY_BEGIN\nPRIVATE_KEY_PAYLOAD\nLINEAI_PRIVATE_KEY_END"
         )
 
         val failure = repository(gateway).setupAndTest(900000) as TermuxSetupOutcome.Failure
 
         assertEquals(1, gateway.setupCalls)
         assertEquals(0, gateway.testCalls)
-        assertFalse(failure.message.contains("PRIVATE"))
+        assertFalse(failure.message.contains("PRIVATE_KEY_PAYLOAD"))
         assertFalse(failure.message.contains("LINEAI_PRIVATE_KEY_BEGIN"))
+        assertFalse(failure.message.contains("LINEAI_PRIVATE_KEY_END"))
         assertTrue(failure.message.contains(REDACT_REPLACEMENT))
     }
 
