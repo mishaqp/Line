@@ -48,6 +48,9 @@ public final class ScreenRegistry {
             Context context
     ) {
         String id = destination == null ? "" : destination.getScreenId();
+        if (destination instanceof LineDestination.TerminalProvider) {
+            return TerminalProvidersLegacyBridge.create(context, view, controller);
+        }
         if ("models".equals(id) || "modelAddOptions".equals(id)) {
             return createModelNavigationHost(context, view, controller, destination);
         }
