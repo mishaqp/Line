@@ -18,7 +18,7 @@ import cn.lineai.ui.model.PhoneControlViewModel
 class PhoneControlHostView(
     context: Context,
     repository: PhoneControlSettingsRepository,
-    listener: Listener
+    private val listener: Listener
 ) : FrameLayout(context) {
 
     interface Listener {
