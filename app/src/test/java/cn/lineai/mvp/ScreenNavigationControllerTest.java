@@ -175,6 +175,70 @@ public final class ScreenNavigationControllerTest {
         Assert.assertFalse(host.chatShown);
     }
 
+    @Test
+    public void mcpSshSettingsBackChainReturnsToToolsAndExecution() {
+        ScreenNavigationController controller = new ScreenNavigationController();
+        RecordingHost host = new RecordingHost();
+
+        controller.showScreen("settings", host);
+        controller.showScreen("mcp", host);
+        controller.showScreen("sshSettings", host);
+
+        controller.backFrom("sshSettings", host);
+        Assert.assertEquals("mcp", host.lastScreenId);
+        Assert.assertFalse(host.lastForward);
+        Assert.assertFalse(host.chatShown);
+
+        controller.backFrom("mcp", host);
+        Assert.assertEquals("settings", host.lastScreenId);
+        Assert.assertFalse(host.lastForward);
+        Assert.assertFalse(host.chatShown);
+    }
+
+    @Test
+    public void mcpTermuxIntegrationBackChainReturnsToToolsAndExecution() {
+        ScreenNavigationController controller = new ScreenNavigationController();
+        RecordingHost host = new RecordingHost();
+
+        controller.showScreen("settings", host);
+        controller.showScreen("mcp", host);
+        controller.showScreen("termuxIntegration", host);
+
+        controller.backFrom("termuxIntegration", host);
+        Assert.assertEquals("mcp", host.lastScreenId);
+        Assert.assertFalse(host.lastForward);
+        Assert.assertFalse(host.chatShown);
+
+        controller.backFrom("mcp", host);
+        Assert.assertEquals("settings", host.lastScreenId);
+        Assert.assertFalse(host.lastForward);
+        Assert.assertFalse(host.chatShown);
+    }
+
+    @Test
+    public void sshSettingsDirectBackUsesMcpFallback() {
+        ScreenNavigationController controller = new ScreenNavigationController();
+        RecordingHost host = new RecordingHost();
+
+        controller.backFrom("sshSettings", host);
+
+        Assert.assertEquals("mcp", host.lastScreenId);
+        Assert.assertFalse(host.lastForward);
+        Assert.assertFalse(host.chatShown);
+    }
+
+    @Test
+    public void termuxIntegrationDirectBackUsesMcpFallback() {
+        ScreenNavigationController controller = new ScreenNavigationController();
+        RecordingHost host = new RecordingHost();
+
+        controller.backFrom("termuxIntegration", host);
+
+        Assert.assertEquals("mcp", host.lastScreenId);
+        Assert.assertFalse(host.lastForward);
+        Assert.assertFalse(host.chatShown);
+    }
+
     private static final class RecordingHost implements ScreenNavigationController.Host {
         private String lastScreenId = "";
         private boolean lastForward;
