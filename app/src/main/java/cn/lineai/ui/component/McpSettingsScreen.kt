@@ -361,7 +361,7 @@ private fun McpToolGroupCard(
                     badge.background = LineTheme.rounded(
                         context,
                         LineTheme.SURFACE_LIGHT,
-                        LineTheme.SHAPE_XS
+                        LineTheme.SHAPE_XS.toFloat()
                     )
                     LineTheme.padding(badge, LineTheme.SM, 2, LineTheme.SM, 2)
                     wrap.addView(

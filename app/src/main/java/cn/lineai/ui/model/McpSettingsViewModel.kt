@@ -19,10 +19,10 @@ data class McpToolGroupUiModel(
 )
 
 data class McpSettingsUiState(
-    val executionMode: String = MODE_LOCAL,
+    val executionMode: String = "local",
     val groups: List<McpToolGroupUiModel> = emptyList()
 ) {
-    val showSshActions: Boolean get() = executionMode == MODE_SSH
+    val showSshActions: Boolean get() = executionMode == "ssh"
 }
 
 sealed interface McpSettingsUiAction {
