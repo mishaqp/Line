@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -54,7 +53,6 @@ internal fun SshSettingsScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(LineTheme.BG))
-            .imePadding()
     ) {
         SettingsScreenHeader(
             titleRes = R.string.screen_ssh_title,
@@ -65,7 +63,7 @@ internal fun SshSettingsScreenContent(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 16.dp)
-                .padding(bottom = 84.dp)
+                .padding(bottom = 16.dp)
         ) {
             SshCard {
                 Text(
