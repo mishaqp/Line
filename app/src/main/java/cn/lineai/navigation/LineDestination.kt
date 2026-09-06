@@ -55,6 +55,10 @@ sealed interface LineDestination : NavKey {
         override val screenId: String = "advancedFeatures"
     }
 
+    data object PhoneControl : LineDestination {
+        override val screenId: String = "phoneControl"
+    }
+
     data object Input : LineDestination {
         override val screenId: String = "input"
     }
@@ -173,6 +177,7 @@ object LineDestinations {
             id == "toolSettings" -> LineDestination.ToolSettings
             id == "extensions" -> LineDestination.Extensions
             id == "advancedFeatures" -> LineDestination.AdvancedFeatures
+            id == "phoneControl" -> LineDestination.PhoneControl
             id == "input" -> LineDestination.Input
             id == "theme" -> LineDestination.Theme
             id == "output" -> LineDestination.Output
@@ -210,7 +215,8 @@ object LineDestinations {
     fun parentOf(destination: LineDestination): LineDestination {
         return when (destination) {
             LineDestination.Chat,
-            LineDestination.Settings -> LineDestination.Chat
+            LineDestination.Settings,
+            LineDestination.PhoneControl -> LineDestination.Chat
 
             LineDestination.Models,
             LineDestination.CodexAccount,

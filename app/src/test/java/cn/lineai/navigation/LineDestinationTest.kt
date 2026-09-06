@@ -35,6 +35,7 @@ class LineDestinationTest {
         assertTrue(LineDestinations.fromScreenId("toolSettings") is LineDestination.ToolSettings)
         assertTrue(LineDestinations.fromScreenId("extensions") is LineDestination.Extensions)
         assertTrue(LineDestinations.fromScreenId("advancedFeatures") is LineDestination.AdvancedFeatures)
+        assertTrue(LineDestinations.fromScreenId("phoneControl") is LineDestination.PhoneControl)
         assertTrue(LineDestinations.fromScreenId("input") is LineDestination.Input)
         assertTrue(LineDestinations.fromScreenId("theme") is LineDestination.Theme)
         assertTrue(LineDestinations.fromScreenId("output") is LineDestination.Output)
@@ -47,6 +48,20 @@ class LineDestinationTest {
         assertTrue(LineDestinations.fromScreenId("keepAlive") is LineDestination.KeepAlive)
         assertTrue(LineDestinations.fromScreenId("about") is LineDestination.About)
         assertTrue(LineDestinations.fromScreenId("licenses") is LineDestination.Licenses)
+    }
+
+    @Test
+    fun advancedFeaturesAndPhoneControlRoundTripTypedCodec() {
+        assertEquals(
+            LineDestination.AdvancedFeatures,
+            LineDestinations.fromScreenId(LineDestination.AdvancedFeatures.screenId)
+        )
+        assertEquals(
+            LineDestination.PhoneControl,
+            LineDestinations.fromScreenId(LineDestination.PhoneControl.screenId)
+        )
+        assertEquals("advancedFeatures", LineDestination.AdvancedFeatures.screenId)
+        assertEquals("phoneControl", LineDestination.PhoneControl.screenId)
     }
 
     @Test
@@ -108,6 +123,10 @@ class LineDestinationTest {
         assertEquals(
             LineDestination.Settings,
             LineDestinations.parentOf(LineDestination.About)
+        )
+        assertEquals(
+            LineDestination.Chat,
+            LineDestinations.parentOf(LineDestination.PhoneControl)
         )
     }
 
