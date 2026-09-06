@@ -17,8 +17,8 @@ class ToolSettingsControllerRepository(
 
     override fun snapshot(): ToolSettingsSnapshot {
         return ToolSettingsSnapshot(
-            imageUnderstandingLabel = gateway.imageUnderstandingLabel(),
-            imageGenerationLabel = gateway.imageGenerationLabel(),
+            imageUnderstandingLabel = gateway.imageUnderstandingLabel().orEmpty().trim(),
+            imageGenerationLabel = gateway.imageGenerationLabel().orEmpty().trim(),
             webSearch = gateway.webSearchConfig() ?: WebSearchConfig.defaultConfig()
         )
     }
