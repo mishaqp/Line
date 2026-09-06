@@ -55,6 +55,14 @@ sealed interface LineDestination : NavKey {
         override val screenId: String = "toolSettings"
     }
 
+    data object ImageUnderstandingModel : LineDestination {
+        override val screenId: String = "imageUnderstandingModel"
+    }
+
+    data object ImageGenerationModel : LineDestination {
+        override val screenId: String = "imageGenerationModel"
+    }
+
     data object Extensions : LineDestination {
         override val screenId: String = "extensions"
     }
@@ -189,6 +197,8 @@ object LineDestinations {
             id == "sshSettings" -> LineDestination.SshSettings
             id == "termuxIntegration" -> LineDestination.TermuxIntegration
             id == "toolSettings" -> LineDestination.ToolSettings
+            id == "imageUnderstandingModel" -> LineDestination.ImageUnderstandingModel
+            id == "imageGenerationModel" -> LineDestination.ImageGenerationModel
             id == "extensions" -> LineDestination.Extensions
             id == "terminalProvider" -> LineDestination.TerminalProvider
             id == "advancedFeatures" -> LineDestination.AdvancedFeatures
@@ -254,6 +264,9 @@ object LineDestinations {
 
             LineDestination.SshSettings,
             LineDestination.TermuxIntegration -> LineDestination.Mcp
+
+            LineDestination.ImageUnderstandingModel,
+            LineDestination.ImageGenerationModel -> LineDestination.ToolSettings
 
             LineDestination.Licenses -> LineDestination.About
             LineDestination.PromptTemplates -> LineDestination.Llm
