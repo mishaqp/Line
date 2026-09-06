@@ -151,7 +151,7 @@ class PhoneControlViewModelTest {
     fun reloadRereadsExternalStateWithoutWritesOrIntentEffect() {
         val repository = FakeRepository(true, true)
         val viewModel = PhoneControlViewModel(repository)
-        repository.accessibilityEnabled = false
+        repository.accessibilityEnabledValue = false
         repository.permissions["screenshot"] = false
 
         assertNull(viewModel.onAction(PhoneControlUiAction.Reload))
@@ -178,8 +178,8 @@ class PhoneControlViewModelTest {
     }
 
     private class FakeRepository(
-        var disclaimerAccepted: Boolean,
-        var accessibilityEnabled: Boolean
+        var disclaimerAcceptedValue: Boolean,
+        var accessibilityEnabledValue: Boolean
     ) : PhoneControlSettingsRepository {
         val permissions = linkedMapOf(
             "screenshot" to true,
@@ -197,11 +197,11 @@ class PhoneControlViewModelTest {
         var failDisclaimerSave = false
         var failPermissionSave = false
 
-        override fun isAccessibilityEnabled(): Boolean = accessibilityEnabled
+        override fun isAccessibilityEnabled(): Boolean = accessibilityEnabledValue
 
         override fun isDisclaimerAccepted(): Boolean {
             events += "readDisclaimer"
-            return disclaimerAccepted
+            return disclaimerAcceptedValue
         }
 
         override fun setDisclaimerAccepted(accepted: Boolean) {
@@ -210,7 +210,7 @@ class PhoneControlViewModelTest {
             if (failDisclaimerSave) {
                 throw IllegalStateException("save failed")
             }
-            disclaimerAccepted = accepted
+            disclaimerAcceptedValue = accepted
         }
 
         override fun isPermissionEnabled(permissionId: String): Boolean =
