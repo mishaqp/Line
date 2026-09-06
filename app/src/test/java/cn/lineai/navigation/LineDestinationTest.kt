@@ -32,6 +32,8 @@ class LineDestinationTest {
         assertTrue(LineDestinations.fromScreenId("llm") is LineDestination.Llm)
         assertTrue(LineDestinations.fromScreenId("promptTemplates") is LineDestination.PromptTemplates)
         assertTrue(LineDestinations.fromScreenId("mcp") is LineDestination.Mcp)
+        assertTrue(LineDestinations.fromScreenId("sshSettings") is LineDestination.SshSettings)
+        assertTrue(LineDestinations.fromScreenId("termuxIntegration") is LineDestination.TermuxIntegration)
         assertTrue(LineDestinations.fromScreenId("toolSettings") is LineDestination.ToolSettings)
         assertTrue(LineDestinations.fromScreenId("extensions") is LineDestination.Extensions)
         assertTrue(LineDestinations.fromScreenId("terminalProvider") is LineDestination.TerminalProvider)
@@ -49,6 +51,24 @@ class LineDestinationTest {
         assertTrue(LineDestinations.fromScreenId("keepAlive") is LineDestination.KeepAlive)
         assertTrue(LineDestinations.fromScreenId("about") is LineDestination.About)
         assertTrue(LineDestinations.fromScreenId("licenses") is LineDestination.Licenses)
+    }
+
+    @Test
+    fun sshSettingsAndTermuxIntegrationRoundTripTypedCodec() {
+        assertEquals(
+            LineDestination.SshSettings,
+            LineDestinations.fromScreenId(LineDestination.SshSettings.screenId)
+        )
+        assertEquals(
+            LineDestination.TermuxIntegration,
+            LineDestinations.fromScreenId(LineDestination.TermuxIntegration.screenId)
+        )
+        assertEquals("sshSettings", LineDestination.SshSettings.screenId)
+        assertEquals("termuxIntegration", LineDestination.TermuxIntegration.screenId)
+        assertFalse(LineDestinations.fromScreenId("sshSettings") is LineDestination.Legacy)
+        assertFalse(LineDestinations.fromScreenId("termuxIntegration") is LineDestination.Legacy)
+        assertEquals(LineDestination.Mcp, LineDestinations.parentOf(LineDestination.SshSettings))
+        assertEquals(LineDestination.Mcp, LineDestinations.parentOf(LineDestination.TermuxIntegration))
     }
 
     @Test
@@ -109,6 +129,10 @@ class LineDestinationTest {
         )
         assertEquals(
             LineDestination.Extensions,
+            LineDestinations.parentOf(LineDestination.Extension("mcp"))
+        )
+        assertEquals(
+            LineDestination.Extensions,
             LineDestinations.parentOf(LineDestination.TerminalProvider)
         )
         assertEquals(
@@ -142,6 +166,14 @@ class LineDestinationTest {
         assertEquals(
             LineDestination.Chat,
             LineDestinations.parentOf(LineDestination.PhoneControl)
+        )
+        assertEquals(
+            LineDestination.Mcp,
+            LineDestinations.parentOf(LineDestination.SshSettings)
+        )
+        assertEquals(
+            LineDestination.Mcp,
+            LineDestinations.parentOf(LineDestination.TermuxIntegration)
         )
     }
 
