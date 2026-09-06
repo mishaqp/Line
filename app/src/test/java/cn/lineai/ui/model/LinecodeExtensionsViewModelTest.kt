@@ -188,10 +188,11 @@ class LinecodeExtensionsViewModelTest {
     fun toggleCallsRepositoryOnce() {
         val repository = RecordingRepository(snapshot(item("one", enabled = true)))
         repository.onSetEnabled = { id, enabled ->
-            repository.snapshotValue = snapshot(
+            repository.snapshotValue = LinecodeExtensionsSnapshot(
                 repository.snapshotValue.items.map {
                     if (it.id == id) it.copy(enabled = enabled) else it
-                }
+                },
+                repository.snapshotValue.suggestedPath
             )
         }
         val viewModel = LinecodeExtensionsViewModel(repository)
