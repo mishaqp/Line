@@ -51,6 +51,9 @@ public final class ScreenRegistry {
         if (destination instanceof LineDestination.TerminalProvider) {
             return TerminalProvidersLegacyBridge.create(context, view, controller);
         }
+        if (McpExtensionsLegacyBridge.handles(destination)) {
+            return McpExtensionsLegacyBridge.create(context, view, controller);
+        }
         if ("models".equals(id) || "modelAddOptions".equals(id)) {
             return createModelNavigationHost(context, view, controller, destination);
         }
