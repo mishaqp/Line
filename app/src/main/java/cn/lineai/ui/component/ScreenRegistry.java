@@ -57,6 +57,9 @@ public final class ScreenRegistry {
         if (AgentExtensionsLegacyBridge.handles(destination)) {
             return AgentExtensionsLegacyBridge.create(context, view, controller);
         }
+        if (LinecodeExtensionsLegacyBridge.handles(destination)) {
+            return LinecodeExtensionsLegacyBridge.create(context, view, controller);
+        }
         if ("models".equals(id) || "modelAddOptions".equals(id)) {
             return createModelNavigationHost(context, view, controller, destination);
         }
