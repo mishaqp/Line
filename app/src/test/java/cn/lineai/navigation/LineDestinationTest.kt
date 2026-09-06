@@ -98,6 +98,10 @@ class LineDestinationTest {
             LineDestinations.parentOf(LineDestination.ToolCallPreview)
         )
         assertEquals(
+            LineDestination.Settings,
+            LineDestinations.parentOf(LineDestination.Storage)
+        )
+        assertEquals(
             LineDestination.About,
             LineDestinations.parentOf(LineDestination.Licenses)
         )
