@@ -109,7 +109,7 @@ internal fun TermuxIntegrationScreenContent(
                         ).apply {
                             typeface = Typeface.MONOSPACE
                             setTextIsSelectable(true)
-                            setLineSpacing(LineTheme.dp(context, 3).toFloat(), 1f)
+                            setLineSpacing(LineTheme.dp(context, 3f).toFloat(), 1f)
                             background = LineTheme.roundedStroke(
                                 context,
                                 LineTheme.CODE_BG,
