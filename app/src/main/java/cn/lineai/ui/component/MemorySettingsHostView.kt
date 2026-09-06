@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.lineai.R
 import cn.lineai.ui.model.MemorySettingsRepository
 import cn.lineai.ui.model.MemorySettingsViewModel
+import cn.lineai.ui.model.MemoryUiAction
 import cn.lineai.ui.model.MemoryUiEffect
 
 class MemorySettingsHostView(
@@ -66,5 +67,9 @@ class MemorySettingsHostView(
             },
             LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         )
+    }
+
+    fun refresh() {
+        memory.onAction(MemoryUiAction.Reload)
     }
 }

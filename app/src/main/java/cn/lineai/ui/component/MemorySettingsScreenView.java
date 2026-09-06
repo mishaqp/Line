@@ -19,6 +19,9 @@ public final class MemorySettingsScreenView extends FrameLayout {
         void onMemoriesDeleted(List<String> ids);
     }
 
+    private final MemorySettingsHostView hostView;
+    private boolean attachedOnce;
+
     public MemorySettingsScreenView(Context context, Listener listener) {
         super(context);
         MemorySettingsRepository repository = new MemorySettingsRepository() {
@@ -42,7 +45,7 @@ public final class MemorySettingsScreenView extends FrameLayout {
                 listener.onMemoriesDeleted(ids);
             }
         };
-        MemorySettingsHostView hostView = new MemorySettingsHostView(
+        hostView = new MemorySettingsHostView(
                 context,
                 repository,
                 new MemorySettingsHostView.Listener() {
@@ -56,5 +59,15 @@ public final class MemorySettingsScreenView extends FrameLayout {
                 hostView,
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         );
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (attachedOnce) {
+            hostView.refresh();
+            return;
+        }
+        attachedOnce = true;
     }
 }
