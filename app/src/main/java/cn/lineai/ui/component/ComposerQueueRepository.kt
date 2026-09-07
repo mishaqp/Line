@@ -4,7 +4,7 @@ import cn.lineai.ui.model.ComposerPendingQueueItem
 import cn.lineai.ui.model.ComposerPendingQueueRepository
 import cn.lineai.ui.model.ComposerPendingQueueSnapshot
 
-class ComposerQueueRepository(
+class ComposerQueueRepository internal constructor(
     private val queue: ComposerQueue
 ) : ComposerPendingQueueRepository {
     override fun snapshot(): ComposerPendingQueueSnapshot =
