@@ -10,6 +10,7 @@ import cn.lineai.model.ModelProtocolType;
 import cn.lineai.model.ModelProviderPreset;
 import cn.lineai.navigation.LineDestination;
 import cn.lineai.ui.MainChatView;
+import cn.lineai.ui.theme.LineTheme;
 import cn.lineai.ui.util.KeyboardController;
 import cn.lineai.ui.util.ModelProviderPresetStrings;
 import java.util.List;
@@ -38,6 +39,7 @@ public final class ModelAddScreenView extends FrameLayout {
             Listener listener
     ) {
         super(context);
+        setBackgroundColor(LineTheme.BG);
         this.destination = resolveDestination(preset, local, editingModel);
 
         ModelEditorLegacyGateway gateway = new ModelEditorLegacyGateway() {
