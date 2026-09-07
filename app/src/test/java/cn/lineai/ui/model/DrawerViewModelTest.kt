@@ -112,7 +112,7 @@ class DrawerViewModelTest {
 
     @Test
     fun fileRefreshAndRowsAreAcceptedOnlyOnFilesTab() {
-        val row = file("/root/a.kt", name = "a.kt", directory = false)
+        val row = file("/root/a.kt", name = "a.kt", directory = false, depth = 1)
         val viewModel = DrawerViewModel(FakeRepository(snapshot(fileRows = listOf(row))))
 
         assertNull(viewModel.onAction(DrawerUiAction.RefreshFiles))
