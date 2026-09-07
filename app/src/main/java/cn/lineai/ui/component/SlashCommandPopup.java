@@ -47,7 +47,10 @@ public final class SlashCommandPopup {
         hostView = new SlashCommandPopupHostView(
                 context,
                 repository,
-                this::onRowSelected
+                index -> {
+                    onRowSelected(index);
+                    return kotlin.Unit.INSTANCE;
+                }
         );
         popup = new PopupWindow(context);
         popup.setOutsideTouchable(true);
