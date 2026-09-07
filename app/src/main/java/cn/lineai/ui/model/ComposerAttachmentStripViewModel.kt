@@ -6,8 +6,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+data class ComposerAttachmentId(
+    val path: String,
+    val source: String
+)
+
 data class ComposerAttachmentItem(
-    val index: Int,
+    val id: ComposerAttachmentId,
     val name: String
 )
 
@@ -24,7 +29,7 @@ data class ComposerAttachmentUiState(
 
 sealed interface ComposerAttachmentUiAction {
     data object Refresh : ComposerAttachmentUiAction
-    data class Remove(val index: Int) : ComposerAttachmentUiAction
+    data class Remove(val id: ComposerAttachmentId) : ComposerAttachmentUiAction
 }
 
 sealed interface ComposerAttachmentUiEffect {
@@ -33,7 +38,7 @@ sealed interface ComposerAttachmentUiEffect {
 
 interface ComposerAttachmentStateRepository {
     fun snapshot(): ComposerAttachmentSnapshot
-    fun removeAt(index: Int): Boolean
+    fun remove(id: ComposerAttachmentId): Boolean
 }
 
 class ComposerAttachmentStripViewModel(
@@ -48,7 +53,7 @@ class ComposerAttachmentStripViewModel(
             null
         }
         is ComposerAttachmentUiAction.Remove -> {
-            if (!repository.removeAt(action.index)) {
+            if (!repository.remove(action.id)) {
                 null
             } else {
                 refresh()

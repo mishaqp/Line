@@ -16,6 +16,7 @@ import cn.lineai.ui.model.ComposerImagePreviewViewModel
 
 class ComposerImagePreviewHostView(
     context: Context,
+    repository: ComposerImagePreviewRepository,
     private val listener: Listener
 ) : FrameLayout(context) {
     interface Listener {
@@ -28,7 +29,7 @@ class ComposerImagePreviewHostView(
     }
     private val preview = ViewModelProvider(
         hostViewModelStoreOwner,
-        ComposerImagePreviewViewModel.factory()
+        ComposerImagePreviewViewModel.factory(repository)
     )["composer-image-preview", ComposerImagePreviewViewModel::class.java]
 
     init {

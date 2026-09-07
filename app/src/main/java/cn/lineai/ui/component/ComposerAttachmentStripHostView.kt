@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cn.lineai.ui.model.ComposerAttachmentId
 import cn.lineai.ui.model.ComposerAttachmentStripViewModel
 import cn.lineai.ui.model.ComposerAttachmentUiAction
 import cn.lineai.ui.model.ComposerAttachmentUiEffect
@@ -42,17 +43,7 @@ class ComposerAttachmentStripHostView(
                         }
                         ComposerAttachmentStripContent(
                             state = attachments.state.collectAsStateWithLifecycle().value,
-                            onRemove = { index ->
-                                when (
-                                    val effect = attachments.onAction(
-                                        ComposerAttachmentUiAction.Remove(index)
-                                    )
-                                ) {
-                                    is ComposerAttachmentUiEffect.AttachmentsChanged ->
-                                        listener.onAttachmentsChanged(effect.visible)
-                                    null -> Unit
-                                }
-                            }
+                            onRemove = ::remove
                         )
                     }
                 }
@@ -64,5 +55,13 @@ class ComposerAttachmentStripHostView(
     fun refresh(): Boolean {
         attachments.onAction(ComposerAttachmentUiAction.Refresh)
         return attachments.state.value.visible
+    }
+
+    private fun remove(id: ComposerAttachmentId) {
+        when (val effect = attachments.onAction(ComposerAttachmentUiAction.Remove(id))) {
+            is ComposerAttachmentUiEffect.AttachmentsChanged ->
+                listener.onAttachmentsChanged(effect.visible)
+            null -> Unit
+        }
     }
 }

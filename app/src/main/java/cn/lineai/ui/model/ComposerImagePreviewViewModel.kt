@@ -6,12 +6,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+data class ComposerImagePreviewSnapshot(
+    val visible: Boolean = false,
+    val uri: String? = null,
+    val base64: String = "",
+    val mimeType: String = "",
+    val name: String = "",
+    val revision: Long = 0L
+)
+
 data class ComposerImagePreviewUiState(
     val visible: Boolean = false,
     val uri: String? = null,
     val base64: String = "",
     val mimeType: String = "",
-    val name: String = ""
+    val name: String = "",
+    val revision: Long = 0L
 ) {
     val hasImage: Boolean
         get() = base64.isNotEmpty()
@@ -32,34 +42,54 @@ sealed interface ComposerImagePreviewUiEffect {
     data class ImageStateChanged(val visible: Boolean) : ComposerImagePreviewUiEffect
 }
 
-class ComposerImagePreviewViewModel : ViewModel() {
-    private val _state = MutableStateFlow(ComposerImagePreviewUiState())
+interface ComposerImagePreviewStateRepository {
+    fun snapshot(): ComposerImagePreviewSnapshot
+    fun show(uri: String?, base64: String?, mimeType: String?, name: String?)
+    fun clear()
+}
+
+class ComposerImagePreviewViewModel(
+    private val repository: ComposerImagePreviewStateRepository
+) : ViewModel() {
+    private val _state = MutableStateFlow(repository.snapshot().toUiState())
     val state: StateFlow<ComposerImagePreviewUiState> = _state.asStateFlow()
 
     fun onAction(action: ComposerImagePreviewUiAction): ComposerImagePreviewUiEffect = when (action) {
         is ComposerImagePreviewUiAction.Show -> {
-            _state.value = ComposerImagePreviewUiState(
-                visible = true,
-                uri = action.uri,
-                base64 = action.base64.orEmpty(),
-                mimeType = action.mimeType.orEmpty(),
-                name = action.name.orEmpty()
-            )
-            ComposerImagePreviewUiEffect.ImageStateChanged(true)
+            repository.show(action.uri, action.base64, action.mimeType, action.name)
+            refresh()
+            ComposerImagePreviewUiEffect.ImageStateChanged(_state.value.visible)
         }
 
         ComposerImagePreviewUiAction.Clear -> {
-            _state.value = ComposerImagePreviewUiState()
-            ComposerImagePreviewUiEffect.ImageStateChanged(false)
+            repository.clear()
+            refresh()
+            ComposerImagePreviewUiEffect.ImageStateChanged(_state.value.visible)
         }
     }
 
+    private fun refresh() {
+        _state.value = repository.snapshot().toUiState()
+    }
+
+    private fun ComposerImagePreviewSnapshot.toUiState() =
+        ComposerImagePreviewUiState(
+            visible = visible,
+            uri = uri,
+            base64 = base64,
+            mimeType = mimeType,
+            name = name,
+            revision = revision
+        )
+
     companion object {
-        fun factory(): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+        fun factory(
+            repository: ComposerImagePreviewStateRepository
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 if (modelClass.isAssignableFrom(ComposerImagePreviewViewModel::class.java)) {
-                    return ComposerImagePreviewViewModel() as T
+                    return ComposerImagePreviewViewModel(repository) as T
                 }
                 throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
             }

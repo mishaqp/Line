@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,32 +46,33 @@ internal fun ComposerImagePreviewContent(
             .padding(LineTheme.SM.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AndroidView(
-            factory = { context ->
-                ImageView(context).apply {
-                    scaleType = ImageView.ScaleType.CENTER_CROP
-                    background = LineTheme.rounded(
-                        context,
-                        LineTheme.SURFACE_LIGHT,
-                        LineTheme.SHAPE_SM.toFloat()
-                    )
-                    clipToOutline = true
-                }
-            },
-            update = { imageView ->
-                val uri = state.uri?.let(Uri::parse)
-                if (uri == null) {
-                    imageView.setImageDrawable(null)
-                } else {
-                    try {
-                        imageView.setImageURI(uri)
-                    } catch (_: Exception) {
-                        imageView.setImageDrawable(null)
+        key(state.revision) {
+            AndroidView(
+                factory = { context ->
+                    ImageView(context).apply {
+                        scaleType = ImageView.ScaleType.CENTER_CROP
+                        background = LineTheme.rounded(
+                            context,
+                            LineTheme.SURFACE_LIGHT,
+                            LineTheme.SHAPE_SM.toFloat()
+                        )
+                        clipToOutline = true
                     }
-                }
-            },
-            modifier = Modifier.size(56.dp)
-        )
+                },
+                update = { imageView ->
+                    imageView.setImageDrawable(null)
+                    val uri = state.uri?.let(Uri::parse)
+                    if (uri != null) {
+                        try {
+                            imageView.setImageURI(uri)
+                        } catch (_: Exception) {
+                            imageView.setImageDrawable(null)
+                        }
+                    }
+                },
+                modifier = Modifier.size(56.dp)
+            )
+        }
 
         Text(
             text = state.name.ifEmpty {

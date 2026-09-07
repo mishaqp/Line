@@ -15,8 +15,10 @@ final class ComposerImagePreview extends FrameLayout {
 
     ComposerImagePreview(Context context) {
         super(context);
+        ComposerImagePreviewRepository repository = new ComposerImagePreviewRepository();
         hostView = new ComposerImagePreviewHostView(
                 context,
+                repository,
                 new ComposerImagePreviewHostView.Listener() {
                     @Override
                     public void onImageStateChanged(boolean visible) {

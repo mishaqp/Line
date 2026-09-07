@@ -6,57 +6,72 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ComposerImagePreviewViewModelTest {
+    private class FakeRepository : ComposerImagePreviewStateRepository {
+        private var current = ComposerImagePreviewSnapshot()
+
+        override fun snapshot() = current
+
+        override fun show(uri: String?, base64: String?, mimeType: String?, name: String?) {
+            current = ComposerImagePreviewSnapshot(
+                visible = true,
+                uri = uri,
+                base64 = base64.orEmpty(),
+                mimeType = mimeType.orEmpty(),
+                name = name.orEmpty(),
+                revision = current.revision + 1
+            )
+        }
+
+        override fun clear() {
+            current = ComposerImagePreviewSnapshot(revision = current.revision + 1)
+        }
+    }
+
     @Test
-    fun showStoresImmutableUiStateAndMarksPreviewVisible() {
-        val viewModel = ComposerImagePreviewViewModel()
+    fun showStoresRepositorySnapshotAndMarksPreviewVisible() {
+        val viewModel = ComposerImagePreviewViewModel(FakeRepository())
 
         val effect = viewModel.onAction(
             ComposerImagePreviewUiAction.Show(
-                uri = "content://image/1",
-                base64 = "encoded",
-                mimeType = "image/png",
-                name = "preview.png"
+                "content://image/1",
+                "encoded",
+                "image/png",
+                "preview.png"
             )
         )
 
         assertEquals(ComposerImagePreviewUiEffect.ImageStateChanged(true), effect)
         assertTrue(viewModel.state.value.visible)
         assertTrue(viewModel.state.value.hasImage)
-        assertEquals("content://image/1", viewModel.state.value.uri)
-        assertEquals("encoded", viewModel.state.value.base64)
-        assertEquals("image/png", viewModel.state.value.mimeType)
         assertEquals("preview.png", viewModel.state.value.name)
     }
 
     @Test
-    fun showNormalizesNullablePayloadFieldsWithoutHidingPreview() {
-        val viewModel = ComposerImagePreviewViewModel()
-
-        viewModel.onAction(
-            ComposerImagePreviewUiAction.Show(
-                uri = null,
-                base64 = null,
-                mimeType = null,
-                name = null
-            )
+    fun repeatedShowAlwaysAdvancesRevision() {
+        val viewModel = ComposerImagePreviewViewModel(FakeRepository())
+        val action = ComposerImagePreviewUiAction.Show(
+            "content://image/1",
+            "encoded",
+            "image/png",
+            "preview.png"
         )
 
-        assertTrue(viewModel.state.value.visible)
-        assertFalse(viewModel.state.value.hasImage)
-        assertEquals("", viewModel.state.value.base64)
-        assertEquals("", viewModel.state.value.mimeType)
-        assertEquals("", viewModel.state.value.name)
+        viewModel.onAction(action)
+        val firstRevision = viewModel.state.value.revision
+        viewModel.onAction(action)
+
+        assertTrue(viewModel.state.value.revision > firstRevision)
     }
 
     @Test
     fun clearDropsAllStagedImageState() {
-        val viewModel = ComposerImagePreviewViewModel()
+        val viewModel = ComposerImagePreviewViewModel(FakeRepository())
         viewModel.onAction(
             ComposerImagePreviewUiAction.Show(
-                uri = "content://image/2",
-                base64 = "encoded",
-                mimeType = "image/jpeg",
-                name = "photo.jpg"
+                "content://image/2",
+                "encoded",
+                "image/jpeg",
+                "photo.jpg"
             )
         )
 
@@ -66,8 +81,5 @@ class ComposerImagePreviewViewModelTest {
         assertFalse(viewModel.state.value.visible)
         assertFalse(viewModel.state.value.hasImage)
         assertEquals(null, viewModel.state.value.uri)
-        assertEquals("", viewModel.state.value.base64)
-        assertEquals("", viewModel.state.value.mimeType)
-        assertEquals("", viewModel.state.value.name)
     }
 }

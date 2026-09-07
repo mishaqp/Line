@@ -1,6 +1,7 @@
 package cn.lineai.ui.component
 
 import cn.lineai.model.InputAttachment
+import cn.lineai.ui.model.ComposerAttachmentId
 import cn.lineai.ui.model.ComposerAttachmentItem
 import cn.lineai.ui.model.ComposerAttachmentSnapshot
 import cn.lineai.ui.model.ComposerAttachmentStateRepository
@@ -21,7 +22,6 @@ class ComposerAttachmentRepository : ComposerAttachmentStateRepository {
         attachments.clear()
     }
 
-    /** Returns true only when the backing list was mutated. */
     fun toggle(attachment: InputAttachment?): Boolean {
         if (attachment == null || attachment.path.isEmpty()) return false
         val index = attachments.indexOfFirst {
@@ -49,13 +49,22 @@ class ComposerAttachmentRepository : ComposerAttachmentStateRepository {
     }
 
     override fun snapshot(): ComposerAttachmentSnapshot = ComposerAttachmentSnapshot(
-        items = attachments.mapIndexed { index, attachment ->
-            ComposerAttachmentItem(index = index, name = attachment.name)
+        items = attachments.map { attachment ->
+            ComposerAttachmentItem(
+                id = ComposerAttachmentId(
+                    path = attachment.path,
+                    source = attachment.source
+                ),
+                name = attachment.name
+            )
         }
     )
 
-    override fun removeAt(index: Int): Boolean {
-        if (index !in attachments.indices) return false
+    override fun remove(id: ComposerAttachmentId): Boolean {
+        val index = attachments.indexOfFirst {
+            it.matches(id.path, id.source)
+        }
+        if (index < 0) return false
         attachments.removeAt(index)
         return true
     }

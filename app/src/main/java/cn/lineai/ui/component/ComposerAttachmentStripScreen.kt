@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,21 +24,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.lineai.R
+import cn.lineai.ui.model.ComposerAttachmentId
 import cn.lineai.ui.model.ComposerAttachmentUiState
 import cn.lineai.ui.theme.LineTheme
 
 @Composable
 internal fun ComposerAttachmentStripContent(
     state: ComposerAttachmentUiState,
-    onRemove: (Int) -> Unit
+    onRemove: (ComposerAttachmentId) -> Unit
 ) {
     if (!state.visible) return
 
     val chipShape = RoundedCornerShape(LineTheme.SHAPE_FULL.dp)
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
+        modifier = Modifier.horizontalScroll(rememberScrollState())
     ) {
         state.items.forEach { item ->
             Row(
@@ -61,7 +59,7 @@ internal fun ComposerAttachmentStripContent(
                     overflow = TextOverflow.MiddleEllipsis
                 )
                 IconButton(
-                    onClick = { onRemove(item.index) },
+                    onClick = { onRemove(item.id) },
                     modifier = Modifier
                         .padding(start = LineTheme.SM.dp)
                         .size(18.dp)

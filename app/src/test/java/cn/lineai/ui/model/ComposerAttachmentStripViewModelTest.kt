@@ -12,8 +12,8 @@ class ComposerAttachmentStripViewModelTest {
     ) : ComposerAttachmentStateRepository {
         override fun snapshot() = ComposerAttachmentSnapshot(rows.toList())
 
-        override fun removeAt(index: Int): Boolean {
-            val position = rows.indexOfFirst { it.index == index }
+        override fun remove(id: ComposerAttachmentId): Boolean {
+            val position = rows.indexOfFirst { it.id == id }
             if (position < 0) return false
             rows.removeAt(position)
             return true
@@ -22,13 +22,13 @@ class ComposerAttachmentStripViewModelTest {
 
     @Test
     fun initialAndRefreshStatesAreImmutableSnapshots() {
-        val rows = mutableListOf(ComposerAttachmentItem(0, "one.txt"))
+        val rows = mutableListOf(item("/one", "one.txt"))
         val viewModel = ComposerAttachmentStripViewModel(FakeRepository(rows))
 
         assertTrue(viewModel.state.value.visible)
         assertEquals("one.txt", viewModel.state.value.items.single().name)
 
-        rows += ComposerAttachmentItem(1, "two.txt")
+        rows += item("/two", "two.txt")
         assertEquals(1, viewModel.state.value.items.size)
 
         viewModel.onAction(ComposerAttachmentUiAction.Refresh)
@@ -36,12 +36,14 @@ class ComposerAttachmentStripViewModelTest {
     }
 
     @Test
-    fun successfulRemovalRefreshesAndEmitsVisibility() {
-        val viewModel = ComposerAttachmentStripViewModel(
-            FakeRepository(mutableListOf(ComposerAttachmentItem(0, "only.txt")))
-        )
+    fun removalUsesStableIdentityAfterRowsShift() {
+        val first = item("/first", "first.txt")
+        val second = item("/second", "second.txt")
+        val rows = mutableListOf(first, second)
+        val viewModel = ComposerAttachmentStripViewModel(FakeRepository(rows))
 
-        val effect = viewModel.onAction(ComposerAttachmentUiAction.Remove(0))
+        rows.removeAt(0)
+        val effect = viewModel.onAction(ComposerAttachmentUiAction.Remove(second.id))
 
         assertEquals(ComposerAttachmentUiEffect.AttachmentsChanged(false), effect)
         assertFalse(viewModel.state.value.visible)
@@ -51,7 +53,16 @@ class ComposerAttachmentStripViewModelTest {
     fun invalidRemovalDoesNothing() {
         val viewModel = ComposerAttachmentStripViewModel(FakeRepository(mutableListOf()))
 
-        assertNull(viewModel.onAction(ComposerAttachmentUiAction.Remove(7)))
+        assertNull(
+            viewModel.onAction(
+                ComposerAttachmentUiAction.Remove(
+                    ComposerAttachmentId("/missing", "local")
+                )
+            )
+        )
         assertFalse(viewModel.state.value.visible)
     }
+
+    private fun item(path: String, name: String) =
+        ComposerAttachmentItem(ComposerAttachmentId(path, "local"), name)
 }
