@@ -95,6 +95,10 @@ sealed interface LineDestination : NavKey {
         override val screenId: String = "toolcall_preview"
     }
 
+    data object ShellCommand : LineDestination {
+        override val screenId: String = "shellCommand"
+    }
+
     data object Security : LineDestination {
         override val screenId: String = "security"
     }
@@ -207,6 +211,7 @@ object LineDestinations {
             id == "theme" -> LineDestination.Theme
             id == "output" -> LineDestination.Output
             id == "toolcall_preview" -> LineDestination.ToolCallPreview
+            id == "shellCommand" -> LineDestination.ShellCommand
             id == "security" -> LineDestination.Security
             id == "storage" -> LineDestination.Storage
             id == "memory" -> LineDestination.Memory
@@ -241,7 +246,8 @@ object LineDestinations {
         return when (destination) {
             LineDestination.Chat,
             LineDestination.Settings,
-            LineDestination.PhoneControl -> LineDestination.Chat
+            LineDestination.PhoneControl,
+            LineDestination.ShellCommand -> LineDestination.Chat
 
             LineDestination.Models,
             LineDestination.CodexAccount,
