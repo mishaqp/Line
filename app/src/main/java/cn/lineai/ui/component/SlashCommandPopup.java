@@ -39,6 +39,7 @@ public final class SlashCommandPopup {
     private final SlashCommandPopupHostView hostView;
     private List<Row> callbacks = Collections.emptyList();
     private int selectedIndex = -1;
+    private View.OnLayoutChangeListener pendingLayoutListener;
 
     public SlashCommandPopup(Context context) {
         this.context = context;
@@ -98,44 +99,90 @@ public final class SlashCommandPopup {
                 2 * LineTheme.dp(context, LineTheme.LG);
         if (popupWidth <= 0) return;
 
-        hostView.measure(
-                View.MeasureSpec.makeMeasureSpec(
-                        popupWidth,
-                        View.MeasureSpec.EXACTLY
-                ),
-                View.MeasureSpec.makeMeasureSpec(
-                        0,
-                        View.MeasureSpec.UNSPECIFIED
-                )
-        );
-        int popupHeight = hostView.getMeasuredHeight();
-        if (popupHeight <= 0) return;
-
-        popup.setWidth(popupWidth);
-        popup.setHeight(popupHeight);
-        if (popup.isShowing()) {
-            popup.update(popupWidth, popupHeight);
-            return;
-        }
-
         int[] location = new int[2];
         anchor.getLocationOnScreen(location);
         int x = location[0] +
                 LineTheme.dp(context, LineTheme.LG);
-        int y = Math.max(
-                0,
-                location[1] - popupHeight -
-                        LineTheme.dp(context, 8)
+
+        if (popup.isShowing()) {
+            hostView.measure(
+                    View.MeasureSpec.makeMeasureSpec(
+                            popupWidth,
+                            View.MeasureSpec.EXACTLY
+                    ),
+                    View.MeasureSpec.makeMeasureSpec(
+                            0,
+                            View.MeasureSpec.UNSPECIFIED
+                    )
+            );
+            int popupHeight = hostView.getMeasuredHeight();
+            if (popupHeight <= 0) return;
+            int y = popupY(location[1], popupHeight);
+            popup.update(x, y, popupWidth, popupHeight);
+            return;
+        }
+
+        clearPendingLayoutListener();
+        hostView.setAlpha(0f);
+        popup.setWidth(popupWidth);
+        popup.setHeight(
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        pendingLayoutListener = (
+                view,
+                left,
+                top,
+                right,
+                bottom,
+                oldLeft,
+                oldTop,
+                oldRight,
+                oldBottom
+        ) -> {
+            int popupHeight = bottom - top;
+            if (popupHeight <= 0 || !popup.isShowing()) return;
+            clearPendingLayoutListener();
+            popup.setHeight(popupHeight);
+            popup.update(
+                    x,
+                    popupY(location[1], popupHeight),
+                    popupWidth,
+                    popupHeight
+            );
+            view.post(() -> {
+                if (popup.isShowing()) view.setAlpha(1f);
+            });
+        };
+        hostView.addOnLayoutChangeListener(
+                pendingLayoutListener
         );
         popup.showAtLocation(
                 anchor,
                 Gravity.NO_GRAVITY,
                 x,
-                y
+                location[1]
         );
     }
 
+    private int popupY(int anchorTop, int popupHeight) {
+        return Math.max(
+                0,
+                anchorTop - popupHeight -
+                        LineTheme.dp(context, 8)
+        );
+    }
+
+    private void clearPendingLayoutListener() {
+        if (pendingLayoutListener == null) return;
+        hostView.removeOnLayoutChangeListener(
+                pendingLayoutListener
+        );
+        pendingLayoutListener = null;
+    }
+
     public void dismiss() {
+        clearPendingLayoutListener();
+        hostView.setAlpha(1f);
         if (popup.isShowing()) popup.dismiss();
         callbacks = Collections.emptyList();
         hostView.clear();
