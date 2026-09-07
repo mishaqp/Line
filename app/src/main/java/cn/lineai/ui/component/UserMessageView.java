@@ -4,19 +4,17 @@ import cn.lineai.ui.theme.LineTheme;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import cn.lineai.R;
 import cn.lineai.model.ChatMessage;
-import cn.lineai.model.InputAttachment;
 
 public final class UserMessageView extends LinearLayout {
     private static final long ENTRANCE_FADE_MS = 220L;
 
     private final TextView contentText;
-    private final LinearLayout attachmentList;
+    private final UserMessageAttachmentList attachmentList;
     private final MessageActionBarView actionBar;
     private final MessageHeaderView headerView;
     private final int defaultPaddingLeft;
@@ -55,10 +53,11 @@ public final class UserMessageView extends LinearLayout {
         contentText.setMaxWidth((int) (availableWidth * 0.74f));
         addView(contentText, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
-        attachmentList = new LinearLayout(context);
-        attachmentList.setOrientation(VERTICAL);
-        attachmentList.setGravity(Gravity.END);
-        LinearLayout.LayoutParams attachmentParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        attachmentList = new UserMessageAttachmentList(context);
+        LinearLayout.LayoutParams attachmentParams = new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT
+        );
         attachmentParams.topMargin = LineTheme.dp(context, LineTheme.XS);
         addView(attachmentList, attachmentParams);
 
@@ -178,27 +177,10 @@ public final class UserMessageView extends LinearLayout {
     }
 
     private void renderAttachments(ChatMessage message) {
-        attachmentList.removeAllViews();
-        if (message == null || !message.hasAttachments()) {
-            attachmentList.setVisibility(GONE);
-            return;
-        }
-        attachmentList.setVisibility(VISIBLE);
-        for (InputAttachment attachment : message.getAttachments()) {
-            attachmentList.addView(attachmentChip(attachment));
-        }
-    }
-
-    private TextView attachmentChip(InputAttachment attachment) {
-        TextView chip = LineTheme.chatTextMedium(getContext(), attachment.getName(), LineTheme.TYPE_BODY_SMALL, LineTheme.TEXT_SECONDARY);
-        chip.setSingleLine(true);
-        chip.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-        chip.setMaxWidth(LineTheme.dp(getContext(), 220));
-        chip.setBackground(LineCards.pillBackground(getContext(), LineTheme.SURFACE_LIGHT, LineTheme.BORDER_LIGHT));
-        LineTheme.padding(chip, LineTheme.SM, 4, LineTheme.SM, 4);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        params.bottomMargin = LineTheme.dp(getContext(), LineTheme.XS);
-        chip.setLayoutParams(params);
-        return chip;
+        attachmentList.bind(
+                message == null || !message.hasAttachments()
+                        ? null
+                        : message.getAttachments()
+        );
     }
 }
