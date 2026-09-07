@@ -52,7 +52,7 @@ internal fun ComposerImagePreviewContent(
                     background = LineTheme.rounded(
                         context,
                         LineTheme.SURFACE_LIGHT,
-                        LineTheme.SHAPE_SM
+                        LineTheme.SHAPE_SM.toFloat()
                     )
                     clipToOutline = true
                 }
