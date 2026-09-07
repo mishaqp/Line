@@ -134,6 +134,31 @@ public final class ScreenNavigationControllerTest {
     }
 
     @Test
+    public void shellCommandDirectBackReturnsToChat() {
+        ScreenNavigationController controller = new ScreenNavigationController();
+        RecordingHost host = new RecordingHost();
+
+        controller.backFrom("shellCommand", host);
+
+        Assert.assertTrue(host.chatShown);
+        Assert.assertEquals("", host.lastScreenId);
+    }
+
+    @Test
+    public void shellCommandBackFromChatReturnsToChatWithoutSecondBack() {
+        ScreenNavigationController controller = new ScreenNavigationController();
+        RecordingHost host = new RecordingHost();
+
+        controller.showScreen("shellCommand", host);
+        Assert.assertEquals("shellCommand", host.lastScreenId);
+        Assert.assertFalse(host.chatShown);
+
+        controller.backFrom("shellCommand", host);
+        Assert.assertTrue(host.chatShown);
+        Assert.assertEquals("shellCommand", host.lastScreenId);
+    }
+
+    @Test
     public void extensionsBackChainWorksForAllFiveMenuDestinations() {
         String[] childIds = new String[] {
                 "extension:agent",

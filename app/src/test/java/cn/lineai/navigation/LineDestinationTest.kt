@@ -43,6 +43,7 @@ class LineDestinationTest {
         assertTrue(LineDestinations.fromScreenId("theme") is LineDestination.Theme)
         assertTrue(LineDestinations.fromScreenId("output") is LineDestination.Output)
         assertTrue(LineDestinations.fromScreenId("toolcall_preview") is LineDestination.ToolCallPreview)
+        assertTrue(LineDestinations.fromScreenId("shellCommand") is LineDestination.ShellCommand)
         assertTrue(LineDestinations.fromScreenId("security") is LineDestination.Security)
         assertTrue(LineDestinations.fromScreenId("storage") is LineDestination.Storage)
         assertTrue(LineDestinations.fromScreenId("memory") is LineDestination.Memory)
@@ -51,6 +52,24 @@ class LineDestinationTest {
         assertTrue(LineDestinations.fromScreenId("keepAlive") is LineDestination.KeepAlive)
         assertTrue(LineDestinations.fromScreenId("about") is LineDestination.About)
         assertTrue(LineDestinations.fromScreenId("licenses") is LineDestination.Licenses)
+    }
+
+    @Test
+    fun shellCommandRoundTripsAsTypedDestinationWithChatParent() {
+        assertEquals(
+            LineDestination.ShellCommand,
+            LineDestinations.fromScreenId("shellCommand")
+        )
+        assertEquals(
+            LineDestination.ShellCommand,
+            LineDestinations.fromScreenId(LineDestination.ShellCommand.screenId)
+        )
+        assertEquals("shellCommand", LineDestination.ShellCommand.screenId)
+        assertFalse(LineDestinations.fromScreenId("shellCommand") is LineDestination.Legacy)
+        assertEquals(
+            LineDestination.Chat,
+            LineDestinations.parentOf(LineDestination.ShellCommand)
+        )
     }
 
     @Test
@@ -150,6 +169,10 @@ class LineDestinationTest {
         assertEquals(
             LineDestination.Output,
             LineDestinations.parentOf(LineDestination.ToolCallPreview)
+        )
+        assertEquals(
+            LineDestination.Chat,
+            LineDestinations.parentOf(LineDestination.ShellCommand)
         )
         assertEquals(
             LineDestination.Settings,
