@@ -66,6 +66,9 @@ public final class ScreenRegistry {
         if (ImageUnderstandingModelPickerLegacyBridge.handles(destination)) {
             return ImageUnderstandingModelPickerLegacyBridge.create(context, view, controller);
         }
+        if (ImageGenerationModelPickerLegacyBridge.handles(destination)) {
+            return ImageGenerationModelPickerLegacyBridge.create(context, view, controller);
+        }
         if ("models".equals(id) || "modelAddOptions".equals(id)) {
             return createModelNavigationHost(context, view, controller, destination);
         }
