@@ -91,7 +91,7 @@ class ToolCallPreviewRegistryRepositoryTest {
         assertEquals(ToolCallPreviewRegistryRepository.PREVIEW_DIFF_PATH, diff.filePath)
         assertEquals(ToolCallPreviewRegistryRepository.PREVIEW_DIFF_OLD, diff.oldContent)
         assertEquals(ToolCallPreviewRegistryRepository.PREVIEW_DIFF_NEW, diff.newContent)
-        assertFalse(diff.reverted)
+        assertFalse(diff.isReverted)
     }
 
     @Test
