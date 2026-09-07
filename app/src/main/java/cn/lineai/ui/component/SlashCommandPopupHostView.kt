@@ -11,7 +11,7 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.ViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.lineai.ui.model.SlashCommandPopupUiAction
 import cn.lineai.ui.model.SlashCommandPopupUiEffect
@@ -41,7 +41,7 @@ class SlashCommandPopupHostView(
     init {
         lifecycleRegistry.currentState =
             Lifecycle.State.CREATED
-        ViewTreeLifecycleOwner.set(this, this)
+        setViewTreeLifecycleOwner(this)
         addView(
             ComposeView(context).apply {
                 setViewCompositionStrategy(
