@@ -3,11 +3,15 @@ package cn.lineai.ui.component
 import android.content.Context
 import android.view.View
 import android.widget.FrameLayout
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.viewinterop.AndroidView
@@ -22,6 +26,7 @@ import cn.lineai.ui.model.AccountModelProviders
 import cn.lineai.ui.model.ModelManagementRepository
 import cn.lineai.ui.model.ModelManagementUiAction
 import cn.lineai.ui.model.ModelManagementViewModel
+import cn.lineai.ui.theme.LineTheme
 
 /**
  * Navigation 3 owner for the complete model-management flow.
@@ -55,8 +60,10 @@ class ModelNavigationHostView(
     }
 
     init {
+        setBackgroundColor(LineTheme.BG)
         addView(
             ComposeView(context).apply {
+                setBackgroundColor(LineTheme.BG)
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
                     AccountScreenTheme {
@@ -111,17 +118,19 @@ class ModelNavigationHostView(
                         }
 
                         @Suppress("DEPRECATION")
-                        fun legacyEditor(destination: LineDestination): @androidx.compose.runtime.Composable () -> Unit = {
-                            AndroidView(
-                                modifier = Modifier.fillMaxSize(),
-                                factory = { viewContext ->
-                                    listener.createLegacyEditor(
-                                        viewContext,
-                                        destination,
-                                        Runnable { navigateBack() }
-                                    )
-                                }
-                            )
+                        fun legacyEditor(destination: LineDestination): @Composable () -> Unit = {
+                            OpaqueScene {
+                                AndroidView(
+                                    modifier = opaqueFill(),
+                                    factory = { viewContext ->
+                                        listener.createLegacyEditor(
+                                            viewContext,
+                                            destination,
+                                            Runnable { navigateBack() }
+                                        ).also { it.setBackgroundColor(LineTheme.BG) }
+                                    }
+                                )
+                            }
                         }
 
                         NavDisplay(
@@ -130,20 +139,24 @@ class ModelNavigationHostView(
                             entryProvider = { destination ->
                                 when (destination) {
                                     LineDestination.Models -> NavEntry(destination) {
-                                        LaunchedEffect(destination) {
-                                            management.refresh()
+                                        OpaqueScene {
+                                            LaunchedEffect(destination) {
+                                                management.refresh()
+                                            }
+                                            ModelListScreenContent(
+                                                state = management.state.collectAsStateWithLifecycle().value,
+                                                onAction = ::handleAction
+                                            )
                                         }
-                                        ModelListScreenContent(
-                                            state = management.state.collectAsStateWithLifecycle().value,
-                                            onAction = ::handleAction
-                                        )
                                     }
 
                                     LineDestination.ModelAddOptions -> NavEntry(destination) {
-                                        ModelAddOptionsScreenContent(
-                                            state = management.state.collectAsStateWithLifecycle().value,
-                                            onAction = ::handleAction
-                                        )
+                                        OpaqueScene {
+                                            ModelAddOptionsScreenContent(
+                                                state = management.state.collectAsStateWithLifecycle().value,
+                                                onAction = ::handleAction
+                                            )
+                                        }
                                     }
 
                                     LineDestination.ModelAdd,
@@ -156,18 +169,20 @@ class ModelNavigationHostView(
                                         if (provider == null) {
                                             legacyEditor(destination).invoke()
                                         } else {
-                                            AndroidView(
-                                                modifier = Modifier.fillMaxSize(),
-                                                factory = { viewContext ->
-                                                    AccountNavigationHostView(
-                                                        viewContext,
-                                                        provider,
-                                                        null,
-                                                        destination,
-                                                        accountListener(::navigateBack)
-                                                    )
-                                                }
-                                            )
+                                            OpaqueScene {
+                                                AndroidView(
+                                                    modifier = opaqueFill(),
+                                                    factory = { viewContext ->
+                                                        AccountNavigationHostView(
+                                                            viewContext,
+                                                            provider,
+                                                            null,
+                                                            destination,
+                                                            accountListener(::navigateBack)
+                                                        ).also { it.setBackgroundColor(LineTheme.BG) }
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
 
@@ -178,18 +193,20 @@ class ModelNavigationHostView(
                                         if (model == null || provider == null) {
                                             legacyEditor(destination).invoke()
                                         } else {
-                                            AndroidView(
-                                                modifier = Modifier.fillMaxSize(),
-                                                factory = { viewContext ->
-                                                    AccountNavigationHostView(
-                                                        viewContext,
-                                                        provider,
-                                                        model,
-                                                        destination,
-                                                        accountListener(::navigateBack)
-                                                    )
-                                                }
-                                            )
+                                            OpaqueScene {
+                                                AndroidView(
+                                                    modifier = opaqueFill(),
+                                                    factory = { viewContext ->
+                                                        AccountNavigationHostView(
+                                                            viewContext,
+                                                            provider,
+                                                            model,
+                                                            destination,
+                                                            accountListener(::navigateBack)
+                                                        ).also { it.setBackgroundColor(LineTheme.BG) }
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
 
@@ -217,3 +234,11 @@ class ModelNavigationHostView(
         else -> null
     }
 }
+
+@Composable
+private fun OpaqueScene(content: @Composable () -> Unit) {
+    Box(modifier = opaqueFill(), content = { content() })
+}
+
+private fun opaqueFill(): Modifier =
+    Modifier.fillMaxSize().background(Color(LineTheme.BG))
