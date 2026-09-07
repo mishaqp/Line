@@ -97,6 +97,8 @@ class ModelEditorViewModelTest {
         assertTrue(state.local)
         assertFalse(state.testVisible)
         assertFalse(viewModel.canSave(state))
+        viewModel.onAction(ModelEditorUiAction.SetLocalContext("8192"))
+        assertEquals("8192", viewModel.state.value.localContextText)
         assertNull(viewModel.onAction(ModelEditorUiAction.Save))
         assertNull(viewModel.onAction(ModelEditorUiAction.Test))
     }
@@ -145,6 +147,27 @@ class ModelEditorViewModelTest {
         assertEquals(ModelProtocolType.ANTHROPIC_MESSAGES, viewModel.state.value.protocol)
         viewModel.onAction(ModelEditorUiAction.SelectProvider(0))
         assertEquals(ModelProtocolType.OPENAI_COMPATIBLE, viewModel.state.value.protocol)
+
+        val lockedRemote = editor(
+            snapshot(
+                presetId = "deepseek",
+                presetProtocol = ModelProtocolType.OPENAI_COMPATIBLE
+            )
+        )
+        assertNull(lockedRemote.onAction(ModelEditorUiAction.SelectProvider(3)))
+        assertFalse(lockedRemote.state.value.local)
+        assertEquals(ModelProtocolType.OPENAI_COMPATIBLE, lockedRemote.state.value.protocol)
+
+        val lockedLocal = editor(
+            snapshot(
+                editingModel = config(
+                    id = "local-locked",
+                    protocol = ModelProtocolType.LOCAL_GGUF
+                )
+            )
+        )
+        assertNull(lockedLocal.onAction(ModelEditorUiAction.SelectProvider(0)))
+        assertTrue(lockedLocal.state.value.local)
     }
 
     @Test
@@ -276,7 +299,13 @@ class ModelEditorViewModelTest {
         viewModel.onAction(ModelEditorUiAction.SetBaseUrl("https://changed.example/v1"))
         dispatcher.runAll()
         assertTrue(viewModel.state.value.mainCatalog.fetchedIds.isEmpty())
+        assertFalse(viewModel.state.value.mainCatalog.fetching)
         assertFalse(viewModel.state.value.picker.visible)
+
+        viewModel.onAction(ModelEditorUiAction.QueryMainCatalog)
+        dispatcher.runAll()
+        assertEquals(2, repository.fetchCallCount)
+        assertTrue(viewModel.state.value.picker.visible)
     }
 
     @Test
@@ -485,11 +514,46 @@ class ModelEditorViewModelTest {
         viewModel.onAction(ModelEditorUiAction.SetApiKey("changed-key"))
         dispatcher.runAll()
         assertTrue(viewModel.state.value.compression.catalog.fetchedIds.isEmpty())
+        assertFalse(viewModel.state.value.compression.catalog.fetching)
         viewModel.onAction(ModelEditorUiAction.QueryCompressionCatalog)
         dispatcher.runAll()
+        assertEquals(2, repository.fetchCallCount)
+        assertTrue(viewModel.state.value.picker.visible)
         viewModel.onAction(ModelEditorUiAction.SelectCompressionCustomRow)
         assertTrue(viewModel.state.value.compression.catalog.customIdEnabled)
         assertEquals("", viewModel.state.value.compression.effectiveModelId)
+    }
+
+    @Test
+    fun switchingCatalogModesCancelsInFlightRequests() {
+        val mainDispatcher = QueuedDispatcher()
+        val mainRepository = FakeRepository(snapshot())
+        mainRepository.catalogIdsValue = listOf("stale-main")
+        val main = ModelEditorViewModel(mainRepository, mainDispatcher)
+        fillRemote(main)
+        main.onAction(ModelEditorUiAction.SetCustomModelId(false))
+        main.onAction(ModelEditorUiAction.QueryMainCatalog)
+        assertTrue(main.state.value.mainCatalog.fetching)
+        main.onAction(ModelEditorUiAction.SetCustomModelId(true))
+        assertFalse(main.state.value.mainCatalog.fetching)
+        mainDispatcher.runAll()
+        assertTrue(main.state.value.mainCatalog.fetchedIds.isEmpty())
+        assertFalse(main.state.value.picker.visible)
+
+        val compressionDispatcher = QueuedDispatcher()
+        val compressionRepository = FakeRepository(snapshot())
+        compressionRepository.catalogIdsValue = listOf("stale-compression")
+        val compression = ModelEditorViewModel(compressionRepository, compressionDispatcher)
+        fillRemote(compression)
+        compression.onAction(ModelEditorUiAction.SetCompressionEnabled(true))
+        compression.onAction(ModelEditorUiAction.SetCompressionAuto(false))
+        compression.onAction(ModelEditorUiAction.QueryCompressionCatalog)
+        assertTrue(compression.state.value.compression.catalog.fetching)
+        compression.onAction(ModelEditorUiAction.SetCompressionAuto(true))
+        assertFalse(compression.state.value.compression.catalog.fetching)
+        compressionDispatcher.runAll()
+        assertTrue(compression.state.value.compression.catalog.fetchedIds.isEmpty())
+        assertFalse(compression.state.value.picker.visible)
     }
 
     @Test

@@ -41,19 +41,18 @@ class ModelEditorViewModel(
         }
         is ModelEditorUiAction.SetToolLimit -> updateForm { it.copy(toolCallLimitText = action.value) }
         is ModelEditorUiAction.SetContextSize -> updateForm { it.copy(contextSizeText = action.value) }
+        is ModelEditorUiAction.SetLocalContext -> updateForm { it.copy(localContextText = action.value) }
         is ModelEditorUiAction.SelectProvider -> selectProvider(action.index)
-        is ModelEditorUiAction.SetCustomModelId -> updateForm {
-            it.copy(mainCatalog = it.mainCatalog.copy(customIdEnabled = action.enabled))
-        }
+        is ModelEditorUiAction.SetCustomModelId -> updateMainCatalogMode(action.enabled)
         ModelEditorUiAction.QueryMainCatalog -> queryCatalog(ModelCatalogKind.MAIN)
         is ModelEditorUiAction.SelectMainModel -> selectCatalogId(ModelCatalogKind.MAIN, action.modelId)
         ModelEditorUiAction.SelectMainCustomRow -> selectCustomRow(ModelCatalogKind.MAIN)
         ModelEditorUiAction.DismissPicker -> updateForm { it.copy(picker = it.picker.copy(visible = false)) }
-        is ModelEditorUiAction.SetCompressionEnabled -> updateCompression {
+        is ModelEditorUiAction.SetCompressionEnabled -> updateCompressionMode {
             it.copy(enabled = action.enabled && it.supported)
         }
-        is ModelEditorUiAction.SetCompressionAuto -> updateCompression { it.copy(auto = action.auto) }
-        is ModelEditorUiAction.SetCompressionCustom -> updateCompression {
+        is ModelEditorUiAction.SetCompressionAuto -> updateCompressionMode { it.copy(auto = action.auto) }
+        is ModelEditorUiAction.SetCompressionCustom -> updateCompressionMode {
             it.copy(catalog = it.catalog.copy(customIdEnabled = action.enabled))
         }
         is ModelEditorUiAction.SetCompressionModelId -> updateCompression {
@@ -69,8 +68,15 @@ class ModelEditorViewModel(
     }
 
     private fun selectProvider(index: Int): ModelEditorUiEffect? {
-        if (index == 3) return ModelEditorUiEffect.OpenLocalFormHint
         val current = _state.value
+        val selectedIndex = when {
+            current.local -> 3
+            current.protocol == ModelProtocolType.CODEX_RESPONSES -> 1
+            current.protocol == ModelProtocolType.ANTHROPIC_MESSAGES -> 2
+            else -> 0
+        }
+        if (current.lockedPreset && index != selectedIndex) return null
+        if (index == 3) return ModelEditorUiEffect.OpenLocalFormHint
         if (current.local) return ModelEditorUiEffect.OpenCustomFormHint
         if (current.lockedPreset) return null
         val next = protocolForIndex(index)
@@ -82,13 +88,20 @@ class ModelEditorViewModel(
             it.copy(
                 protocol = next,
                 mainCatalog = it.mainCatalog.copy(
-                    fetchedIds = emptyList(), selectedId = "", customIdText = "", lastRequest = null
+                    fetchedIds = emptyList(),
+                    fetching = false,
+                    selectedId = "",
+                    customIdText = "",
+                    lastRequest = null
                 ),
                 compression = it.compression.copy(
                     supported = compressionSupported,
                     enabled = if (compressionSupported) it.compression.enabled else false,
                     catalog = it.compression.catalog.copy(
-                        fetchedIds = emptyList(), selectedId = "", lastRequest = null
+                        fetchedIds = emptyList(),
+                        fetching = false,
+                        selectedId = "",
+                        lastRequest = null
                     )
                 ),
                 picker = it.picker.copy(visible = false)
@@ -112,12 +125,14 @@ class ModelEditorViewModel(
             next.copy(
                 mainCatalog = next.mainCatalog.copy(
                     fetchedIds = emptyList(),
+                    fetching = false,
                     selectedId = if (next.mainCatalog.customIdEnabled) next.mainCatalog.selectedId else "",
                     lastRequest = null
                 ),
                 compression = next.compression.copy(
                     catalog = next.compression.catalog.copy(
                         fetchedIds = emptyList(),
+                        fetching = false,
                         selectedId = if (next.compression.catalog.customIdEnabled) {
                             next.compression.catalog.selectedId
                         } else {
@@ -132,11 +147,49 @@ class ModelEditorViewModel(
         return null
     }
 
+    private fun updateMainCatalogMode(customIdEnabled: Boolean): ModelEditorUiEffect? {
+        if (_state.value.isSaving) return null
+        mainGeneration++
+        _state.update { current ->
+            current.copy(
+                mainCatalog = current.mainCatalog.copy(
+                    customIdEnabled = customIdEnabled,
+                    fetching = false
+                ),
+                picker = if (current.picker.kind == ModelCatalogKind.MAIN) {
+                    current.picker.copy(visible = false)
+                } else {
+                    current.picker
+                }
+            )
+        }
+        return null
+    }
+
     private fun updateCompression(
         transform: (CompressionEditorUiState) -> CompressionEditorUiState
     ): ModelEditorUiEffect? {
         if (_state.value.isSaving) return null
         _state.update { it.copy(compression = transform(it.compression)) }
+        return null
+    }
+
+    private fun updateCompressionMode(
+        transform: (CompressionEditorUiState) -> CompressionEditorUiState
+    ): ModelEditorUiEffect? {
+        if (_state.value.isSaving) return null
+        compressionGeneration++
+        _state.update { current ->
+            val next = transform(current.compression)
+            current.copy(
+                compression = next.copy(catalog = next.catalog.copy(fetching = false)),
+                picker = if (current.picker.kind == ModelCatalogKind.COMPRESSION) {
+                    current.picker.copy(visible = false)
+                } else {
+                    current.picker
+                }
+            )
+        }
         return null
     }
 

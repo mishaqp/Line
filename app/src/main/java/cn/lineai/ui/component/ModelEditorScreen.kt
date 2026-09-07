@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -253,12 +254,12 @@ private fun ProviderRow(
         ) {
             labels.forEachIndexed { index, label ->
                 val active = index == selected
-                val enabledLook = !state.lockedPreset || index == selected || index == 3
+                val enabled = !state.lockedPreset || index == selected
                 Text(
                     text = label,
                     modifier = Modifier
                         .weight(1f)
-                        .alpha(if (enabledLook) 1f else 0.4f)
+                        .alpha(if (enabled) 1f else 0.4f)
                         .clip(RoundedCornerShape(LineTheme.SHAPE_SM.dp))
                         .background(
                             Color(if (active) LineTheme.ACCENT_MUTED else LineTheme.SURFACE_ELEVATED)
@@ -268,11 +269,14 @@ private fun ProviderRow(
                             color = Color(if (active) LineTheme.ACCENT else LineTheme.BORDER_LIGHT),
                             shape = RoundedCornerShape(LineTheme.SHAPE_SM.dp)
                         )
-                        .clickable { onAction(ModelEditorUiAction.SelectProvider(index)) }
+                        .clickable(enabled = enabled) {
+                            onAction(ModelEditorUiAction.SelectProvider(index))
+                        }
                         .padding(vertical = 8.dp),
                     color = Color(if (active) LineTheme.ACCENT else LineTheme.TEXT),
                     fontSize = LineTheme.FONT_XS.sp,
                     fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -359,7 +363,7 @@ private fun RemoteForm(
         value = state.toolCallLimitText,
         onValueChange = { onAction(ModelEditorUiAction.SetToolLimit(it)) },
         hint = stringResource(R.string.screen_model_add_hint_tool_call_limit),
-        keyboardType = KeyboardType.Number
+        keyboardType = KeyboardType.Text
     )
     Text(
         text = stringResource(R.string.screen_model_add_max_tool_calls_hint),
@@ -427,7 +431,7 @@ private fun LocalForm(
     EditorField(
         label = stringResource(R.string.screen_model_add_context_length_label),
         value = state.localContextText,
-        onValueChange = {},
+        onValueChange = { onAction(ModelEditorUiAction.SetLocalContext(it)) },
         hint = "4096"
     )
     Text(
@@ -462,7 +466,8 @@ private fun LocalForm(
                     .padding(vertical = 8.dp),
                 color = Color(if (selected) LineTheme.ACCENT else LineTheme.TEXT),
                 fontSize = LineTheme.FONT_XS.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -484,12 +489,12 @@ private fun CompressionSection(
         checked = state.compression.enabled,
         onCheckedChange = { onAction(ModelEditorUiAction.SetCompressionEnabled(it)) }
     )
-    Text(
-        text = stringResource(R.string.screen_model_add_compaction_hint),
-        color = Color(LineTheme.TEXT_TERTIARY),
-        fontSize = LineTheme.FONT_XS.sp
-    )
     if (state.compression.detailsVisible) {
+        Text(
+            text = stringResource(R.string.screen_model_add_compaction_hint),
+            color = Color(LineTheme.TEXT_TERTIARY),
+            fontSize = LineTheme.FONT_XS.sp
+        )
         SwitchLine(
             title = stringResource(R.string.screen_model_add_compaction_auto_label),
             checked = state.compression.auto,
@@ -564,6 +569,7 @@ private fun CatalogSelector(
                     color = Color(LineTheme.BORDER_LIGHT),
                     shape = RoundedCornerShape(LineTheme.SHAPE_SM.dp)
                 )
+                .clickable(enabled = canQuery, onClick = onQuery)
                 .padding(horizontal = 12.dp, vertical = 12.dp),
             color = Color(if (selectedId.isNotEmpty()) LineTheme.TEXT else LineTheme.TEXT_TERTIARY),
             fontSize = LineTheme.FONT_SM.sp,

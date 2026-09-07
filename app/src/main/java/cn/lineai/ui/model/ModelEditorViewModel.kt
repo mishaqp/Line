@@ -113,6 +113,7 @@ sealed interface ModelEditorUiAction {
     data class SetModelId(val value: String) : ModelEditorUiAction
     data class SetToolLimit(val value: String) : ModelEditorUiAction
     data class SetContextSize(val value: String) : ModelEditorUiAction
+    data class SetLocalContext(val value: String) : ModelEditorUiAction
     data class SelectProvider(val index: Int) : ModelEditorUiAction
     data class SetCustomModelId(val enabled: Boolean) : ModelEditorUiAction
     data object QueryMainCatalog : ModelEditorUiAction
