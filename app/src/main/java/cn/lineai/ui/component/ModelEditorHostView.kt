@@ -16,6 +16,7 @@ import cn.lineai.navigation.LineDestination
 import cn.lineai.ui.model.ModelEditorRepository
 import cn.lineai.ui.model.ModelEditorUiEffect
 import cn.lineai.ui.model.ModelEditorViewModel
+import cn.lineai.ui.theme.LineTheme
 import cn.lineai.ui.util.KeyboardController
 
 class ModelEditorHostView(
@@ -40,6 +41,7 @@ class ModelEditorHostView(
 
     private var disposed = false
     private val composeView = ComposeView(context).apply {
+        setBackgroundColor(LineTheme.BG)
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             AccountScreenTheme {
@@ -64,6 +66,7 @@ class ModelEditorHostView(
     }
 
     init {
+        setBackgroundColor(LineTheme.BG)
         addView(composeView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
     }
 
