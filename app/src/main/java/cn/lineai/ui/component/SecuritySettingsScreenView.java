@@ -1,14 +1,14 @@
 package cn.lineai.ui.component;
-import cn.lineai.ui.theme.IconButtonView;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.widget.LinearLayout;
-import android.widget.Switch;
-import cn.lineai.R;
+import android.widget.FrameLayout;
 import cn.lineai.model.OutputSettings;
+import cn.lineai.ui.model.SecuritySettingsRepository;
 
-public final class SecuritySettingsScreenView extends ScreenScaffoldView {
+/**
+ * Compatibility wrapper around the Compose Security settings screen.
+ */
+public final class SecuritySettingsScreenView extends FrameLayout {
     public interface Listener {
         void onBack();
 
@@ -21,90 +21,105 @@ public final class SecuritySettingsScreenView extends ScreenScaffoldView {
         void onFullAccessChanged(boolean enabled);
     }
 
-    private final Listener listener;
-    private Switch bypassPathProtectionSwitch;
-    private boolean bypassDialogInProgress;
-
-    public SecuritySettingsScreenView(Context context, OutputSettings settings, boolean fullAccessEnabled, Listener listener) {
-        super(context, context.getString(R.string.screen_security_title), listener::onBack, null);
-        this.listener = listener;
-        OutputSettings safeSettings = settings == null
-                ? new OutputSettings(false, OutputSettings.BROWSER_BUILTIN)
-                : settings;
-        boolean allowAnyHttp = safeSettings.isAllowAnyHttp();
-        boolean browserJavaScriptEnabled = safeSettings.isBrowserJavaScriptEnabled();
-        boolean bypassPathProtection = safeSettings.isBypassPathProtection();
-        LinearLayout content = getContent();
-
-        SettingsSectionView http = new SettingsSectionView(context, context.getString(R.string.screen_security_section_http));
-        http.addRow(new SwitchRowView(context, IconButtonView.SHIELD_CHECK,
-                context.getString(R.string.settings_row_security_allow_any_http_title),
-                context.getString(R.string.settings_row_security_allow_any_http_desc),
-                allowAnyHttp,
-                (buttonView, isChecked) -> listener.onAllowAnyHttpChanged(isChecked)), false);
-        content.addView(http, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        SettingsSectionView browser = new SettingsSectionView(context, context.getString(R.string.screen_security_section_browser));
-        browser.addRow(new SwitchRowView(context, IconButtonView.CODE,
-                context.getString(R.string.screen_output_browser_js_label),
-                context.getString(R.string.screen_output_browser_js_desc),
-                browserJavaScriptEnabled,
-                (buttonView, isChecked) -> listener.onBrowserJavaScriptChanged(isChecked)), false);
-        content.addView(browser, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        SettingsSectionView path = new SettingsSectionView(context, context.getString(R.string.screen_security_section_path));
-        SwitchRowView bypassRow = new SwitchRowView(context, IconButtonView.SHIELD,
-                context.getString(R.string.settings_row_security_bypass_path_title),
-                context.getString(R.string.settings_row_security_bypass_path_desc),
-                bypassPathProtection,
-                (buttonView, isChecked) -> onBypassPathProtectionToggled(context, isChecked));
-        bypassPathProtectionSwitch = findSwitch(bypassRow);
-        path.addRow(bypassRow, false);
-        content.addView(path, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        SettingsSectionView agent = new SettingsSectionView(context, context.getString(R.string.screen_security_section_agent));
-        agent.addRow(new SwitchRowView(context, IconButtonView.SHIELD_CHECK,
-                context.getString(R.string.settings_row_security_full_access_title),
-                context.getString(R.string.settings_row_security_full_access_desc),
-                fullAccessEnabled,
-                (buttonView, isChecked) -> listener.onFullAccessChanged(isChecked)), false);
-        content.addView(agent, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+    public SecuritySettingsScreenView(
+            Context context,
+            OutputSettings settings,
+            boolean fullAccessEnabled,
+            Listener listener
+    ) {
+        super(context);
+        SecuritySettingsRepository repository =
+                new ListenerSecuritySettingsRepository(settings, fullAccessEnabled, listener);
+        addView(
+                new SecuritySettingsHostView(context, repository, listener::onBack),
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        );
     }
 
-    private void onBypassPathProtectionToggled(Context context, boolean isChecked) {
-        if (bypassDialogInProgress) {
-            return;
-        }
-        if (!isChecked) {
-            listener.onBypassPathProtectionChanged(false);
-            return;
-        }
-        bypassDialogInProgress = true;
-        if (bypassPathProtectionSwitch != null) {
-            bypassPathProtectionSwitch.setChecked(false);
-        }
-        new AlertDialog.Builder(context)
-                .setTitle(context.getString(R.string.settings_row_security_bypass_path_warning_title))
-                .setMessage(context.getString(R.string.settings_row_security_bypass_path_warning_message))
-                .setNegativeButton(context.getString(R.string.common_cancel), (dialog, which) -> bypassDialogInProgress = false)
-                .setPositiveButton(context.getString(R.string.common_confirm), (dialog, which) -> {
-                    if (bypassPathProtectionSwitch != null) {
-                        bypassPathProtectionSwitch.setChecked(true);
-                    }
-                    bypassDialogInProgress = false;
-                    listener.onBypassPathProtectionChanged(true);
-                })
-                .setOnCancelListener(dialog -> bypassDialogInProgress = false)
-                .show();
-    }
+    private static final class ListenerSecuritySettingsRepository
+            implements SecuritySettingsRepository {
+        private OutputSettings snapshot;
+        private boolean fullAccessEnabled;
+        private final Listener listener;
 
-    private static Switch findSwitch(LinearLayout row) {
-        for (int i = 0; i < row.getChildCount(); i++) {
-            android.view.View child = row.getChildAt(i);
-            if (child instanceof Switch) {
-                return (Switch) child;
-            }
+        ListenerSecuritySettingsRepository(
+                OutputSettings settings,
+                boolean fullAccessEnabled,
+                Listener listener
+        ) {
+            this.snapshot = settings == null
+                    ? new OutputSettings(false, OutputSettings.BROWSER_BUILTIN)
+                    : settings;
+            this.fullAccessEnabled = fullAccessEnabled;
+            this.listener = listener;
         }
-        return null;
+
+        @Override
+        public OutputSettings outputSettings() {
+            return snapshot;
+        }
+
+        @Override
+        public boolean fullAccessEnabled() {
+            return fullAccessEnabled;
+        }
+
+        @Override
+        public void setAllowAnyHttp(boolean enabled) {
+            snapshot = copy(
+                    snapshot.isCodeWrapEnabled(),
+                    snapshot.getBrowserMode(),
+                    snapshot.isBrowserJavaScriptEnabled(),
+                    enabled,
+                    snapshot.isBypassPathProtection()
+            );
+            listener.onAllowAnyHttpChanged(enabled);
+        }
+
+        @Override
+        public void setBrowserJavaScriptEnabled(boolean enabled) {
+            snapshot = copy(
+                    snapshot.isCodeWrapEnabled(),
+                    snapshot.getBrowserMode(),
+                    enabled,
+                    snapshot.isAllowAnyHttp(),
+                    snapshot.isBypassPathProtection()
+            );
+            listener.onBrowserJavaScriptChanged(enabled);
+        }
+
+        @Override
+        public void setBypassPathProtection(boolean enabled) {
+            snapshot = copy(
+                    snapshot.isCodeWrapEnabled(),
+                    snapshot.getBrowserMode(),
+                    snapshot.isBrowserJavaScriptEnabled(),
+                    snapshot.isAllowAnyHttp(),
+                    enabled
+            );
+            listener.onBypassPathProtectionChanged(enabled);
+        }
+
+        @Override
+        public void setFullAccessEnabled(boolean enabled) {
+            fullAccessEnabled = enabled;
+            listener.onFullAccessChanged(enabled);
+        }
+
+        private OutputSettings copy(
+                boolean codeWrap,
+                String browserMode,
+                boolean browserJavaScript,
+                boolean allowAnyHttp,
+                boolean bypassPathProtection
+        ) {
+            return new OutputSettings(
+                    codeWrap,
+                    browserMode,
+                    browserJavaScript,
+                    allowAnyHttp,
+                    bypassPathProtection
+            );
+        }
     }
 }

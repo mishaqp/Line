@@ -1,0 +1,4 @@
+<resources>
+    <string name="screen_storage_clear_title">清理存储数据</string>
+    <string name="screen_storage_clear_message">选择要删除的内容。此页面不会删除配置文件和 Home 数据。</string>
+</resources>

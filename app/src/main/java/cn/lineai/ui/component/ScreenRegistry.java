@@ -3,12 +3,17 @@ package cn.lineai.ui.component;
 import android.content.Context;
 import android.view.View;
 import cn.lineai.model.ModelConfig;
+import cn.lineai.model.ModelProviderPreset;
+import cn.lineai.model.ModelProviderPresets;
+import cn.lineai.navigation.LineDestination;
+import cn.lineai.navigation.LineDestinations;
 import cn.lineai.model.ModelProtocolType;
 import cn.lineai.mvp.MainUiController;
 import cn.lineai.ui.MainChatView;
 import cn.lineai.ui.model.AccountModelProvider;
 import cn.lineai.ui.model.AccountModelProviders;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,13 +38,47 @@ public final class ScreenRegistry {
     }
 
     public View createScreen(String id, MainChatView view, MainUiController controller, Context context) {
+        return createScreen(LineDestinations.fromScreenId(id), view, controller, context);
+    }
+
+    public View createScreen(
+            LineDestination destination,
+            MainChatView view,
+            MainUiController controller,
+            Context context
+    ) {
+        String id = destination == null ? "" : destination.getScreenId();
+        if (destination instanceof LineDestination.TerminalProvider) {
+            return TerminalProvidersLegacyBridge.create(context, view, controller);
+        }
+        if (McpExtensionsLegacyBridge.handles(destination)) {
+            return McpExtensionsLegacyBridge.create(context, view, controller);
+        }
+        if (AgentExtensionsLegacyBridge.handles(destination)) {
+            return AgentExtensionsLegacyBridge.create(context, view, controller);
+        }
+        if (LinecodeExtensionsLegacyBridge.handles(destination)) {
+            return LinecodeExtensionsLegacyBridge.create(context, view, controller);
+        }
+        if (SkillsExtensionsLegacyBridge.handles(destination)) {
+            return SkillsExtensionsLegacyBridge.create(context, view, controller);
+        }
+        if (ImageUnderstandingModelPickerLegacyBridge.handles(destination)) {
+            return ImageUnderstandingModelPickerLegacyBridge.create(context, view, controller);
+        }
+        if (ImageGenerationModelPickerLegacyBridge.handles(destination)) {
+            return ImageGenerationModelPickerLegacyBridge.create(context, view, controller);
+        }
+        if ("models".equals(id) || "modelAddOptions".equals(id)) {
+            return createModelNavigationHost(context, view, controller, destination);
+        }
         if ("codexAccount".equals(id)) {
             return createAccountScreen(
                     context,
                     view,
                     controller,
                     AccountModelProviders.fromProtocol(ModelProtocolType.CODEX_RESPONSES),
-                    "modelAdd:preset:codex"
+                    "codexAccount"
             );
         }
         if ("grokAccount".equals(id)) {
@@ -48,7 +87,7 @@ public final class ScreenRegistry {
                     view,
                     controller,
                     AccountModelProviders.fromProtocol(ModelProtocolType.GROK_RESPONSES),
-                    "modelAdd:preset:grok"
+                    "grokAccount"
             );
         }
 
@@ -96,28 +135,123 @@ public final class ScreenRegistry {
         return null;
     }
 
+    private View createModelNavigationHost(
+            Context context,
+            MainChatView view,
+            MainUiController controller,
+            LineDestination startDestination
+    ) {
+        return new ModelNavigationHostView(
+                context,
+                controller.getModels(),
+                controller.getSelectedModelId(),
+                startDestination,
+                new ModelNavigationHostView.Listener() {
+                    @Override
+                    public void onExit() {
+                        view.handleScreenBack();
+                    }
+
+                    @Override
+                    public void onSelectModel(String id) {
+                        controller.onModelSelected(id);
+                    }
+
+                    @Override
+                    public void onDeleteModels(List<String> ids) {
+                        controller.onModelsDeleted(ids);
+                    }
+
+                    @Override
+                    public void onSave(ModelConfig model) {
+                        controller.onModelSaved(model);
+                    }
+
+                    @Override
+                    public void onTest(ModelConfig model) {
+                        controller.onModelTest(model);
+                    }
+
+                    @Override
+                    public ModelConfig getModel(String id) {
+                        return controller.getModel(id);
+                    }
+
+                    @Override
+                    public List<ModelConfig> models() {
+                        return controller.getModels();
+                    }
+
+                    @Override
+                    public String selectedModelId() {
+                        return controller.getSelectedModelId();
+                    }
+
+                    @Override
+                    public View createLegacyEditor(
+                            Context editorContext,
+                            LineDestination destination,
+                            Runnable onBack
+                    ) {
+                        String id = destination.getScreenId();
+                        ModelProviderPreset preset = null;
+                        boolean local = "modelAdd:local".equals(id);
+                        ModelConfig editingModel = null;
+
+                        if (id.startsWith("modelAdd:preset:")) {
+                            preset = ModelProviderPresets.find(
+                                    id.substring("modelAdd:preset:".length())
+                            );
+                        } else if (id.startsWith("modelEdit:")) {
+                            editingModel = controller.getModel(
+                                    id.substring("modelEdit:".length())
+                            );
+                            local = editingModel != null
+                                    && editingModel.getProtocolType() == ModelProtocolType.LOCAL_GGUF;
+                        }
+
+                        return ScreenFactories.newModelAddScreen(
+                                editorContext,
+                                controller,
+                                preset,
+                                local,
+                                editingModel,
+                                onBack
+                        );
+                    }
+                }
+        );
+    }
+
     private View createAccountScreen(
             Context context,
             MainChatView view,
             MainUiController controller,
             AccountModelProvider provider,
-            String addModelScreenId
+            String startScreenId
     ) {
         if (provider == null) {
             return null;
         }
-        return new AccountScreenView(
+        return new AccountNavigationHostView(
                 context,
                 provider,
-                new AccountScreenView.Listener() {
+                null,
+                LineDestinations.fromScreenId(startScreenId),
+                new AccountNavigationHostView.Listener() {
                     @Override
-                    public void onBack() {
+                    public void onExit() {
                         view.handleScreenBack();
                     }
 
                     @Override
-                    public void onAddModel() {
-                        controller.onSettingsItemSelected(addModelScreenId);
+                    public void onSave(ModelConfig model) {
+                        controller.onModelSaved(model);
+                    }
+
+                    @Override
+                    public void onTest(ModelConfig model) {
+                        controller.onModelTest(model);
                     }
                 }
         );
@@ -133,13 +267,21 @@ public final class ScreenRegistry {
         if (provider == null) {
             return null;
         }
-        return new AccountModelEditorScreenView(
+        String providerId = provider.getProtocolType() == ModelProtocolType.CODEX_RESPONSES
+                ? "codex"
+                : "grok";
+        String startScreenId = editingModel == null
+                ? "modelAdd:preset:" + providerId
+                : "modelEdit:" + editingModel.getId();
+
+        return new AccountNavigationHostView(
                 context,
                 provider,
                 editingModel,
-                new AccountModelEditorScreenView.Listener() {
+                LineDestinations.fromScreenId(startScreenId),
+                new AccountNavigationHostView.Listener() {
                     @Override
-                    public void onBack() {
+                    public void onExit() {
                         view.handleScreenBack();
                     }
 
@@ -152,12 +294,8 @@ public final class ScreenRegistry {
                     public void onTest(ModelConfig model) {
                         controller.onModelTest(model);
                     }
-
-                    @Override
-                    public void onOpenAccount(String screenId) {
-                        controller.onSettingsItemSelected(screenId);
-                    }
                 }
         );
     }
+
 }

@@ -116,11 +116,29 @@ public final class ScreenFactories {
 
     private static View newModelAddScreen(Context context, MainChatView view, MainUiController controller,
                                          ModelProviderPreset preset, boolean local, ModelConfig editingModel) {
+        return newModelAddScreen(
+                context,
+                controller,
+                preset,
+                local,
+                editingModel,
+                view::handleScreenBack
+        );
+    }
+
+    static View newModelAddScreen(
+            Context context,
+            MainUiController controller,
+            ModelProviderPreset preset,
+            boolean local,
+            ModelConfig editingModel,
+            Runnable onBack
+    ) {
         final cn.lineai.ai.protocol.ModelCatalogClient catalogClient = new cn.lineai.ai.protocol.ModelCatalogClient();
         return new ModelAddScreenView(context, preset, local, editingModel, new ModelAddScreenView.Listener() {
             @Override
             public void onBack() {
-                view.handleScreenBack();
+                onBack.run();
             }
 
             @Override

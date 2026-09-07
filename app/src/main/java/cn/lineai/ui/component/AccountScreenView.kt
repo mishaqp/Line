@@ -25,7 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -76,8 +76,8 @@ class AccountScreenView(
                     factory = AccountScreenViewModel.factory(context, provider)
                 )
                 AccountScreenTheme {
-                    AccountScreen(
-                        state = model.state.collectAsState().value,
+                    AccountScreenContent(
+                        state = model.state.collectAsStateWithLifecycle().value,
                         onBack = listener::onBack,
                         onAddModel = listener::onAddModel,
                         onRefresh = model::refresh,
@@ -196,7 +196,7 @@ private fun stringsFor(kind: AccountProviderKind): AccountStrings = when (kind) 
 }
 
 @Composable
-private fun AccountScreenTheme(content: @Composable () -> Unit) {
+internal fun AccountScreenTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = darkColorScheme(
             primary = Color(LineTheme.ACCENT),
@@ -214,7 +214,7 @@ private fun AccountScreenTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun AccountScreen(
+internal fun AccountScreenContent(
     state: AccountScreenState,
     onBack: () -> Unit,
     onAddModel: () -> Unit,

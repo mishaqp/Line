@@ -1,0 +1,4 @@
+<resources>
+    <string name="screen_storage_clear_title">Clear storage data</string>
+    <string name="screen_storage_clear_message">Choose what to delete. Config files and Home data are not deleted from this screen.</string>
+</resources>
