@@ -54,7 +54,7 @@ internal fun HeaderScreenContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             HeaderIconButton(
-                iconRes = R.drawable.ic_lucide_menu,
+                iconRes = cn.lineai.ui.theme.R.drawable.ic_lucide_menu,
                 descriptionRes = R.string.header_menu_desc,
                 tint = LineTheme.TEXT,
                 onClick = { onAction(HeaderUiAction.Menu) }
@@ -97,7 +97,7 @@ internal fun HeaderScreenContent(
                     }
                 }
                 Icon(
-                    painter = painterResource(R.drawable.ic_lucide_chevron_down),
+                    painter = painterResource(cn.lineai.ui.theme.R.drawable.ic_lucide_chevron_down),
                     contentDescription = null,
                     modifier = Modifier.size(width = 20.dp, height = 14.dp),
                     tint = Color(LineTheme.TEXT_SECONDARY)
@@ -127,7 +127,7 @@ internal fun HeaderScreenContent(
                     )
                     Spacer(Modifier.width(2.dp))
                     Icon(
-                        painter = painterResource(R.drawable.ic_lucide_chevron_down),
+                        painter = painterResource(cn.lineai.ui.theme.R.drawable.ic_lucide_chevron_down),
                         contentDescription = null,
                         modifier = Modifier.size(width = 16.dp, height = 12.dp),
                         tint = Color(LineTheme.TEXT_SECONDARY)
@@ -167,17 +167,17 @@ internal fun HeaderScreenContent(
             }
             Spacer(Modifier.width(4.dp))
             HeaderIconButton(
-                R.drawable.ic_lucide_shield,
+                cn.lineai.ui.theme.R.drawable.ic_lucide_shield,
                 R.string.header_permission_desc,
                 LineTheme.TEXT_SECONDARY
             ) { onAction(HeaderUiAction.Permission) }
             HeaderIconButton(
-                R.drawable.ic_lucide_plus,
+                cn.lineai.ui.theme.R.drawable.ic_lucide_plus,
                 R.string.header_new_conversation_desc,
                 LineTheme.TEXT_SECONDARY
             ) { onAction(HeaderUiAction.NewConversation) }
             HeaderIconButton(
-                R.drawable.ic_lucide_ellipsis_vertical,
+                cn.lineai.ui.theme.R.drawable.ic_lucide_ellipsis_vertical,
                 R.string.header_more_desc,
                 LineTheme.TEXT_SECONDARY
             ) { onAction(HeaderUiAction.More) }
