@@ -74,7 +74,6 @@ import cn.lineai.ui.component.TermuxIntegrationScreenView;
 import cn.lineai.ui.component.TextSelectionDialog;
 import cn.lineai.ui.component.ThemeSettingsScreenView;
 import cn.lineai.ui.component.ToolSettingsScreenView;
-import cn.lineai.ui.component.TutorialScreenView;
 import cn.lineai.ui.util.KeyboardController;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -467,8 +466,6 @@ public final class MainChatView extends FrameLayout implements MainContract.View
         screenRegistry.register(new ScreenFactories.TermuxIntegrationScreenFactory());
         screenRegistry.register(new ScreenFactories.AboutScreenFactory());
         screenRegistry.register(new ScreenFactories.LicensesScreenFactory());
-        screenRegistry.register(new ScreenFactories.TutorialScreenFactory());
-        screenRegistry.register(new ScreenFactories.TutorialFromSettingsScreenFactory());
         screenRegistry.register(new ScreenFactories.ModelListScreenFactory());
         screenRegistry.register(new ScreenFactories.ImageUnderstandingModelScreenFactory());
         screenRegistry.register(new ScreenFactories.ImageGenerationModelScreenFactory());

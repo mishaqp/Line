@@ -297,7 +297,6 @@ object LineDestinations {
 
     private fun legacyParent(id: String): LineDestination {
         val parentId = when (id) {
-            "tutorialFromSettings" -> "settings"
             "sshSettings", "termuxIntegration" -> "mcp"
             "imageUnderstandingModel", "imageGenerationModel" -> "toolSettings"
             "promptTemplates" -> "llm"

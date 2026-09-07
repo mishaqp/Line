@@ -729,14 +729,6 @@
     <string name="screen_about_section_legal">Legal</string>
     <string name="screen_about_open_source_licenses">Open source licenses</string>
 
-    <string name="screen_tutorial_title">Tutorial</string>
-    <string name="screen_tutorial_subtitle_brief">Please complete the basic setup for project, model, permissions and tools before starting.</string>
-    <string name="screen_tutorial_simple_label">Simple mode</string>
-    <string name="screen_tutorial_simple_desc">For first-time users, walk through the basic configuration step by step</string>
-    <string name="screen_tutorial_pro_label">Pro mode</string>
-    <string name="screen_tutorial_pro_desc">For experienced developers, covering architecture, protocols, extensions and security details</string>
-    <string name="screen_tutorial_fallback">Tutorial content failed to load. Please reinstall LineCode Pro and try again.</string>
-    <string name="screen_tutorial_loading_error">Unable to read tutorial file</string>
 
     <string name="screen_licenses_commonmark_core">commonmark-java core</string>
     <string name="screen_licenses_commonmark_gfm">commonmark-java GFM tables</string>
@@ -1158,8 +1150,6 @@
     <string name="tool_group_ipc_shell_desc">Run shell commands via the terminal provider IPC</string>
 
     <!-- Overlay action sheet (more actions menu) -->
-    <string name="sheet_more_tutorial">Tutorial</string>
-    <string name="sheet_more_tutorial_desc">Open the beginner tutorial</string>
     <string name="sheet_more_settings_desc">Model, theme and data management</string>
     <string name="sheet_more_export">Export chat</string>
     <string name="sheet_more_export_desc">Export the current chat as Markdown or share it</string>
@@ -1229,8 +1219,6 @@
     <string name="screen_output_toolcall_preview_desc">Preview every tool card with sample data</string>
     <string name="screen_toolcall_preview_title">Tool call cards</string>
     <string name="toolcall_preview_section_note">Sample data — states shown below may not reflect real tool runs.</string>
-    <string name="settings_row_tutorial_title">Tutorial</string>
-    <string name="settings_row_tutorial_desc">Beginner to advanced: models, workspace, Termux, SSH and MCP</string>
     <string name="screen_mcp_execution_root">Root (su)</string>
     <string name="screen_mcp_execution_root_desc">Run shell and file tools on this device as root via su. Requires a rooted device (KernelSU/Magisk) with root permission granted to LineCode; the whole filesystem becomes accessible.</string>
     <string name="tool_group_skills_name">Skills</string>

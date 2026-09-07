@@ -25,9 +25,6 @@ class ShellCommandLegacyBoundaryTest {
             ShellCommandLegacyBridge.handles(LineDestination.Browser("https://example.com"))
         )
         assertFalse(
-            ShellCommandLegacyBridge.handles(LineDestinations.fromScreenId("tutorialFromSettings"))
-        )
-        assertFalse(
             ShellCommandLegacyBridge.handles(LineDestinations.fromScreenId("legacyUnknown"))
         )
     }

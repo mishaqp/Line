@@ -729,14 +729,6 @@
     <string name="screen_about_section_legal">Правовая информация</string>
     <string name="screen_about_open_source_licenses">Лицензии с открытым исходным кодом</string>
 
-    <string name="screen_tutorial_title">Руководство</string>
-    <string name="screen_tutorial_subtitle_brief">Перед началом работы завершите базовую настройку проекта, модели, разрешений и инструментов.</string>
-    <string name="screen_tutorial_simple_label">Простой режим</string>
-    <string name="screen_tutorial_simple_desc">Для новых пользователей, пошаговая базовая настройка</string>
-    <string name="screen_tutorial_pro_label">Режим Pro</string>
-    <string name="screen_tutorial_pro_desc">Для опытных разработчиков, охват архитектуры, протоколов, расширений и безопасности</string>
-    <string name="screen_tutorial_fallback">Не удалось загрузить руководство. Переустановите LineCode Pro и повторите.</string>
-    <string name="screen_tutorial_loading_error">Не удалось прочитать файл руководства</string>
 
     <string name="screen_licenses_commonmark_core">commonmark-java core</string>
     <string name="screen_licenses_commonmark_gfm">commonmark-java GFM tables</string>
@@ -1156,8 +1148,6 @@
     <string name="tool_group_ipc_shell_desc">Выполнение shell-команд через терминальный провайдер IPC</string>
 
     <!-- Overlay action sheet (more actions menu) -->
-    <string name="sheet_more_tutorial">Руководство</string>
-    <string name="sheet_more_tutorial_desc">Открыть руководство для начинающих</string>
     <string name="sheet_more_settings_desc">Модель, тема и управление данными</string>
     <string name="sheet_more_export">Экспорт чата</string>
     <string name="sheet_more_export_desc">Экспортировать текущий чат как Markdown или поделиться</string>
@@ -1227,8 +1217,6 @@
     <string name="screen_output_toolcall_preview_desc">Просмотр всех карточек инструментов с тестовыми данными</string>
     <string name="screen_toolcall_preview_title">Карточки вызовов инструментов</string>
     <string name="toolcall_preview_section_note">Тестовые данные — состояния не отражают реальные запуски инструментов.</string>
-    <string name="settings_row_tutorial_title">Руководство</string>
-    <string name="settings_row_tutorial_desc">От новичка до профи: модели, рабочее пространство, Termux, SSH и MCP</string>
     <string name="screen_mcp_execution_root">Root (su)</string>
     <string name="screen_mcp_execution_root_desc">Выполнять shell и файловые инструменты на этом устройстве от имени root через su. Требуется root (KernelSU/Magisk) и выданное приложению LineCode root-разрешение; доступной становится вся файловая система.</string>
     <string name="tool_group_skills_name">Навыки</string>
