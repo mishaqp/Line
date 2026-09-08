@@ -19,6 +19,8 @@ import cn.lineai.model.ChatUiState;
 import cn.lineai.model.ChatMessage;
 import cn.lineai.model.FileTreeNode;
 import cn.lineai.model.InputAttachment;
+import cn.lineai.navigation.LineDestination;
+import cn.lineai.navigation.LineDestinations;
 import cn.lineai.model.SheetOption;
 import cn.lineai.mvp.MainContract;
 import cn.lineai.mvp.MainUiController;
@@ -72,7 +74,6 @@ import cn.lineai.ui.component.TermuxIntegrationScreenView;
 import cn.lineai.ui.component.TextSelectionDialog;
 import cn.lineai.ui.component.ThemeSettingsScreenView;
 import cn.lineai.ui.component.ToolSettingsScreenView;
-import cn.lineai.ui.component.TutorialScreenView;
 import cn.lineai.ui.util.KeyboardController;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -465,8 +466,6 @@ public final class MainChatView extends FrameLayout implements MainContract.View
         screenRegistry.register(new ScreenFactories.TermuxIntegrationScreenFactory());
         screenRegistry.register(new ScreenFactories.AboutScreenFactory());
         screenRegistry.register(new ScreenFactories.LicensesScreenFactory());
-        screenRegistry.register(new ScreenFactories.TutorialScreenFactory());
-        screenRegistry.register(new ScreenFactories.TutorialFromSettingsScreenFactory());
         screenRegistry.register(new ScreenFactories.ModelListScreenFactory());
         screenRegistry.register(new ScreenFactories.ImageUnderstandingModelScreenFactory());
         screenRegistry.register(new ScreenFactories.ImageGenerationModelScreenFactory());
@@ -639,7 +638,11 @@ public final class MainChatView extends FrameLayout implements MainContract.View
 
     @Override
     public void showScreen(String screenId) {
-        showScreen(screenId, true);
+        showScreen(LineDestinations.fromScreenId(screenId));
+    }
+
+    public void showScreen(LineDestination destination) {
+        showScreen(destination == null ? "" : destination.getScreenId(), true);
     }
 
     public void showScreen(String screenId, boolean forward) {
@@ -1155,7 +1158,8 @@ public final class MainChatView extends FrameLayout implements MainContract.View
     }
 
     private View buildScreen(String screenId) {
-        View view = screenRegistry.createScreen(screenId, this, presenter, getContext());
+        LineDestination destination = LineDestinations.fromScreenId(screenId);
+        View view = screenRegistry.createScreen(destination, this, presenter, getContext());
         if (view != null) {
             return view;
         }

@@ -43,19 +43,19 @@ data class AccountModelEditorState(
 }
 
 class AccountModelEditorViewModel(
-    context: Context,
-    val provider: AccountModelProvider,
+    private val repository: AccountRepository,
     private val editingModel: ModelConfig?
 ) : ViewModel() {
-    private val appContext = context.applicationContext ?: context
-
+    private val provider = repository.provider
     private val initialModelId = editingModel?.modelId.orEmpty()
+    private val initialIdentity = repository.identity()
+
     private val _state = MutableStateFlow(
         AccountModelEditorState(
             providerLabel = provider.label,
-            authenticated = provider.isAuthenticated(appContext),
-            email = provider.email(appContext),
-            plan = provider.plan(appContext),
+            authenticated = initialIdentity.authenticated,
+            email = initialIdentity.email,
+            plan = initialIdentity.plan,
             selectedModelId = initialModelId,
             customModelId = initialModelId,
             name = editingModel?.name.orEmpty(),
@@ -73,22 +73,22 @@ class AccountModelEditorViewModel(
     }
 
     fun refreshModels() {
-        val authenticated = provider.isAuthenticated(appContext)
+        val identity = repository.identity()
         _state.update {
             it.copy(
-                authenticated = authenticated,
-                email = provider.email(appContext),
-                plan = provider.plan(appContext),
-                loadingModels = authenticated,
+                authenticated = identity.authenticated,
+                email = identity.email,
+                plan = identity.plan,
+                loadingModels = identity.authenticated,
                 loadError = false,
                 issue = null
             )
         }
-        if (!authenticated) return
+        if (!identity.authenticated) return
 
         viewModelScope.launch {
             try {
-                val ids = provider.fetchModelIds(appContext).distinct()
+                val ids = repository.fetchModelIds().distinct()
                 _state.update { current ->
                     val existing = current.effectiveModelId.ifBlank { initialModelId }
                     val existsInCatalog = existing.isNotBlank() && ids.contains(existing)
@@ -172,10 +172,16 @@ class AccountModelEditorViewModel(
             context: Context,
             provider: AccountModelProvider,
             editingModel: ModelConfig?
+        ): ViewModelProvider.Factory =
+            factory(AndroidAccountRepository(context, provider), editingModel)
+
+        internal fun factory(
+            repository: AccountRepository,
+            editingModel: ModelConfig?
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return AccountModelEditorViewModel(context, provider, editingModel) as T
+                return AccountModelEditorViewModel(repository, editingModel) as T
             }
         }
     }

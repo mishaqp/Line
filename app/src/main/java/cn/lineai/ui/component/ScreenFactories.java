@@ -116,11 +116,29 @@ public final class ScreenFactories {
 
     private static View newModelAddScreen(Context context, MainChatView view, MainUiController controller,
                                          ModelProviderPreset preset, boolean local, ModelConfig editingModel) {
+        return newModelAddScreen(
+                context,
+                controller,
+                preset,
+                local,
+                editingModel,
+                view::handleScreenBack
+        );
+    }
+
+    static View newModelAddScreen(
+            Context context,
+            MainUiController controller,
+            ModelProviderPreset preset,
+            boolean local,
+            ModelConfig editingModel,
+            Runnable onBack
+    ) {
         final cn.lineai.ai.protocol.ModelCatalogClient catalogClient = new cn.lineai.ai.protocol.ModelCatalogClient();
         return new ModelAddScreenView(context, preset, local, editingModel, new ModelAddScreenView.Listener() {
             @Override
             public void onBack() {
-                view.handleScreenBack();
+                onBack.run();
             }
 
             @Override
@@ -846,31 +864,6 @@ public final class ScreenFactories {
         @Override
         public String screenId() {
             return "licenses";
-        }
-    }
-
-    public static final class TutorialScreenFactory implements ScreenFactory {
-        @Override
-        public View createScreen(MainChatView view, MainUiController controller, Context context) {
-            return new TutorialScreenView(context, view::handleScreenBack);
-        }
-
-        @Override
-        public String screenId() {
-            return "tutorial";
-        }
-    }
-
-    /** 设置页顶部的教程入口：返回时回到设置页（区别于聊天"更多"菜单的 tutorial）。 */
-    public static final class TutorialFromSettingsScreenFactory implements ScreenFactory {
-        @Override
-        public View createScreen(MainChatView view, MainUiController controller, Context context) {
-            return new TutorialScreenView(context, view::handleScreenBack);
-        }
-
-        @Override
-        public String screenId() {
-            return "tutorialFromSettings";
         }
     }
 

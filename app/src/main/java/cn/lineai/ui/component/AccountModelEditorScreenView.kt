@@ -29,7 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,8 +83,8 @@ class AccountModelEditorScreenView(
                     factory = AccountModelEditorViewModel.factory(context, provider, editingModel)
                 )
                 AccountModelEditorTheme {
-                    AccountModelEditorScreen(
-                        state = editor.state.collectAsState().value,
+                    AccountModelEditorScreenContent(
+                        state = editor.state.collectAsStateWithLifecycle().value,
                         editing = editingModel != null,
                         provider = provider,
                         onBack = listener::onBack,
@@ -132,7 +132,7 @@ private fun AccountModelEditorTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun AccountModelEditorScreen(
+internal fun AccountModelEditorScreenContent(
     state: AccountModelEditorState,
     editing: Boolean,
     provider: AccountModelProvider,

@@ -1,14 +1,16 @@
 package cn.lineai.ui.component;
-import cn.lineai.ui.theme.IconButtonView;
-import cn.lineai.ui.theme.LineTheme;
 
 import android.content.Context;
-import android.widget.LinearLayout;
-import cn.lineai.R;
+import android.widget.FrameLayout;
 import cn.lineai.model.OutputSettings;
-import cn.lineai.ui.markdown.MarkdownView;
+import cn.lineai.navigation.LineDestination;
+import cn.lineai.ui.model.OutputSettingsRepository;
 
-public final class OutputSettingsScreenView extends ScreenScaffoldView {
+/**
+ * Compatibility wrapper around the Compose Output settings screen.
+ * Tool Call Preview stays on the ScreenRegistry / typed destination bridge.
+ */
+public final class OutputSettingsScreenView extends FrameLayout {
     public interface Listener {
         void onBack();
 
@@ -21,75 +23,81 @@ public final class OutputSettingsScreenView extends ScreenScaffoldView {
         void onToolCallPreviewClicked();
     }
 
-    private final String PREVIEW_MARKDOWN;
-    private final Listener listener;
-    private final MarkdownView previewView;
-    private OptionRowView builtinBrowserRow;
-    private OptionRowView externalBrowserRow;
-    private boolean codeWrapEnabled;
-    private String browserMode;
-
     public OutputSettingsScreenView(Context context, OutputSettings settings, Listener listener) {
-        super(context, context.getString(R.string.screen_output_title), listener::onBack, null);
-        this.listener = listener;
-        PREVIEW_MARKDOWN = context.getString(R.string.screen_output_preview_markdown);
-        OutputSettings safeSettings = settings == null
-                ? new OutputSettings(false, OutputSettings.BROWSER_BUILTIN)
-                : settings;
-        codeWrapEnabled = safeSettings.isCodeWrapEnabled();
-        browserMode = safeSettings.getBrowserMode();
-        boolean browserJavaScriptEnabled = safeSettings.isBrowserJavaScriptEnabled();
-        LinearLayout content = getContent();
+        super(context);
+        OutputSettingsRepository repository = new ListenerOutputSettingsRepository(settings, listener);
+        addView(
+                new OutputSettingsHostView(context, repository, new OutputSettingsHostView.Listener() {
+                    @Override
+                    public void onBack() {
+                        listener.onBack();
+                    }
 
-        previewView = new MarkdownView(context);
-        previewView.setCodeWrapEnabled(codeWrapEnabled);
-        previewView.setLinkHandler(url -> {});
-        previewView.setMarkdown(PREVIEW_MARKDOWN);
-
-        SettingsSectionView code = new SettingsSectionView(context, context.getString(R.string.screen_output_section_code));
-        code.addRow(new SwitchRowView(context, IconButtonView.SCROLL_TEXT, context.getString(R.string.screen_output_code_wrap_label), context.getString(R.string.screen_output_code_wrap_desc),
-                codeWrapEnabled,
-                (buttonView, isChecked) -> {
-                    codeWrapEnabled = isChecked;
-                    previewView.setCodeWrapEnabled(isChecked);
-                    listener.onCodeWrapChanged(isChecked);
-                }), false);
-        content.addView(code, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        SettingsSectionView browser = new SettingsSectionView(context, context.getString(R.string.screen_output_section_browser));
-        builtinBrowserRow = new OptionRowView(context, IconButtonView.GLOBE, context.getString(R.string.screen_output_browser_internal_label), context.getString(R.string.screen_output_browser_internal_desc),
-                OutputSettings.BROWSER_BUILTIN.equals(browserMode),
-                () -> setBrowserMode(OutputSettings.BROWSER_BUILTIN));
-        externalBrowserRow = new OptionRowView(context, IconButtonView.EXTERNAL_LINK, context.getString(R.string.screen_output_browser_external_label), context.getString(R.string.screen_output_browser_external_desc),
-                OutputSettings.BROWSER_EXTERNAL.equals(browserMode),
-                () -> setBrowserMode(OutputSettings.BROWSER_EXTERNAL));
-        browser.addRow(builtinBrowserRow, true, 52);
-        browser.addRow(externalBrowserRow, false, 52);
-        content.addView(browser, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        SettingsSectionView preview = new SettingsSectionView(context, context.getString(R.string.screen_output_section_preview));
-        LinearLayout previewBox = new LinearLayout(context);
-        previewBox.setOrientation(LinearLayout.VERTICAL);
-        LineTheme.padding(previewBox, LineTheme.LG, LineTheme.LG, LineTheme.LG, LineTheme.LG);
-        previewBox.addView(previewView, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        preview.addRow(previewBox, false);
-        content.addView(preview, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        SettingsSectionView toolCall = new SettingsSectionView(context, context.getString(R.string.screen_output_section_toolcall));
-        toolCall.addRow(new ActionRowView(context, IconButtonView.FILE_CODE, context.getString(R.string.screen_output_toolcall_preview_label),
-                context.getString(R.string.screen_output_toolcall_preview_desc), false, true,
-                () -> listener.onToolCallPreviewClicked()), false);
-        content.addView(toolCall, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+                    @Override
+                    public void onOpen(LineDestination destination) {
+                        if (destination instanceof LineDestination.ToolCallPreview) {
+                            listener.onToolCallPreviewClicked();
+                        }
+                    }
+                }),
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        );
     }
 
-    private void setBrowserMode(String mode) {
-        String normalized = OutputSettings.normalizeBrowserMode(mode);
-        if (normalized.equals(browserMode)) {
-            return;
+    private static final class ListenerOutputSettingsRepository implements OutputSettingsRepository {
+        private OutputSettings snapshot;
+        private final Listener listener;
+
+        ListenerOutputSettingsRepository(OutputSettings settings, Listener listener) {
+            this.snapshot = settings == null
+                    ? new OutputSettings(false, OutputSettings.BROWSER_BUILTIN)
+                    : settings;
+            this.listener = listener;
         }
-        browserMode = normalized;
-        builtinBrowserRow.setActive(OutputSettings.BROWSER_BUILTIN.equals(browserMode));
-        externalBrowserRow.setActive(OutputSettings.BROWSER_EXTERNAL.equals(browserMode));
-        listener.onBrowserModeChanged(browserMode);
+
+        @Override
+        public OutputSettings settings() {
+            return snapshot;
+        }
+
+        @Override
+        public void setCodeWrapEnabled(boolean enabled) {
+            snapshot = copy(
+                    enabled,
+                    snapshot.getBrowserMode(),
+                    snapshot.isBrowserJavaScriptEnabled()
+            );
+            listener.onCodeWrapChanged(enabled);
+        }
+
+        @Override
+        public void setBrowserMode(String mode) {
+            snapshot = copy(
+                    snapshot.isCodeWrapEnabled(),
+                    mode,
+                    snapshot.isBrowserJavaScriptEnabled()
+            );
+            listener.onBrowserModeChanged(snapshot.getBrowserMode());
+        }
+
+        @Override
+        public void setBrowserJavaScriptEnabled(boolean enabled) {
+            snapshot = copy(
+                    snapshot.isCodeWrapEnabled(),
+                    snapshot.getBrowserMode(),
+                    enabled
+            );
+            listener.onBrowserJavaScriptChanged(enabled);
+        }
+
+        private OutputSettings copy(boolean codeWrap, String mode, boolean javaScript) {
+            return new OutputSettings(
+                    codeWrap,
+                    mode,
+                    javaScript,
+                    snapshot.isAllowAnyHttp(),
+                    snapshot.isBypassPathProtection()
+            );
+        }
     }
 }

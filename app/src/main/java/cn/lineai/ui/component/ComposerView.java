@@ -10,7 +10,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -18,6 +17,7 @@ import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -95,6 +95,10 @@ public final class ComposerView extends LinearLayout implements QuoteController.
     private boolean streaming;
     private String chatMode = ChatMode.DEFAULT;
     private String enterKeyBehavior = InputSettings.ENTER_SEND;
+    private boolean submitInsertedNewline;
+    private int insertedNewlineStart = -1;
+    private int insertedNewlineCount;
+    private boolean editingInsertedNewline;
     private String selectedModelId = "";
     private List<ModelConfig> availableModels = Collections.emptyList();
     private Listener listener;
@@ -211,8 +215,8 @@ public final class ComposerView extends LinearLayout implements QuoteController.
         input.setMinHeight(LineTheme.dp(context, 68));
         input.setMaxHeight(LineTheme.dp(context, 152));
         input.setGravity(Gravity.TOP | Gravity.START);
-        input.setImeOptions(EditorInfo.IME_ACTION_SEND);
-        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        input.setImeOptions(EnterKeyImePolicy.imeOptions(enterKeyBehavior));
+        input.setRawInputType(EnterKeyImePolicy.rawInputType(enterKeyBehavior));
         input.setBackgroundColor(android.graphics.Color.TRANSPARENT);
         input.setIncludeFontPadding(false);
         input.setPadding(LineTheme.dp(context, LineTheme.SM), LineTheme.dp(context, LineTheme.SM),
@@ -328,12 +332,45 @@ public final class ComposerView extends LinearLayout implements QuoteController.
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!editingInsertedNewline
+                        && EnterKeyImePolicy.shouldConsumeInsertedNewline(
+                                enterKeyBehavior,
+                                s,
+                                start,
+                                count
+                        )) {
+                    submitInsertedNewline = true;
+                    insertedNewlineStart = start;
+                    insertedNewlineCount = count;
+                }
                 updateSendButton();
                 updateSlashPopup();
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                if (!submitInsertedNewline || editingInsertedNewline) {
+                    return;
+                }
+                int start = insertedNewlineStart;
+                int count = insertedNewlineCount;
+                submitInsertedNewline = false;
+                insertedNewlineStart = -1;
+                insertedNewlineCount = 0;
+
+                if (start >= 0 && count > 0 && start + count <= s.length()) {
+                    editingInsertedNewline = true;
+                    try {
+                        s.delete(start, start + count);
+                    } finally {
+                        editingInsertedNewline = false;
+                    }
+                }
+                post(() -> {
+                    if (InputSettings.ENTER_SEND.equals(enterKeyBehavior)) {
+                        submitCurrentInput();
+                    }
+                });
             }
         });
         slashPopup = new SlashCommandPopup(context);
@@ -646,10 +683,26 @@ public final class ComposerView extends LinearLayout implements QuoteController.
     }
 
     private void updateEnterKeyBehavior(String behavior) {
-        enterKeyBehavior = InputSettings.normalizeEnterKeyBehavior(behavior);
-        input.setImeOptions(InputSettings.ENTER_SEND.equals(enterKeyBehavior)
-                ? EditorInfo.IME_ACTION_SEND
-                : EditorInfo.IME_ACTION_NONE);
+        String normalized = InputSettings.normalizeEnterKeyBehavior(behavior);
+        boolean changed = !normalized.equals(enterKeyBehavior);
+        enterKeyBehavior = normalized;
+
+        int inputType = EnterKeyImePolicy.rawInputType(enterKeyBehavior);
+        int imeOptions = EnterKeyImePolicy.imeOptions(enterKeyBehavior);
+        if (input.getInputType() != inputType) {
+            input.setRawInputType(inputType);
+        }
+        if (input.getImeOptions() != imeOptions) {
+            input.setImeOptions(imeOptions);
+        }
+
+        if (changed && input.hasFocus()) {
+            InputMethodManager inputMethodManager =
+                    (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (inputMethodManager != null) {
+                input.post(() -> inputMethodManager.restartInput(input));
+            }
+        }
     }
 
     private void clearAttachments() {

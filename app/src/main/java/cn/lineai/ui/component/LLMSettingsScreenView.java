@@ -1,14 +1,16 @@
 package cn.lineai.ui.component;
-import cn.lineai.ui.theme.IconButtonView;
 
 import android.content.Context;
-import android.widget.LinearLayout;
-import cn.lineai.R;
+import android.widget.FrameLayout;
 import cn.lineai.model.AiBehaviorSettings;
-import java.util.ArrayList;
-import java.util.List;
+import cn.lineai.navigation.LineDestination;
+import cn.lineai.ui.model.LlmSettingsRepository;
 
-public final class LLMSettingsScreenView extends ScreenScaffoldView {
+/**
+ * Compatibility wrapper around the Compose LLM settings screen.
+ * Prompt Templates remains on the ScreenRegistry / typed destination bridge.
+ */
+public final class LLMSettingsScreenView extends FrameLayout {
     public interface Listener {
         void onBack();
 
@@ -29,152 +31,139 @@ public final class LLMSettingsScreenView extends ScreenScaffoldView {
         void onOpenPromptTemplates();
     }
 
-    private final List<ReasoningRow> reasoningRows = new ArrayList<>();
-    private final List<ToneRow> toneRows = new ArrayList<>();
-
     public LLMSettingsScreenView(Context context, AiBehaviorSettings settings, Listener listener) {
-        super(context, context.getString(R.string.screen_llm_title), listener::onBack, null);
-        LinearLayout content = getContent();
-        AiBehaviorSettings value = settings == null
-                ? new AiBehaviorSettings(null, true, false, null, false, false)
-                : settings;
+        super(context);
+        LlmSettingsRepository repository = new ListenerLlmSettingsRepository(settings, listener);
+        addView(
+                new LlmSettingsHostView(context, repository, new LlmSettingsHostView.Listener() {
+                    @Override
+                    public void onBack() {
+                        listener.onBack();
+                    }
 
-        SettingsSectionView reasoning = new SettingsSectionView(context, context.getString(R.string.screen_llm_section_thinking));
-        addReasoningRow(reasoning, listener, AiBehaviorSettings.REASONING_OFF, context.getString(R.string.screen_llm_thinking_off_label), context.getString(R.string.screen_llm_thinking_off_desc), value.getReasoningEffort(), true);
-        addReasoningRow(reasoning, listener, AiBehaviorSettings.REASONING_AUTO, context.getString(R.string.screen_llm_thinking_auto_label), context.getString(R.string.screen_llm_thinking_auto), value.getReasoningEffort(), true);
-        addReasoningRow(reasoning, listener, AiBehaviorSettings.REASONING_LOW, context.getString(R.string.screen_llm_thinking_low_label), context.getString(R.string.screen_llm_thinking_low), value.getReasoningEffort(), true);
-        addReasoningRow(reasoning, listener, AiBehaviorSettings.REASONING_MEDIUM, context.getString(R.string.screen_llm_thinking_medium_label), context.getString(R.string.screen_llm_thinking_medium), value.getReasoningEffort(), true);
-        addReasoningRow(reasoning, listener, AiBehaviorSettings.REASONING_HIGH, context.getString(R.string.screen_llm_thinking_high_label), context.getString(R.string.screen_llm_thinking_high), value.getReasoningEffort(), true);
-        addReasoningRow(reasoning, listener, AiBehaviorSettings.REASONING_MAX, context.getString(R.string.screen_llm_thinking_max_label), context.getString(R.string.screen_llm_thinking_max), value.getReasoningEffort(), false);
-        content.addView(reasoning, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        SettingsSectionView learning = new SettingsSectionView(context, context.getString(R.string.screen_llm_section_learning));
-        learning.addRow(new SwitchRowView(
-                context,
-                IconButtonView.BRAIN,
-                context.getString(R.string.screen_llm_learning_label),
-                context.getString(R.string.screen_llm_learning_desc),
-                value.isLearningModeEnabled(),
-                (buttonView, isChecked) -> listener.onLearningModeChanged(isChecked)
-        ), true);
-        learning.addRow(new SwitchRowView(
-                context,
-                IconButtonView.ROTATE_CCW,
-                context.getString(R.string.screen_llm_soft_compact_label),
-                context.getString(R.string.screen_llm_soft_compact_desc),
-                value.isSoftCompactionEnabled(),
-                (buttonView, isChecked) -> listener.onSoftCompactionChanged(isChecked)
-        ), false);
-        content.addView(learning, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        SettingsSectionView tone = new SettingsSectionView(context, context.getString(R.string.screen_llm_section_tone));
-        addToneRow(tone, listener, AiBehaviorSettings.TONE_CODING, context.getString(R.string.screen_llm_tone_coding), context.getString(R.string.screen_llm_tone_coding_desc), IconButtonView.ZAP, value.getToneMode(), true);
-        addToneRow(tone, listener, AiBehaviorSettings.TONE_CHAT, context.getString(R.string.screen_llm_tone_chat), context.getString(R.string.screen_llm_tone_chat_desc), IconButtonView.SMILE, value.getToneMode(), false);
-        content.addView(tone, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        SettingsSectionView prompts = new SettingsSectionView(context, context.getString(R.string.screen_llm_section_prompts));
-        prompts.addRow(new OptionRowView(
-                context,
-                IconButtonView.FILE_PEN_LINE,
-                context.getString(R.string.screen_llm_prompts_label),
-                context.getString(R.string.screen_llm_prompts_desc),
-                false,
-                listener::onOpenPromptTemplates
-        ), false);
-        content.addView(prompts, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        SettingsSectionView thinking = new SettingsSectionView(context, context.getString(R.string.screen_llm_section_thinking_display));
-        thinking.addRow(new SwitchRowView(
-                context,
-                IconButtonView.SCROLL_TEXT,
-                context.getString(R.string.screen_llm_scroll_label),
-                context.getString(R.string.screen_llm_scroll_desc),
-                value.isThinkingScrollEnabled(),
-                (buttonView, isChecked) -> listener.onThinkingScrollChanged(isChecked)
-        ), true);
-        thinking.addRow(new SwitchRowView(
-                context,
-                IconButtonView.EXPAND,
-                context.getString(R.string.screen_llm_auto_expand_label),
-                context.getString(R.string.screen_llm_auto_expand_desc),
-                value.isThinkingAutoExpandEnabled(),
-                (buttonView, isChecked) -> listener.onThinkingAutoExpandChanged(isChecked)
-        ), true);
-        thinking.addRow(new SwitchRowView(
-                context,
-                IconButtonView.BRAIN,
-                context.getString(R.string.screen_llm_keep_reasoning_label),
-                context.getString(R.string.screen_llm_keep_reasoning_desc),
-                value.isPreserveReasoningEnabled(),
-                (buttonView, isChecked) -> listener.onPreserveReasoningChanged(isChecked)
-        ), false);
-        content.addView(thinking, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+                    @Override
+                    public void onOpen(LineDestination destination) {
+                        if (destination instanceof LineDestination.PromptTemplates) {
+                            listener.onOpenPromptTemplates();
+                        }
+                    }
+                }),
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        );
     }
 
-    private void addReasoningRow(
-            SettingsSectionView section,
-            Listener listener,
-            String effort,
-            String label,
-            String desc,
-            String selected,
-            boolean divider
-    ) {
-        OptionRowView row = new OptionRowView(getContext(), IconButtonView.SPARKLES, label, desc, effort.equals(selected), () -> {
-            listener.onReasoningEffortChanged(effort);
-            updateReasoningRows(effort);
-        });
-        reasoningRows.add(new ReasoningRow(effort, row));
-        section.addRow(row, divider);
-    }
+    private static final class ListenerLlmSettingsRepository implements LlmSettingsRepository {
+        private AiBehaviorSettings snapshot;
+        private final Listener listener;
 
-    private void addToneRow(
-            SettingsSectionView section,
-            Listener listener,
-            String toneMode,
-            String label,
-            String desc,
-            int icon,
-            String selected,
-            boolean divider
-    ) {
-        OptionRowView row = new OptionRowView(getContext(), icon, label, desc, toneMode.equals(selected), () -> {
+        ListenerLlmSettingsRepository(AiBehaviorSettings settings, Listener listener) {
+            this.snapshot = settings == null
+                    ? new AiBehaviorSettings(null, true, false, null, false, false)
+                    : settings;
+            this.listener = listener;
+        }
+
+        @Override
+        public AiBehaviorSettings settings() {
+            return snapshot;
+        }
+
+        @Override
+        public void setToneMode(String toneMode) {
+            snapshot = new AiBehaviorSettings(
+                    toneMode,
+                    snapshot.isThinkingScrollEnabled(),
+                    snapshot.isThinkingAutoExpandEnabled(),
+                    snapshot.getReasoningEffort(),
+                    snapshot.isPreserveReasoningEnabled(),
+                    snapshot.isLearningModeEnabled(),
+                    snapshot.isSoftCompactionEnabled()
+            );
             listener.onToneModeChanged(toneMode);
-            updateToneRows(toneMode);
-        });
-        toneRows.add(new ToneRow(toneMode, row));
-        section.addRow(row, divider);
-    }
-
-    private void updateReasoningRows(String selected) {
-        for (ReasoningRow item : reasoningRows) {
-            item.row.setActive(item.effort.equals(selected));
         }
-    }
 
-    private void updateToneRows(String selected) {
-        for (ToneRow item : toneRows) {
-            item.row.setActive(item.toneMode.equals(selected));
+        @Override
+        public void setReasoningEffort(String effort) {
+            snapshot = new AiBehaviorSettings(
+                    snapshot.getToneMode(),
+                    snapshot.isThinkingScrollEnabled(),
+                    snapshot.isThinkingAutoExpandEnabled(),
+                    effort,
+                    snapshot.isPreserveReasoningEnabled(),
+                    snapshot.isLearningModeEnabled(),
+                    snapshot.isSoftCompactionEnabled()
+            );
+            listener.onReasoningEffortChanged(effort);
         }
-    }
 
-    private static final class ReasoningRow {
-        final String effort;
-        final OptionRowView row;
-
-        ReasoningRow(String effort, OptionRowView row) {
-            this.effort = effort;
-            this.row = row;
+        @Override
+        public void setThinkingScrollEnabled(boolean enabled) {
+            snapshot = new AiBehaviorSettings(
+                    snapshot.getToneMode(),
+                    enabled,
+                    snapshot.isThinkingAutoExpandEnabled(),
+                    snapshot.getReasoningEffort(),
+                    snapshot.isPreserveReasoningEnabled(),
+                    snapshot.isLearningModeEnabled(),
+                    snapshot.isSoftCompactionEnabled()
+            );
+            listener.onThinkingScrollChanged(enabled);
         }
-    }
 
-    private static final class ToneRow {
-        final String toneMode;
-        final OptionRowView row;
+        @Override
+        public void setThinkingAutoExpandEnabled(boolean enabled) {
+            snapshot = new AiBehaviorSettings(
+                    snapshot.getToneMode(),
+                    snapshot.isThinkingScrollEnabled(),
+                    enabled,
+                    snapshot.getReasoningEffort(),
+                    snapshot.isPreserveReasoningEnabled(),
+                    snapshot.isLearningModeEnabled(),
+                    snapshot.isSoftCompactionEnabled()
+            );
+            listener.onThinkingAutoExpandChanged(enabled);
+        }
 
-        ToneRow(String toneMode, OptionRowView row) {
-            this.toneMode = toneMode;
-            this.row = row;
+        @Override
+        public void setPreserveReasoningEnabled(boolean enabled) {
+            snapshot = new AiBehaviorSettings(
+                    snapshot.getToneMode(),
+                    snapshot.isThinkingScrollEnabled(),
+                    snapshot.isThinkingAutoExpandEnabled(),
+                    snapshot.getReasoningEffort(),
+                    enabled,
+                    snapshot.isLearningModeEnabled(),
+                    snapshot.isSoftCompactionEnabled()
+            );
+            listener.onPreserveReasoningChanged(enabled);
+        }
+
+        @Override
+        public void setLearningModeEnabled(boolean enabled) {
+            snapshot = new AiBehaviorSettings(
+                    snapshot.getToneMode(),
+                    snapshot.isThinkingScrollEnabled(),
+                    snapshot.isThinkingAutoExpandEnabled(),
+                    snapshot.getReasoningEffort(),
+                    snapshot.isPreserveReasoningEnabled(),
+                    enabled,
+                    snapshot.isSoftCompactionEnabled()
+            );
+            listener.onLearningModeChanged(enabled);
+        }
+
+        @Override
+        public void setSoftCompactionEnabled(boolean enabled) {
+            snapshot = new AiBehaviorSettings(
+                    snapshot.getToneMode(),
+                    snapshot.isThinkingScrollEnabled(),
+                    snapshot.isThinkingAutoExpandEnabled(),
+                    snapshot.getReasoningEffort(),
+                    snapshot.isPreserveReasoningEnabled(),
+                    snapshot.isLearningModeEnabled(),
+                    enabled
+            );
+            listener.onSoftCompactionChanged(enabled);
         }
     }
 }
