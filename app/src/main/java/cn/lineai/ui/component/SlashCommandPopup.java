@@ -162,6 +162,7 @@ public final class SlashCommandPopup {
                 x,
                 location[1]
         );
+        hostView.installLifecycleOwnerOnWindowRoot();
     }
 
     private int popupY(int anchorTop, int popupHeight) {

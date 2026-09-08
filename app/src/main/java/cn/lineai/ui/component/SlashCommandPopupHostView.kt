@@ -88,6 +88,12 @@ class SlashCommandPopupHostView(
         super.onDetachedFromWindow()
     }
 
+    fun installLifecycleOwnerOnWindowRoot() {
+        // PopupWindow inserts its own decor above this host.
+        // WindowRecomposer resolves lifecycle from that root.
+        rootView.setViewTreeLifecycleOwner(this)
+    }
+
     fun bind(
         title: String?,
         rows: List<SlashCommandRowData>,
